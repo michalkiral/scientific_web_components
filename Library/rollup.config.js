@@ -8,11 +8,25 @@ import summary from 'rollup-plugin-summary';
 import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import path from 'path';
 
-export default {
-  input: 'my-element.js',
+const components = [
+  {
+    name: 'Button',
+    input: 'src/Button/index.js', // Adjust to your main entry file for Button
+    output: 'Build/Button/my-button.bundled.js', // Output file for Button
+  },
+  {
+    name: 'Form',
+    input: 'src/Form/index.js', // Adjust to your main entry file for Form
+    output: 'Build/Form/my-form.bundled.js', // Output file for Form
+  },
+];
+
+export default components.map(({ name, input, output }) => ({
+  input,
   output: {
-    file: 'my-element.bundled.js',
+    file: output,
     format: 'esm',
   },
   onwarn(warning) {
@@ -21,22 +35,18 @@ export default {
     }
   },
   plugins: [
-    replace({preventAssignment: false, 'Reflect.decorate': 'undefined'}),
+    replace({ preventAssignment: false, 'Reflect.decorate': 'undefined' }),
     resolve(),
-    /**
-     * This minification setup serves the static site generation.
-     * For bundling and minification, check the README.md file.
-     */
     terser({
       ecma: 2021,
       module: true,
       warnings: true,
       mangle: {
         properties: {
-          regex: /^__/,
+          regex: /^__/, // Adjust property mangling as needed
         },
       },
     }),
     summary(),
   ],
-};
+}));

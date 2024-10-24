@@ -51,6 +51,7 @@ export class ScientificButton extends LitElement {
   }
 
   override render() {
+    console.log('Rendering ScientificButton');
     return html`
       <button @click=${this._onClick}>
         ${this.loading ? 'Processing...' : this.label}

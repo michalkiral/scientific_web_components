@@ -3,8 +3,8 @@
   "private": true,
   "version": "2.0.2",
   "description": "A simple web component",
-  "main": "my-element.js",
-  "module": "my-element.js",
+  "main": "scientific-web-components.js",
+  "module": "scientific-web-components.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
