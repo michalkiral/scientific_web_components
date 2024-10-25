@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
   <head>
@@ -6,10 +6,34 @@
     <title>&lt;my-element> Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../node_modules/lit/polyfill-support.js"></script>
-    <script type="module" src="../scientific-button.js"></script>
+    <script type="module" src="../Build/Button/scientific-button.js"></script>
+    <script type="module" src="../Build/Form/scientific-form.js"></script>
   </head>
   <body>
-    <scientific-button name="Fred.">
-    </scientific-button>
+    <scientific-button name="Fred."> </scientific-button>
+
+    <scientific-form
+      formTitle="Sample Scientific Form"
+      submitLabel="Send Data"
+      cancelLabel="Reset"
+      .onSubmit="${() => console.log('Form submitted')}"
+      .onCancel="${() => console.log('Form cancelled')}"
+    >
+      <div slot="personal-info">
+        <label for="name">Name: </label>
+        <input id="name" type="text" placeholder="Enter your name" />
+      </div>
+
+      <div slot="scientific-data">
+        <label for="experiment">Experiment Name: </label>
+        <input
+          id="experiment"
+          type="text"
+          placeholder="Enter experiment name"
+        />
+      </div>
+    </scientific-form>
+
+    <scientific-form></scientific-form>
   </body>
 </html>
