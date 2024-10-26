@@ -92,12 +92,12 @@ export class ScientificForm extends LitElement {
           <scientific-button 
             .label="${this.cancelLabel}" 
             @click="${() => this._handleCancel()}"
-            ?disabled="${this.isLoading}"
+            ?loading="${this.isLoading}"
           ></scientific-button>
           <scientific-button
             .label="${this.isLoading ? 'Submitting...' : this.submitLabel}" 
             @click="${() => this._handleSubmit()}"
-            ?disabled="${this.isLoading}"
+            ?loading="${this.isLoading}"
           ></scientific-button>
         </div>
       </div>
