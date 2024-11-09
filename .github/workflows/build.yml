@@ -15,5 +15,8 @@ jobs:
         with:
           node-version-file: ".nvmrc"
       - run: npm ci
+        working-directory: ./Library
       - run: npm run lint
+        working-directory: ./Library
       - run: npm run build
+        working-directory: ./Library
