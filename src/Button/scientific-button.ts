@@ -10,14 +10,17 @@ export class ScientificButton extends LitElement {
       padding: var(--button-padding, 8px 16px);
       background-color: var(--button-bg-color, #007bff);
       color: var(--button-color, white);
+      width: var(--button-width, 300px);
+      opacity: var(--button-opacity, 75%);
       cursor: pointer;
-      border: none;
-      border-radius: var(--button-border-radius, 4px);
+      border: var(--button-border, none);
+      border-radius: var(--button-border-radius, 8px);
     }
 
     button:hover {
-      transition: .5s ease-in-out;
+      transition: .25s ease-in-out;
       background-color: var(--button-hover-bg-color, #034994);
+      opacity: var(--button-hover-opacity, 100%);
     }
 
     button[disabled] {
@@ -35,25 +38,29 @@ export class ScientificButton extends LitElement {
   @property({type: String})
   label = 'Click Me';
 
+  @property({type: String})
+  loadingLabel = "Processing...";
+
   private async _onClick() {
-    if (this.action) {
-      this.dispatchEvent(new CustomEvent('custom-button-action-start'));
-      this.loading = true;
-      try {
-        await this.action();
-        this.dispatchEvent(
-          new CustomEvent('custom-button-action-complete')
-        );
-      } finally {
-        this.loading = false;
-      }
+    if (!this.action || this.loading) return;
+    
+    this.dispatchEvent(new CustomEvent('custom-button-action-start'));
+    this.loading = true;
+  
+    try {
+      await this.action();
+      this.dispatchEvent(new CustomEvent('custom-button-action-complete'));
+    } catch (error) {
+      this.dispatchEvent(new CustomEvent('custom-button-action-error', { detail: error }));
+    } finally {
+      this.loading = false;
     }
   }
 
   override render() {
     return html`
       <button @click=${this._onClick}>
-        ${this.loading ? 'Processing...' : this.label}
+        ${this.loading ? this.loadingLabel : this.label}
       </button>
     `;
   }
