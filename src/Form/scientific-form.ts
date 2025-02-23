@@ -11,94 +11,110 @@ export class ScientificForm extends LitElement {
       background-color: var(--form-bg-color, #f9f9f9);
       border-radius: var(--form-border-radius, 8px);
       max-width: var(--form-max-width, 600px);
-      margin: 20px auto;
-    }
-
-    .form-section {
-      margin-bottom: 16px;
+      margin: var(--form-margin, 20px auto);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .form-header {
       font-size: var(--form-header-font-size, 24px);
-      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .form-footer {
-      text-align: right;
-      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
     scientific-button {
-      margin-left: 8px;
-    }
-
-    .section-title {
-      font-size: var(--section-title-font-size, 18px);
-      margin-bottom: 4px;
+      min-width: var(--button-min-width, 100px);
     }
   `;
+
+  @property({type: String})
+  formBgColor = '#f9f9f9';
+  @property({type: String})
+  formPadding = '16px';
+  @property({type: String})
+  formBorder = '1px solid #ddd';
 
   @property({type: Boolean})
   isLoading = false;
 
   @property({type: String})
   formTitle = 'Scientific Form';
-
   @property({type: String})
   submitLabel = 'Submit';
-
+  @property({type: String})
+  loadingLabel = 'Submitting...';
   @property({type: String})
   cancelLabel = 'Cancel';
 
   @property({ attribute: false })
   onSubmit?: () => Promise<void>;
-
   @property({ attribute: false })
   onCancel?: () => void;
 
   private async _handleSubmit() {
-    if (this.onSubmit) {
-      this.isLoading = true;
-      try {
-        await this.onSubmit();
-      } finally {
-        this.isLoading = false;
-      }
+    if (this.isLoading || !this.onSubmit) return;
+    
+    this.dispatchEvent(new CustomEvent('scientific-form-submit-start'));
+    this.isLoading = true;
+
+    try {
+      await this.onSubmit();
+      this.dispatchEvent(new CustomEvent('scientific-form-submit-success'));
+    } catch (error) {
+      this.dispatchEvent(new CustomEvent('scientific-form-submit-error', { detail: error }));
+    } finally {
+      this.isLoading = false;
     }
   }
 
   private _handleCancel() {
-    if (this.onCancel) {
-      this.onCancel();
-    }
+    this.dispatchEvent(new CustomEvent('scientific-form-cancel'));
+    this.onCancel?.();
   }
 
   override render() {
     return html`
-      <div class="form-container">
-        <div class="form-header">${this.formTitle}</div>
+      <div 
+        class="form-container" 
+        style="
+          background-color: ${this.formBgColor}; 
+          padding: ${this.formPadding}; 
+          border: ${this.formBorder};
+        "
+        role="form"
+      >
+        <slot name="header">
+          <div class="form-header">${this.formTitle}</div>
+        </slot>
 
         <div class="form-section">
-          <div class="section-title">Personal Information</div>
-          <slot name="personal-info"></slot>
-        </div>
-
-        <div class="form-section">
-          <div class="section-title">Scientific Data</div>
-          <slot name="scientific-data"></slot>
+          <slot name="form-fields"></slot>
         </div>
 
         <div class="form-footer">
-          <scientific-button 
-            .label="${this.cancelLabel}" 
-            @click="${() => this._handleCancel()}"
-            ?loading="${this.isLoading}"
-          ></scientific-button>
-          <scientific-button
-            .label="${this.isLoading ? 'Submitting...' : this.submitLabel}" 
-            @click="${() => this._handleSubmit()}"
-            ?loading="${this.isLoading}"
-          ></scientific-button>
+          <slot name="actions">
+            <scientific-button 
+              .label="${this.cancelLabel}" 
+              @click="${() => this._handleCancel()}"
+            ></scientific-button>
+            <scientific-button
+              .label="${this.isLoading ? this.loadingLabel : this.submitLabel}" 
+              @click="${() => this._handleSubmit()}"
+              ?loading="${this.isLoading}"
+            ></scientific-button>
+          </slot>
         </div>
       </div>
     `;

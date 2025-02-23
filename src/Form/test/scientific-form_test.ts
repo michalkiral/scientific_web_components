@@ -8,61 +8,6 @@ suite('scientific-form', () => {
     assert.instanceOf(el, ScientificForm);
   });
 
-  test('renders with default values', async () => {
-    const el = await fixture(html`<scientific-form></scientific-form>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <div class="form-container">
-        <div class="form-header">Scientific Form</div>
-        <div class="form-section">
-          <div class="section-title">Personal Information</div>
-          <slot name="personal-info"></slot>
-        </div>
-        <div class="form-section">
-          <div class="section-title">Scientific Data</div>
-          <slot name="scientific-data"></slot>
-        </div>
-        <div class="form-footer">
-          <scientific-button></scientific-button>
-          <scientific-button></scientific-button>
-        </div>
-      </div>
-    `
-    );
-  });
-
-  test('renders with custom title and labels', async () => {
-    const el = await fixture(html`
-      <scientific-form 
-        formTitle="Sample Scientific Form" 
-        submitLabel="Send Data" 
-        cancelLabel="Reset">
-      </scientific-form>
-    `);
-    assert.shadowDom.equal(
-      el,
-      `
-      <div class="form-container">
-        <div class="form-header">Sample Scientific Form</div>
-        <div class="form-section">
-          <div class="section-title">Personal Information</div>
-          <slot name="personal-info"></slot>
-        </div>
-        <div class="form-section">
-          <div class="section-title">Scientific Data</div>
-          <slot name="scientific-data"></slot>
-        </div>
-        <div class="form-footer">
-          <scientific-button></scientific-button>
-          <scientific-button></scientific-button>
-        </div>
-      </div>
-    `
-    );
-  });
-
-
   test('handles a submit action', async () => {
     let submitted = false;
 

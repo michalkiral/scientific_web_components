@@ -7,7 +7,7 @@ export class ScientificDropdown extends LitElement {
     .dropdown-container {
       position: relative;
       display: inline-block;
-      width: 50%;
+      width: var(--dropdown-width, 50%);
     }
 
     .dropdown-label {

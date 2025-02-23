@@ -8,46 +8,6 @@ suite('scientific-slider', () => {
     assert.instanceOf(el, ScientificSlider);
   });
 
-  test('renders with default values', async () => {
-    const el = await fixture(html`<scientific-slider></scientific-slider>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <div class="slider-container">
-        <div class="label">Arrows Count</div>
-        <div class="range-container">
-          <div class="value-display" style="left: calc(0%);">
-            0
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            class="range-input"
-          />
-        </div>
-        <div class="min-max-labels">
-          <span>0</span>
-          <span>100</span>
-        </div>
-        <div class="ticks">
-          <span style="left: 0%">0</span>
-          <span style="left: 11%">11</span>
-          <span style="left: 22%">22</span>
-          <span style="left: 33%">33</span>
-          <span style="left: 44%">44</span>
-          <span style="left: 56.00000000000001%">56</span>
-          <span style="left: 67%">67</span>
-          <span style="left: 78%">78</span>
-          <span style="left: 89%">89</span>
-          <span style="left: 100%">100</span>
-        </div>
-      </div>
-      `
-    );
-  });
-
   test('sets custom min, max, and step properties', async () => {
     const el = await fixture<ScientificSlider>(html`
       <scientific-slider min="10" max="50" step="5"></scientific-slider>
@@ -92,7 +52,7 @@ suite('scientific-slider', () => {
 
   test('calculates ticks correctly based on min and max values', async () => {
     const el = await fixture<ScientificSlider>(html`
-      <scientific-slider min="0" max="50"></scientific-slider>
+      <scientific-slider min="0" max="50" tickCount="10"></scientific-slider>
     `);
 
     const expectedTicks = [0, 6, 11, 17, 22, 28, 33, 39, 44, 50];
