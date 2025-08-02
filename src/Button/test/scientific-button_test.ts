@@ -56,21 +56,17 @@ suite('my-element', () => {
 
     const button = el.shadowRoot!.querySelector('button')!;
     
-    button.click(); // Simulate a button click
+    button.click();
     
-    // Ensure loading state is applied after the click
     await el.updateComplete;
     assert.equal(el.loading, true);
     assert.equal(button.textContent?.trim(), 'Processing...');
 
-    // Wait for the promise (fake async action) to resolve
-    await aTimeout(100); // Simulates time taken by the async action
+    await aTimeout(100);
 
-    // After the action completes
     assert.equal(el.loading, false);
     assert.equal(button.textContent?.trim(), 'Test Action');
     
-    // Validate that the custom events were dispatched correctly
     assert.isTrue(actionStarted, 'custom-button-action-start was emitted');
     assert.isTrue(actionCompleted, 'custom-button-action-complete was emitted');
   });
@@ -85,7 +81,6 @@ suite('my-element', () => {
 
     const button = el.shadowRoot!.querySelector('button')!;
     
-    // Validate custom styles
     assert.equal(getComputedStyle(button).backgroundColor, 'rgb(255, 0, 0)');
     assert.equal(getComputedStyle(button).fontSize, '20px');
   });

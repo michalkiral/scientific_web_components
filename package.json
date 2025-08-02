@@ -30,7 +30,10 @@
     "test:watch": "wtr --watch",
     "test:prod": "MODE=prod wtr",
     "test:prod:watch": "MODE=prod wtr --watch",
-    "checksize": "rollup -c ; cat my-element.bundled.js | gzip -9 | wc -c ; rm my-element.bundled.js"
+    "checksize": "rollup -c ; cat my-element.bundled.js | gzip -9 | wc -c ; rm my-element.bundled.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test-storybook": "test-storybook"
   },
   "keywords": [
     "web-components",
@@ -47,13 +50,23 @@
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
+    "@chromatic-com/storybook": "^4.1.0",
     "@custom-elements-manifest/analyzer": "^0.6.3",
     "@open-wc/testing": "^4.0.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
+    "@storybook/addon-a11y": "^9.1.0",
+    "@storybook/addon-docs": "^9.1.0",
+    "@storybook/addon-vitest": "^9.1.0",
+    "@storybook/jest": "^0.2.2",
+    "@storybook/test-runner": "^0.23.0",
+    "@storybook/testing-library": "^0.2.1",
+    "@storybook/web-components-vite": "^9.1.0",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "@web/dev-server": "^0.1.31",
     "@web/dev-server-legacy": "^1.0.0",
     "@web/test-runner": "^0.15.0",
@@ -62,13 +75,17 @@
     "eslint": "^8.15.0",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-storybook": "^9.1.0",
     "eslint-plugin-wc": "^2.2.0",
     "lit-analyzer": "^1.2.1",
+    "playwright": "^1.54.2",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "rollup": "^4.18.0",
     "rollup-plugin-summary": "^2.0.1",
-    "typescript": "^5.1.6"
+    "storybook": "^9.1.0",
+    "typescript": "^5.1.6",
+    "vitest": "^3.2.4"
   },
   "customElements": "custom-elements.json"
 }
