@@ -5,6 +5,19 @@ import {ifDefined} from 'lit/directives/if-defined.js';
 @customElement('scientific-button')
 export class ScientificButton extends LitElement {
   static override styles = css`
+    :host {
+      display: inline-block;
+    }
+
+    :host([fullwidth]) {
+      display: block;
+      width: 100%;
+    }
+
+    :host([fullwidth]) button {
+      width: 100%;
+    }
+
     button {
       position: relative;
       display: inline-flex;
@@ -210,7 +223,7 @@ export class ScientificButton extends LitElement {
   @property({type: Boolean})
   disabled = false;
 
-  @property({type: Boolean})
+  @property({type: Boolean, reflect: true})
   fullWidth = false;
 
   @property({type: String})
