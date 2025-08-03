@@ -14,6 +14,7 @@ export class ScientificDropdown extends LitElement {
         -apple-system,
         sans-serif
       );
+      z-index: var(--dropdown-container-z-index, 1);
     }
 
     .dropdown-label {
@@ -226,21 +227,32 @@ export class ScientificDropdown extends LitElement {
     this.dispatchEvent(
       new CustomEvent('option-selected', {
         detail: {value, label},
+        bubbles: true,
+        composed: true,
       })
     );
     this.dispatchEvent(
       new CustomEvent('change', {
         detail: {value, label},
+        bubbles: true,
+        composed: true,
       })
     );
   }
 
   private clearSelection() {
     this.selectedValue = '';
-    this.dispatchEvent(new CustomEvent('option-cleared'));
+    this.dispatchEvent(
+      new CustomEvent('option-cleared', {
+        bubbles: true,
+        composed: true,
+      })
+    );
     this.dispatchEvent(
       new CustomEvent('change', {
         detail: {value: '', label: ''},
+        bubbles: true,
+        composed: true,
       })
     );
   }
