@@ -27,8 +27,8 @@
         "strict": true
       }
     ],
-    "types": ["mocha"]
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": []
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "node_modules/@types/jest", "node_modules/@types/mdx"]
 }
