@@ -230,7 +230,6 @@ export class ScientificGraph extends LitElement {
       border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    /* Responsive Design */
     @media (max-width: 768px) {
       .graph-container {
         padding: var(--graph-mobile-padding, 16px);
@@ -253,7 +252,6 @@ export class ScientificGraph extends LitElement {
       }
     }
 
-    /* Compact variant */
     .graph-container.compact {
       padding: var(--graph-compact-padding, 16px);
       gap: var(--graph-compact-gap, 12px);
@@ -281,6 +279,9 @@ export class ScientificGraph extends LitElement {
   @property({type: String})
   type: ChartType = 'line';
 
+  @property({type: Boolean})
+  isAreaChart = false;
+
   @property({type: Array})
   labels: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 
@@ -304,6 +305,12 @@ export class ScientificGraph extends LitElement {
 
   @property({type: Boolean})
   showToolbar = true;
+
+  @property({type: Boolean})
+  showExportButtons = false;
+
+  @property({type: Array})
+  exportFormats: ('png' | 'jpg' | 'pdf')[] = ['png', 'jpg', 'pdf'];
 
   @property({type: Boolean})
   isLoading = false;
@@ -353,24 +360,26 @@ export class ScientificGraph extends LitElement {
 
   private chart: Chart | null = null;
 
-  // Chart type options for dropdown
   private chartTypeOptions = [
     {label: 'Line Chart', value: 'line'},
     {label: 'Bar Chart', value: 'bar'},
     {label: 'Pie Chart', value: 'pie'},
     {label: 'Doughnut Chart', value: 'doughnut'},
     {label: 'Scatter Plot', value: 'scatter'},
-    {label: 'Area Chart', value: 'area'},
+    {label: 'Area Chart', value: 'line'},
     {label: 'Radar Chart', value: 'radar'},
   ];
 
   override firstUpdated() {
-    this._createChart();
+    setTimeout(() => {
+      this._createChart();
+    }, 50);
   }
 
   override updated(changedProperties: Map<string, unknown>) {
     if (
       changedProperties.has('type') ||
+      changedProperties.has('isAreaChart') ||
       changedProperties.has('labels') ||
       changedProperties.has('datasets') ||
       changedProperties.has('customOptions') ||
@@ -388,7 +397,22 @@ export class ScientificGraph extends LitElement {
       'canvas'
     ) as HTMLCanvasElement;
     const ctx = canvas?.getContext('2d');
-    if (!ctx) return;
+
+    if (!canvas) {
+      console.warn('Canvas element not found in shadow DOM');
+      return;
+    }
+
+    if (!ctx) {
+      console.warn('Could not get 2D context from canvas');
+      return;
+    }
+
+    const existingChart = (canvas as HTMLCanvasElement & {chart?: Chart}).chart;
+    if (existingChart) {
+      console.warn('Canvas already has a chart, destroying it first');
+      existingChart.destroy();
+    }
 
     try {
       const chartData = {
@@ -396,9 +420,11 @@ export class ScientificGraph extends LitElement {
         datasets: this.datasets.map((dataset, index) => ({
           ...dataset,
           backgroundColor:
-            dataset.backgroundColor || this._getDefaultColor(index, 0.2),
+            dataset.backgroundColor ||
+            this._getDefaultColor(index, this.isAreaChart ? 0.3 : 0.2),
           borderColor: dataset.borderColor || this._getDefaultColor(index, 1),
           borderWidth: dataset.borderWidth || 2,
+          fill: this.isAreaChart ? true : dataset.fill ?? false,
         })),
       };
 
@@ -483,6 +509,9 @@ export class ScientificGraph extends LitElement {
       });
 
       this.errorMessage = '';
+      console.log('Debug: Chart created successfully:', this.chart);
+
+      this.requestUpdate();
     } catch (error) {
       this.errorMessage =
         error instanceof Error ? error.message : 'Failed to create chart';
@@ -495,7 +524,9 @@ export class ScientificGraph extends LitElement {
       this.chart.destroy();
       this.chart = null;
     }
-    this._createChart();
+    setTimeout(() => {
+      this._createChart();
+    }, 50);
   }
 
   private _getDefaultColor(index: number, alpha: number): string {
@@ -513,7 +544,6 @@ export class ScientificGraph extends LitElement {
     ];
     const color = colors[index % colors.length];
 
-    // Convert hex to rgba
     const hex = color.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
@@ -527,7 +557,6 @@ export class ScientificGraph extends LitElement {
       return null;
     }
 
-    // Calculate statistics for the first dataset
     const data = this.datasets[0].data;
     const sortedData = [...data].sort((a, b) => a - b);
 
@@ -559,44 +588,183 @@ export class ScientificGraph extends LitElement {
   }
 
   private _handleTypeChange(e: CustomEvent) {
-    const {value} = e.detail;
+    const {value, label} = e.detail;
+
+    this.isAreaChart = label === 'Area Chart';
     this.type = value as ChartType;
+
     this.dispatchEvent(
       new CustomEvent('graph-type-changed', {
-        detail: {type: this.type},
+        detail: {type: this.type, isAreaChart: this.isAreaChart},
       })
     );
   }
 
   private _handleExport = (format: 'png' | 'jpg' | 'pdf') => {
     return () => {
-      if (!this.chart) return;
+      if (!this.chart) {
+        return;
+      }
 
       try {
-        if (format === 'pdf') {
-          // For PDF export, you'd typically use a library like jsPDF
-          this.onExport?.(format);
+        if (this.onExport) {
+          this.onExport(format);
         } else {
-          const url = this.chart.toBase64Image('image/' + format, 1.0);
-          const link = document.createElement('a');
-          link.download = `${this.title
-            .replace(/\s+/g, '_')
-            .toLowerCase()}.${format}`;
-          link.href = url;
-          link.click();
+          if (format === 'pdf') {
+            this._exportToPDF();
+          } else {
+            this._exportToImage(format);
+          }
         }
 
         this.dispatchEvent(
           new CustomEvent('graph-exported', {
             detail: {format, title: this.title},
+            bubbles: true,
+            composed: true,
           })
         );
       } catch (error) {
         console.error('Export error:', error);
-        this.errorMessage = 'Failed to export chart';
+        this.errorMessage = `Failed to export chart as ${format.toUpperCase()}`;
       }
     };
   };
+
+  private _exportToImage(format: 'png' | 'jpg') {
+    if (!this.chart) return;
+
+    if (format === 'jpg') {
+      const canvas = this.chart.canvas;
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+
+      if (!tempCtx) return;
+
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      tempCtx.fillStyle = '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      tempCtx.drawImage(canvas, 0, 0);
+
+      const url = tempCanvas.toDataURL('image/jpeg', 0.95);
+      this._downloadFile(url, format);
+    } else {
+      const url = this.chart.toBase64Image('image/png', 1.0);
+      this._downloadFile(url, format);
+    }
+  }
+
+  private async _exportToPDF() {
+    if (!this.chart) return;
+
+    try {
+      const {jsPDF} = await import('jspdf');
+
+      const canvas = this.chart.canvas;
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = imgHeight / imgWidth;
+
+      const pageWidth = 595.28;
+      const pageHeight = 841.89;
+      const margin = 40;
+
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - margin * 2 - 60;
+
+      let finalWidth = maxWidth;
+      let finalHeight = finalWidth * ratio;
+
+      if (finalHeight > maxHeight) {
+        finalHeight = maxHeight;
+        finalWidth = finalHeight / ratio;
+      }
+
+      const pdf = new jsPDF('p', 'pt', 'a4');
+
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      const titleWidth = pdf.getTextWidth(this.title);
+      const titleX = (pageWidth - titleWidth) / 2;
+      pdf.text(this.title, titleX, margin + 20);
+
+      if (this.subtitle) {
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        const subtitleWidth = pdf.getTextWidth(this.subtitle);
+        const subtitleX = (pageWidth - subtitleWidth) / 2;
+        pdf.text(this.subtitle, subtitleX, margin + 40);
+      }
+
+      const imgX = (pageWidth - finalWidth) / 2;
+      const imgY = margin + (this.subtitle ? 60 : 40);
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
+
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      const timestamp = new Date().toLocaleString();
+      pdf.text(`Generated on ${timestamp}`, margin, pageHeight - 20);
+
+      const fileName = `${this.title.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('PDF export error:', error);
+
+      const message = `PDF export requires jsPDF library. Please install it with: npm install jspdf`;
+      console.warn(message);
+      this.errorMessage =
+        'PDF export not available. Check console for installation instructions.';
+
+      this._exportToImage('png');
+    }
+  }
+
+  getChartDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
+    if (!this.chart) return null;
+
+    if (format === 'jpg') {
+      const canvas = this.chart.canvas;
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+
+      if (!tempCtx) return null;
+
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      tempCtx.fillStyle = '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, 0);
+
+      return tempCanvas.toDataURL('image/jpeg', quality);
+    } else {
+      return this.chart.toBase64Image('image/png', quality);
+    }
+  }
+
+  getChart(): Chart | null {
+    return this.chart;
+  }
+
+  private _downloadFile(dataUrl: string, format: string) {
+    const link = document.createElement('a');
+    const fileName = `${this.title
+      .replace(/\s+/g, '_')
+      .toLowerCase()}.${format}`;
+
+    link.download = fileName;
+    link.href = dataUrl;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   private _handleDataRefresh = () => {
     return () => {
@@ -707,31 +875,54 @@ export class ScientificGraph extends LitElement {
                   <scientific-dropdown
                     .label=${'Chart Type'}
                     .options=${this.chartTypeOptions}
-                    .selectedValue=${this.type}
+                    .selectedValue=${this.isAreaChart ? 'line' : this.type}
                     .disabled=${this.isLoading}
                     .placeholder=${'Select chart type'}
-                    style="min-width: 150px;"
                     @option-selected=${this._handleTypeChange}
                   ></scientific-dropdown>
                 </div>
 
                 <div class="graph-actions">
-                  <scientific-button
-                    .label=${'📊 PNG'}
-                    .variant=${'outline'}
-                    .size=${'small'}
-                    .disabled=${this.isLoading || !this.chart}
-                    .action=${this._handleExport('png')}
-                    title="Export as PNG"
-                  ></scientific-button>
-                  <scientific-button
-                    .label=${'🖼️ JPG'}
-                    .variant=${'outline'}
-                    .size=${'small'}
-                    .disabled=${this.isLoading || !this.chart}
-                    .action=${this._handleExport('jpg')}
-                    title="Export as JPG"
-                  ></scientific-button>
+                  ${this.showExportButtons
+                    ? html`
+                        ${this.exportFormats.includes('png')
+                          ? html`
+                              <scientific-button
+                                .label=${'📊 PNG'}
+                                .variant=${'outline'}
+                                .size=${'small'}
+                                .disabled=${this.isLoading || !this.chart}
+                                .action=${this._handleExport('png')}
+                                title="Export chart as PNG image"
+                              ></scientific-button>
+                            `
+                          : ''}
+                        ${this.exportFormats.includes('jpg')
+                          ? html`
+                              <scientific-button
+                                .label=${'🖼️ JPG'}
+                                .variant=${'outline'}
+                                .size=${'small'}
+                                .disabled=${this.isLoading || !this.chart}
+                                .action=${this._handleExport('jpg')}
+                                title="Export chart as JPG image"
+                              ></scientific-button>
+                            `
+                          : ''}
+                        ${this.exportFormats.includes('pdf')
+                          ? html`
+                              <scientific-button
+                                .label=${'📄 PDF'}
+                                .variant=${'outline'}
+                                .size=${'small'}
+                                .disabled=${this.isLoading || !this.chart}
+                                .action=${this._handleExport('pdf')}
+                                title="Export chart as PDF document"
+                              ></scientific-button>
+                            `
+                          : ''}
+                      `
+                    : ''}
                   <scientific-button
                     .label=${'🔄 Refresh'}
                     .variant=${'outline'}
@@ -740,6 +931,9 @@ export class ScientificGraph extends LitElement {
                     .action=${this._handleDataRefresh()}
                     title="Refresh Chart"
                   ></scientific-button>
+
+                  <!-- Slot for custom actions -->
+                  <slot name="actions"></slot>
                 </div>
               </div>
             `

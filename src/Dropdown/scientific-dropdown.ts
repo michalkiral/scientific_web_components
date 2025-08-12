@@ -330,7 +330,10 @@ export class ScientificDropdown extends LitElement {
   }
 
   private handleClickOutside = (e: Event) => {
-    if (!this.contains(e.target as Node)) {
+    const path = e.composedPath();
+    const clickedInsideDropdown = path.includes(this);
+
+    if (!clickedInsideDropdown) {
       this.isOpen = false;
       this.focusedOptionIndex = -1;
     }

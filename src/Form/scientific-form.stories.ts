@@ -250,6 +250,7 @@ export const Default: Story = {
     method: 'post',
     action: '',
     noValidate: false,
+    variant: 'default',
   },
   render: ({
     title,
@@ -271,6 +272,7 @@ export const Default: Story = {
     method,
     action,
     noValidate,
+    variant,
   }) =>
     html`<scientific-form
       .title=${title}
@@ -292,6 +294,7 @@ export const Default: Story = {
       .method=${method}
       .action=${action}
       .noValidate=${noValidate}
+      .variant=${variant}
     >
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div style="display: flex; gap: 12px;">

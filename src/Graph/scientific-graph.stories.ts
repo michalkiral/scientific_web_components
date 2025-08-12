@@ -1,17 +1,190 @@
 import {html} from 'lit';
+import type {Meta} from '@storybook/web-components-vite';
 import './scientific-graph.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 
-const meta = {
+const meta: Meta = {
   title: 'Scientific/Graph',
   component: 'scientific-graph',
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     docs: {
       description: {
-        component:
-          'A powerful scientific graph component with Chart.js integration, featuring multiple chart types, statistics, export capabilities, and comprehensive customization options.',
+        component: `
+# Scientific Graph
+
+A **powerful**, **customizable** scientific graph component with Chart.js integration featuring multiple chart types, statistics, and export capabilities.
+
+---
+
+## Props
+
+- \`title\` — Graph title text
+- \`subtitle\` — Graph subtitle/description text
+- \`variant\` — Graph style: default, compact
+- \`type\` — Chart type: line, bar, pie, doughnut, scatter, area, radar
+- \`labels\` — Array of labels for data points
+- \`datasets\` — Array of dataset objects with data, styling, and configuration
+- \`showStatistics\` — Shows/hides statistical calculations
+- \`showLegend\` — Shows/hides chart legend
+- \`showToolbar\` — Shows/hides toolbar with controls
+- \`showExportButtons\` — Shows/hides export buttons in toolbar (default: false)
+- \`exportFormats\` — Array of export formats to show: ['png', 'jpg', 'pdf'] (default: all)
+- \`showGrid\` — Shows/hides grid lines
+- \`showAxes\` — Shows/hides axes
+- \`animateOnLoad\` — Enables/disables chart animation on load
+- \`responsive\` — Makes chart responsive to container size
+- \`maintainAspectRatio\` — Maintains chart aspect ratio
+- \`enableZoom\` — Enables chart zoom functionality
+- \`enablePan\` — Enables chart pan functionality
+- \`isLoading\` — Shows loading overlay
+- \`errorMessage\` — Error message to display
+- \`xAxisTitle\` — Title for X-axis
+- \`yAxisTitle\` — Title for Y-axis
+- \`customOptions\` — Custom Chart.js options object
+- \`onExport\` — Custom export handler function (format: string) => void
+- \`onDataClick\` — Click handler for chart data points
+
+## Events
+
+- \`graph-type-changed\` — Fired when chart type is changed via dropdown
+- \`graph-exported\` — Fired when chart is exported
+- \`graph-refreshed\` — Fired when chart is refreshed
+
+## Features
+
+- **Multiple Chart Types**: Line, bar, pie, doughnut, scatter, area, radar
+- **Interactive Toolbar**: Chart type selector and export options
+- **Statistical Analysis**: Automatic calculation and display of key statistics
+- **Export Capabilities**: PNG, JPG export with automatic filename generation
+- **Loading States**: Built-in loading overlay and error handling
+- **Responsive Design**: Adapts to container size changes
+- **Customizable**: Extensive CSS variable system for styling
+- **Accessibility**: ARIA attributes and keyboard navigation support
+
+## Dataset Configuration
+
+Each dataset object supports these properties:
+
+    {
+      label: string;              // Dataset name
+      data: number[];            // Data points
+      backgroundColor?: string | string[];  // Fill colors
+      borderColor?: string | string[];      // Border colors
+      borderWidth?: number;      // Border thickness
+      tension?: number;          // Line curve tension (0-1)
+      fill?: boolean;           // Fill area under line
+      pointRadius?: number;      // Point size
+      pointHoverRadius?: number; // Point hover size
+    }
+
+## Styling
+
+Use CSS variables to customize appearance. Here are the most commonly used variables:
+
+**Basic Styling:**
+    scientific-graph {
+      --graph-bg-color: #ffffff;
+      --graph-border: 2px solid #e5e7eb;
+      --graph-border-radius: 12px;
+      --graph-padding: 24px;
+      --graph-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+**Complete Variable List:**
+
+    scientific-graph {
+      /* Container Styling */
+      --graph-bg-color: #ffffff;
+      --graph-border: 2px solid #e5e7eb;
+      --graph-border-radius: 12px;
+      --graph-padding: 24px;
+      --graph-margin: 0;
+      --graph-max-width: 100%;
+      --graph-width: 100%;
+      --graph-min-height: 400px;
+      --graph-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --graph-hover-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      --graph-transition: all 0.2s ease-in-out;
+      --graph-font-family: system-ui, -apple-system, sans-serif;
+      --graph-gap: 20px;
+      
+      /* Loading Overlay */
+      --graph-loading-overlay-bg: rgba(255, 255, 255, 0.8);
+      --graph-loading-z-index: 10;
+      --graph-loading-spinner-color: #e5e7eb;
+      --graph-loading-spinner-active-color: #007bff;
+      
+      /* Header */
+      --graph-header-gap: 8px;
+      --graph-header-padding-bottom: 16px;
+      --graph-header-border: 1px solid #f3f4f6;
+      --graph-title-font-size: 24px;
+      --graph-title-font-weight: 600;
+      --graph-title-color: #111827;
+      --graph-title-line-height: 1.2;
+      --graph-subtitle-font-size: 16px;
+      --graph-subtitle-font-weight: 400;
+      --graph-subtitle-color: #6b7280;
+      --graph-subtitle-line-height: 1.4;
+      
+      /* Toolbar */
+      --graph-toolbar-gap: 12px;
+      --graph-toolbar-padding: 12px 0;
+      --graph-toolbar-z-index: 100;
+      --graph-controls-gap: 8px;
+      --graph-controls-z-index: 101;
+      --graph-actions-gap: 8px;
+      
+      /* Canvas */
+      --graph-canvas-min-height: 300px;
+      --graph-canvas-bg-color: #ffffff;
+      --graph-canvas-border-radius: 8px;
+      
+      /* Error Messages */
+      --graph-error-bg-color: #fef2f2;
+      --graph-error-border: 1px solid #fecaca;
+      --graph-error-border-radius: 8px;
+      --graph-error-padding: 12px 16px;
+      --graph-error-color: #dc2626;
+      --graph-error-font-size: 14px;
+      
+      /* Statistics */
+      --graph-stats-gap: 12px;
+      --graph-stats-padding: 16px 0 0 0;
+      --graph-stats-border: 1px solid #f3f4f6;
+      --graph-stat-padding: 12px;
+      --graph-stat-bg-color: #f9fafb;
+      --graph-stat-border-radius: 8px;
+      --graph-stat-border: 1px solid #f3f4f6;
+      --graph-stat-label-font-size: 12px;
+      --graph-stat-label-font-weight: 500;
+      --graph-stat-label-color: #6b7280;
+      --graph-stat-value-font-size: 18px;
+      --graph-stat-value-font-weight: 600;
+      --graph-stat-value-color: #111827;
+      
+      /* Legend */
+      --graph-legend-gap: 12px;
+      --graph-legend-padding: 12px 0;
+      --graph-legend-border: 1px solid #f3f4f6;
+      --graph-legend-font-size: 14px;
+      --graph-legend-color: #374151;
+      
+      /* Compact Variant */
+      --graph-compact-padding: 16px;
+      --graph-compact-gap: 12px;
+      --graph-compact-min-height: 250px;
+      --graph-compact-canvas-min-height: 200px;
+      
+      /* Mobile Responsive */
+      --graph-mobile-padding: 16px;
+      --graph-mobile-gap: 16px;
+      --graph-mobile-stats-gap: 8px;
+    }
+        `,
       },
     },
   },
@@ -30,7 +203,7 @@ const meta = {
       description: 'The type of chart to display',
     },
     variant: {
-      control: 'select',
+      control: {type: 'select'},
       options: ['default', 'compact'],
       description: 'The variant of the graph container',
     },
@@ -46,8 +219,17 @@ const meta = {
       control: 'boolean',
       description: 'Whether to show the toolbar with controls',
     },
-    showGrid: {
+    showExportButtons: {
       control: 'boolean',
+      description: 'Whether to show export buttons in toolbar',
+    },
+    exportFormats: {
+      control: {type: 'check'},
+      options: ['png', 'jpg', 'pdf'],
+      description: 'Which export formats to show',
+    },
+    showGrid: {
+      control: {type: 'boolean'},
       description: 'Whether to show grid lines',
     },
     showAxes: {
@@ -62,12 +244,20 @@ const meta = {
       control: 'boolean',
       description: 'Whether the chart should be responsive',
     },
+    isLoading: {
+      control: 'boolean',
+      description: 'Whether to show loading state',
+    },
+    errorMessage: {
+      control: 'text',
+      description: 'Error message to display',
+    },
     xAxisTitle: {
       control: 'text',
       description: 'Title for the X-axis',
     },
     yAxisTitle: {
-      control: 'text',
+      control: {type: 'text'},
       description: 'Title for the Y-axis',
     },
   },
@@ -155,19 +345,26 @@ const distributionData = {
 };
 
 export const Default = {
-  args:{
-    title:'Sample Scientific Data',
-    subtitle:'Basic line chart with default settings',
-    type:'line',
-    labels:temperatureData.labels,
-    datasets:temperatureData.datasets,
-    showStatistics:true,
-    showLegend:true,
-    showToolbar:true,
-    showAxes:true,
-    animateOnLoad:true,
-    responsive:true,
-    xAxisTitle:""
+  args: {
+    title: 'Sample Scientific Data',
+    subtitle: 'Basic line chart with default settings',
+    type: 'line',
+    variant: 'default',
+    labels: temperatureData.labels,
+    datasets: temperatureData.datasets,
+    showStatistics: true,
+    showLegend: true,
+    showToolbar: true,
+    showExportButtons: false,
+    exportFormats: ['png', 'jpg', 'pdf'],
+    showGrid: true,
+    showAxes: true,
+    animateOnLoad: true,
+    responsive: true,
+    isLoading: false,
+    errorMessage: '',
+    xAxisTitle: '',
+    yAxisTitle: '',
   },
 };
 
@@ -349,6 +546,75 @@ export const CustomStyling = {
         max-width: 600px;
         margin: 20px auto;
       "
+    ></scientific-graph>`,
+};
+
+export const WithExportButtons = {
+  args: {
+    title: 'Graph with Export Options',
+    subtitle: 'Demonstrating customizable export functionality',
+    type: 'line',
+    labels: temperatureData.labels,
+    datasets: temperatureData.datasets,
+    showStatistics: true,
+    showLegend: true,
+    showToolbar: true,
+    showExportButtons: true,
+    exportFormats: ['png', 'jpg', 'pdf'],
+    xAxisTitle: 'Month',
+    yAxisTitle: 'Temperature (°C)',
+  },
+};
+
+export const CustomExportFormats = {
+  args: {
+    title: 'Limited Export Options',
+    subtitle: 'Only PNG and PDF export available',
+    type: 'bar',
+    labels: experimentData.labels,
+    datasets: experimentData.datasets,
+    showStatistics: true,
+    showToolbar: true,
+    showExportButtons: true,
+    exportFormats: ['png', 'pdf'],
+    yAxisTitle: 'Response Rate (%)',
+  },
+};
+
+export const CustomExportHandler = {
+  args: {
+    title: 'Custom Export Handler',
+    subtitle: 'Using external export functionality',
+    type: 'line',
+    labels: ['A', 'B', 'C', 'D', 'E'],
+    datasets: [
+      {
+        label: 'Custom Data',
+        data: [10, 20, 15, 25, 18],
+        borderColor: '#28a745',
+        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+      },
+    ],
+    showExportButtons: true,
+    exportFormats: ['png', 'jpg'],
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  render: (args: any) =>
+    html`<scientific-graph
+      .title=${args.title}
+      .subtitle=${args.subtitle}
+      .type=${args.type}
+      .labels=${args.labels}
+      .datasets=${args.datasets}
+      .showExportButtons=${args.showExportButtons}
+      .exportFormats=${args.exportFormats}
+      .onExport=${(format: string) => {
+        alert(`Custom export handler called for format: ${format}`);
+        // Here you could implement your own export logic
+      }}
+      @graph-exported=${(e: CustomEvent) => {
+        console.log('Export event fired:', e.detail);
+      }}
     ></scientific-graph>`,
 };
 
