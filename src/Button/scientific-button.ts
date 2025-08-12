@@ -260,14 +260,12 @@ export class ScientificButton extends LitElement {
       return;
     }
 
-    // If it's a link, let the browser handle it
     if (this.href) {
       return;
     }
 
     // Handle form submission/reset without custom action
     if (this.type === 'submit' || this.type === 'reset') {
-      // Let the browser handle form submission/reset naturally
       if (!this.action) {
         return;
       }
