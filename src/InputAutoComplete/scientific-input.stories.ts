@@ -79,11 +79,6 @@ The component supports extensive customization through CSS custom properties:
       control: 'boolean',
       description: 'Whether to show a clear button when input has value',
     },
-    size: {
-      control: {type: 'select'},
-      options: ['small', 'medium', 'large'],
-      description: 'Size variant of the input',
-    },
     state: {
       control: {type: 'select'},
       options: ['default', 'error', 'success'],
@@ -152,7 +147,6 @@ export const Default: Story = {
     disabled: false,
     required: false,
     clearable: true,
-    size: 'medium',
     state: 'default',
     helperText: 'Select a country from the list or type to search',
     errorMessage: '',
@@ -207,50 +201,6 @@ export const Default: Story = {
       .autoComplete=${autoComplete}
       .autoFocus=${autoFocus}
     ></scientific-input>`,
-};
-
-export const Sizes: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; width: 400px;"
-    >
-      <h3 style="margin: 0;">Small Size</h3>
-      <scientific-input
-        label="Small Input"
-        placeholder="Small input..."
-        size="small"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
-        ]}
-      ></scientific-input>
-
-      <h3 style="margin: 0;">Medium Size (Default)</h3>
-      <scientific-input
-        label="Medium Input"
-        placeholder="Medium input..."
-        size="medium"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
-        ]}
-      ></scientific-input>
-
-      <h3 style="margin: 0;">Large Size</h3>
-      <scientific-input
-        label="Large Input"
-        placeholder="Large input..."
-        size="large"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
-        ]}
-      ></scientific-input>
-    </div>
-  `,
 };
 
 export const States: Story = {

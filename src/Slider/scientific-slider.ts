@@ -1,5 +1,14 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  messageStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
+import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
 
 export interface SliderMark {
   value: number;
@@ -8,336 +17,280 @@ export interface SliderMark {
 
 @customElement('scientific-slider')
 export class ScientificSlider extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      font-family: var(
-        --slider-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-      width: var(--slider-width, 100%);
-      max-width: var(--slider-max-width, 100%);
-    }
-
-    .slider-container {
-      position: relative;
-      padding: var(--slider-padding, 20px);
-      background-color: var(--slider-bg-color, #ffffff);
-      border: var(--slider-border, 2px solid #e5e7eb);
-      border-radius: var(--slider-border-radius, 12px);
-      box-shadow: var(--slider-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-      transition: var(--slider-transition, all 0.2s ease-in-out);
-      display: flex;
-      flex-direction: column;
-      gap: var(--slider-gap, 16px);
-    }
-
-    .slider-container:hover {
-      box-shadow: var(--slider-hover-shadow, 0 8px 12px rgba(0, 0, 0, 0.15));
-    }
-
-    .slider-container.disabled {
-      opacity: 0.6;
-      pointer-events: none;
-      background-color: var(--slider-disabled-bg-color, #f9fafb);
-    }
-
-    .slider-container.compact {
-      padding: var(--slider-compact-padding, 12px);
-      gap: var(--slider-compact-gap, 8px);
-    }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: var(--slider-header-gap, 12px);
-    }
-
-    .slider-label-section {
-      display: flex;
-      flex-direction: column;
-      gap: var(--slider-label-gap, 4px);
-      flex: 1;
-    }
-
-    .slider-label {
-      font-size: var(--slider-label-font-size, 16px);
-      font-weight: var(--slider-label-font-weight, 600);
-      color: var(--slider-label-color, #111827);
-      margin: 0;
-      line-height: var(--slider-label-line-height, 1.2);
-    }
-
-    .slider-label.required::after {
-      content: ' *';
-      color: var(--slider-required-color, #dc2626);
-    }
-
-    .slider-description {
-      font-size: var(--slider-description-font-size, 14px);
-      font-weight: var(--slider-description-font-weight, 400);
-      color: var(--slider-description-color, #6b7280);
-      margin: 0;
-      line-height: var(--slider-description-line-height, 1.4);
-    }
-
-    .slider-value-display {
-      display: flex;
-      align-items: center;
-      gap: var(--slider-value-gap, 8px);
-      padding: var(--slider-value-padding, 8px 12px);
-      background-color: var(--slider-value-bg-color, #f3f4f6);
-      border: var(--slider-value-border, 1px solid #d1d5db);
-      border-radius: var(--slider-value-border-radius, 6px);
-      font-size: var(--slider-value-font-size, 14px);
-      font-weight: var(--slider-value-font-weight, 600);
-      color: var(--slider-value-color, #374151);
-      min-width: var(--slider-value-min-width, 60px);
-      justify-content: center;
-    }
-
-    .slider-track-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: var(--slider-track-padding, 12px 0);
-      margin: var(--slider-track-margin, 8px 0);
-    }
-
-    .slider-track {
-      position: relative;
-      width: 100%;
-      height: var(--slider-track-height, 8px);
-      background-color: var(--slider-track-color, #e5e7eb);
-      border-radius: var(--slider-track-border-radius, 4px);
-      overflow: hidden;
-      cursor: pointer;
-      transition: var(--slider-track-transition, all 0.2s ease-in-out);
-    }
-
-    .slider-track:hover {
-      background-color: var(--slider-track-hover-color, #d1d5db);
-    }
-
-    .slider-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      background: var(
-        --slider-fill-color,
-        linear-gradient(90deg, #007bff 0%, #0056b3 100%)
-      );
-      border-radius: var(--slider-fill-border-radius, 4px);
-      transition: var(--slider-fill-transition, width 0.15s ease-out);
-      z-index: 1;
-    }
-
-    .slider-thumb {
-      position: absolute;
-      top: 50%;
-      width: var(--slider-thumb-size, 20px);
-      height: var(--slider-thumb-size, 20px);
-      background-color: var(--slider-thumb-color, #007bff);
-      border: var(--slider-thumb-border, 3px solid #ffffff);
-      border-radius: var(--slider-thumb-border-radius, 50%);
-      box-shadow: var(--slider-thumb-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
-      cursor: grab;
-      transform: translate(-50%, -50%);
-      transition: var(--slider-thumb-transition, all 0.15s ease-out);
-      z-index: 3;
-      user-select: none;
-    }
-
-    .slider-thumb:hover {
-      transform: translate(-50%, -50%) scale(1.1);
-      box-shadow: var(
-        --slider-thumb-hover-shadow,
-        0 4px 12px rgba(0, 0, 0, 0.2)
-      );
-    }
-
-    .slider-thumb:active,
-    .slider-thumb.dragging {
-      cursor: grabbing;
-      transform: translate(-50%, -50%) scale(1.15);
-      box-shadow: var(
-        --slider-thumb-active-shadow,
-        0 6px 16px rgba(0, 0, 0, 0.25)
-      );
-    }
-
-    .slider-input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 2;
-      margin: 0;
-      padding: 0;
-      border: none;
-      background: none;
-      outline: none;
-    }
-
-    .slider-tooltip {
-      position: absolute;
-      bottom: calc(100% + 12px);
-      left: 50%;
-      transform: translateX(-50%);
-      padding: var(--slider-tooltip-padding, 6px 10px);
-      background-color: var(--slider-tooltip-bg-color, #111827);
-      color: var(--slider-tooltip-color, #ffffff);
-      font-size: var(--slider-tooltip-font-size, 12px);
-      font-weight: var(--slider-tooltip-font-weight, 500);
-      border-radius: var(--slider-tooltip-border-radius, 6px);
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: var(--slider-tooltip-transition, opacity 0.15s ease-out);
-      z-index: 4;
-    }
-
-    .slider-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 5px solid transparent;
-      border-top-color: var(--slider-tooltip-bg-color, #111827);
-    }
-
-    .slider-thumb:hover .slider-tooltip,
-    .slider-thumb.dragging .slider-tooltip,
-    .show-tooltip .slider-tooltip {
-      opacity: 1;
-    }
-
-    .slider-marks {
-      position: relative;
-      margin-top: var(--slider-marks-margin-top, 8px);
-      height: var(--slider-marks-height, 20px);
-    }
-
-    .slider-mark {
-      position: absolute;
-      top: 0;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .slider-mark-tick {
-      width: var(--slider-mark-tick-width, 2px);
-      height: var(--slider-mark-tick-height, 8px);
-      background-color: var(--slider-mark-tick-color, #9ca3af);
-      border-radius: var(--slider-mark-tick-border-radius, 1px);
-    }
-
-    .slider-mark-label {
-      font-size: var(--slider-mark-label-font-size, 11px);
-      font-weight: var(--slider-mark-label-font-weight, 500);
-      color: var(--slider-mark-label-color, #6b7280);
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    .slider-range-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: var(--slider-range-labels-margin-top, 4px);
-      font-size: var(--slider-range-labels-font-size, 12px);
-      color: var(--slider-range-labels-color, #9ca3af);
-      font-weight: var(--slider-range-labels-font-weight, 500);
-    }
-
-    .slider-helper {
-      font-size: var(--slider-helper-font-size, 12px);
-      color: var(--slider-helper-color, #6b7280);
-      margin-top: var(--slider-helper-margin-top, 4px);
-    }
-
-    .slider-error {
-      font-size: var(--slider-error-font-size, 12px);
-      color: var(--slider-error-color, #dc2626);
-      margin-top: var(--slider-error-margin-top, 4px);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .slider-container.error .slider-track {
-      background-color: var(--slider-error-track-color, #fecaca);
-    }
-
-    .slider-container.error .slider-fill {
-      background: var(--slider-error-fill-color, #dc2626);
-    }
-
-    .slider-container.error .slider-thumb {
-      background-color: var(--slider-error-thumb-color, #dc2626);
-      border-color: var(--slider-error-thumb-border-color, #fecaca);
-    }
-
-    @media (max-width: 768px) {
-      .slider-container {
-        padding: var(--slider-mobile-padding, 16px);
-        gap: var(--slider-mobile-gap, 12px);
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    messageStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
+        width: var(--slider-width, 100%);
+        max-width: var(--slider-max-width, 100%);
       }
 
-      .slider-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--slider-mobile-header-gap, 8px);
+      .slider-container.disabled {
+        background-color: var(--slider-disabled-bg-color, #f9fafb);
+      }
+
+      .slider-label.required::after {
+        content: ' *';
+        color: var(--scientific-danger-color);
       }
 
       .slider-value-display {
-        align-self: flex-end;
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+        background-color: var(--slider-value-bg-color, #f3f4f6);
+        border: var(--scientific-border);
+        border-radius: var(--scientific-border-radius);
+        font-size: var(--scientific-text-sm);
+        font-weight: 600;
+        color: var(--scientific-text-primary);
+        min-width: var(--slider-value-min-width, 60px);
+        justify-content: center;
+      }
+
+      .slider-track-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: var(--scientific-spacing-md) 0;
+        margin: var(--scientific-spacing-sm) 0;
+      }
+
+      .slider-track {
+        position: relative;
+        width: 100%;
+        height: var(--slider-track-height, 8px);
+        background-color: var(
+          --slider-track-color,
+          var(--scientific-border-color)
+        );
+        border-radius: var(--scientific-border-radius-sm);
+        overflow: hidden;
+        cursor: pointer;
+        transition: var(--scientific-transition);
+      }
+
+      .slider-track:hover {
+        background-color: var(
+          --slider-track-hover-color,
+          var(--scientific-border-hover)
+        );
+      }
+
+      .slider-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--slider-fill-color, var(--scientific-primary-color));
+        border-radius: var(--scientific-border-radius-sm);
+        transition: var(--scientific-transition-fast);
+        z-index: 1;
       }
 
       .slider-thumb {
-        width: var(--slider-mobile-thumb-size, 24px);
-        height: var(--slider-mobile-thumb-size, 24px);
+        position: absolute;
+        top: 50%;
+        width: var(--slider-thumb-size, 20px);
+        height: var(--slider-thumb-size, 20px);
+        background-color: var(
+          --slider-thumb-color,
+          var(--scientific-primary-color)
+        );
+        border: var(--slider-thumb-border, 3px solid #ffffff);
+        border-radius: 50%;
+        box-shadow: var(--scientific-shadow);
+        cursor: grab;
+        transform: translate(-50%, -50%);
+        transition: var(--scientific-transition-fast);
+        z-index: 3;
+        user-select: none;
       }
-    }
 
-    .slider-container.small {
-      padding: var(--slider-small-padding, 12px);
-      gap: var(--slider-small-gap, 8px);
-    }
+      .slider-thumb:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: var(--scientific-shadow-lg);
+      }
 
-    .slider-container.small .slider-track {
-      height: var(--slider-small-track-height, 6px);
-    }
+      .slider-thumb:active,
+      .slider-thumb.dragging {
+        cursor: grabbing;
+        transform: translate(-50%, -50%) scale(1.15);
+        box-shadow: var(--scientific-shadow-xl);
+      }
 
-    .slider-container.small .slider-thumb {
-      width: var(--slider-small-thumb-size, 16px);
-      height: var(--slider-small-thumb-size, 16px);
-    }
+      .slider-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        outline: none;
+      }
 
-    .slider-container.large {
-      padding: var(--slider-large-padding, 24px);
-      gap: var(--slider-large-gap, 20px);
-    }
+      .slider-tooltip {
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        padding: var(--scientific-spacing-xs) var(--scientific-spacing-sm);
+        background-color: var(
+          --slider-tooltip-bg-color,
+          var(--scientific-text-primary)
+        );
+        color: var(--slider-tooltip-color, #ffffff);
+        font-size: var(--scientific-text-xs);
+        font-weight: 500;
+        border-radius: var(--scientific-border-radius);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--scientific-transition-fast);
+        z-index: 4;
+      }
 
-    .slider-container.large .slider-track {
-      height: var(--slider-large-track-height, 12px);
-    }
+      .slider-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: var(
+          --slider-tooltip-bg-color,
+          var(--scientific-text-primary)
+        );
+      }
 
-    .slider-container.large .slider-thumb {
-      width: var(--slider-large-thumb-size, 24px);
-      height: var(--slider-large-thumb-size, 24px);
-    }
-  `;
+      .slider-thumb:hover .slider-tooltip,
+      .slider-thumb.dragging .slider-tooltip,
+      .show-tooltip .slider-tooltip {
+        opacity: 1;
+      }
+
+      .slider-marks {
+        position: relative;
+        margin-top: var(--scientific-spacing-sm);
+        height: var(--slider-marks-height, 20px);
+      }
+
+      .slider-mark {
+        position: absolute;
+        top: 0;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .slider-mark-tick {
+        width: var(--slider-mark-tick-width, 2px);
+        height: var(--slider-mark-tick-height, 8px);
+        background-color: var(
+          --slider-mark-tick-color,
+          var(--scientific-text-muted)
+        );
+        border-radius: 1px;
+      }
+
+      .slider-mark-label {
+        font-size: var(--scientific-text-xs);
+        font-weight: 500;
+        color: var(--slider-mark-label-color, var(--scientific-text-muted));
+        white-space: nowrap;
+        user-select: none;
+      }
+
+      .slider-range-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: var(--scientific-spacing-xs);
+        font-size: var(--scientific-text-xs);
+        color: var(--scientific-text-muted);
+        font-weight: 500;
+      }
+
+      .slider-container.error .slider-track {
+        background-color: var(--slider-error-track-color, #fecaca);
+      }
+
+      .slider-container.error .slider-fill {
+        background: var(
+          --slider-error-fill-color,
+          var(--scientific-danger-color)
+        );
+      }
+
+      .slider-container.error .slider-thumb {
+        background-color: var(
+          --slider-error-thumb-color,
+          var(--scientific-danger-color)
+        );
+        border-color: var(--slider-error-thumb-border-color, #fecaca);
+      }
+
+      /* Size variants */
+      .slider-container.small {
+        padding: var(--scientific-spacing-md);
+        gap: var(--scientific-spacing-sm);
+      }
+
+      .slider-container.small .slider-track {
+        height: var(--slider-small-track-height, 6px);
+      }
+
+      .slider-container.small .slider-thumb {
+        width: var(--slider-small-thumb-size, 16px);
+        height: var(--slider-small-thumb-size, 16px);
+      }
+
+      .slider-container.large {
+        padding: var(--scientific-spacing-3xl);
+        gap: var(--scientific-spacing-xl);
+      }
+
+      .slider-container.large .slider-track {
+        height: var(--slider-large-track-height, 12px);
+      }
+
+      .slider-container.large .slider-thumb {
+        width: var(--slider-large-thumb-size, 24px);
+        height: var(--slider-large-thumb-size, 24px);
+      }
+
+      @media (max-width: 768px) {
+        .slider-thumb {
+          width: var(--slider-mobile-thumb-size, 24px);
+          height: var(--slider-mobile-thumb-size, 24px);
+        }
+
+        .slider-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--scientific-spacing-sm);
+        }
+
+        .slider-value-display {
+          align-self: flex-end;
+        }
+      }
+    `,
+  ];
 
   @property({type: String})
   label = '';
@@ -419,7 +372,7 @@ export class ScientificSlider extends LitElement {
   }
 
   private _clampValue() {
-    const clampedValue = Math.max(this.min, Math.min(this.max, this.value));
+    const clampedValue = clamp(this.value, this.min, this.max);
     if (clampedValue !== this.value) {
       this.value = clampedValue;
     }
@@ -439,7 +392,7 @@ export class ScientificSlider extends LitElement {
     if (this.formatValue) {
       return this.formatValue(value);
     }
-    return `${value}${this.unit}`;
+    return formatValue(value, {unit: this.unit});
   }
 
   private _handleInput(event: Event) {
@@ -558,57 +511,39 @@ export class ScientificSlider extends LitElement {
   private _dispatchChange() {
     this.onValueChange?.(this.value);
 
-    this.dispatchEvent(
-      new CustomEvent('value-changed', {
+    dispatchMultipleEvents(this, [
+      {
+        name: 'value-changed',
         detail: {value: this.value},
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    this.dispatchEvent(
-      new CustomEvent('change', {
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
         detail: {value: this.value},
-        bubbles: true,
-        composed: true,
-      })
-    );
+        options: {bubbles: true, composed: true},
+      },
+    ]);
   }
 
   private _getContainerClasses(): string {
-    const classes = ['slider-container'];
-
-    if (this.variant !== 'default') {
-      classes.push(this.variant);
-    }
-
-    if (this.size !== 'medium') {
-      classes.push(this.size);
-    }
-
-    if (this.disabled) {
-      classes.push('disabled');
-    }
-
-    if (this.state !== 'default') {
-      classes.push(this.state);
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'slider-container',
+      'scientific-container',
+      this.variant !== 'default' && this.variant,
+      this.size !== 'medium' && this.size,
+      this.disabled && 'disabled',
+      this.state !== 'default' && this.state
+    );
   }
 
   private _getThumbClasses(): string {
-    const classes = ['slider-thumb'];
-
-    if (this.isDragging) {
-      classes.push('dragging');
-    }
-
-    if (this.showTooltip && (this.showTooltipState || this.isDragging)) {
-      classes.push('show-tooltip');
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'slider-thumb',
+      this.isDragging && 'dragging',
+      this.showTooltip &&
+        (this.showTooltipState || this.isDragging) &&
+        'show-tooltip'
+    );
   }
 
   override render() {
@@ -630,17 +565,25 @@ export class ScientificSlider extends LitElement {
     }
 
     return html`
-      <div class="slider-header">
-        <div class="slider-label-section">
+      <div class="slider-header scientific-header">
+        <div class="slider-label-section scientific-header-content">
           ${this.label
             ? html`
-                <h3 class="slider-label ${this.required ? 'required' : ''}">
+                <h3
+                  class="slider-label scientific-title ${this.required
+                    ? 'required'
+                    : ''}"
+                >
                   ${this.label}
                 </h3>
               `
             : ''}
           ${this.description
-            ? html` <p class="slider-description">${this.description}</p> `
+            ? html`
+                <p class="slider-description scientific-subtitle">
+                  ${this.description}
+                </p>
+              `
             : ''}
         </div>
         ${this.showValue
@@ -735,10 +678,14 @@ export class ScientificSlider extends LitElement {
   private _renderMessages() {
     return html`
       ${this.helperText
-        ? html`<div class="slider-helper">${this.helperText}</div>`
+        ? html`<div class="slider-helper scientific-helper">
+            ${this.helperText}
+          </div>`
         : ''}
       ${this.state === 'error' && this.errorMessage
-        ? html`<div class="slider-error">⚠️ ${this.errorMessage}</div>`
+        ? html`<div class="slider-error scientific-error">
+            ⚠️ ${this.errorMessage}
+          </div>`
         : ''}
     `;
   }

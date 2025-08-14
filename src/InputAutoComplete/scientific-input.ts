@@ -1,5 +1,15 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  inputStyles,
+  messageStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
+import {classNames} from '../shared/utils/dom-utils.js';
 
 export interface InputOption {
   label: string;
@@ -10,314 +20,190 @@ export interface InputOption {
 
 @customElement('scientific-input')
 export class ScientificInput extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      width: var(--input-width, 100%);
-      font-family: var(
-        --input-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-    }
-
-    .input-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: var(--input-gap, 8px);
-      width: 100%;
-    }
-
-    .input-label {
-      font-size: var(--input-label-font-size, 14px);
-      font-weight: var(--input-label-font-weight, 500);
-      color: var(--input-label-color, #374151);
-      margin-bottom: var(--input-label-margin-bottom, 4px);
-      display: block;
-    }
-
-    .input-label.required::after {
-      content: ' *';
-      color: var(--input-required-color, #dc2626);
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .autocomplete-hint {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: var(--input-padding, 12px 16px);
-      border: 2px solid transparent;
-      border-radius: var(--input-border-radius, 8px);
-      background: transparent;
-      color: var(--input-hint-color, #9ca3af);
-      font-size: var(--input-font-size, 16px);
-      font-family: inherit;
-      pointer-events: none;
-      z-index: 1;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .input-field {
-      position: relative;
-      z-index: 2;
-      background: transparent;
-      width: 100%;
-      padding: var(--input-padding, 12px 16px);
-      border: var(--input-border, 2px solid #d1d5db);
-      border-radius: var(--input-border-radius, 8px);
-      background-color: var(--input-bg-color, #ffffff);
-      color: var(--input-color, #374151);
-      font-size: var(--input-font-size, 16px);
-      font-family: inherit;
-      transition: var(--input-transition, all 0.2s ease-in-out);
-      box-shadow: var(--input-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
-      min-height: var(--input-min-height, 48px);
-      box-sizing: border-box;
-      outline: none;
-    }
-
-    .input-field::placeholder {
-      color: var(--input-placeholder-color, #9ca3af);
-      opacity: 1;
-    }
-
-    .input-field:hover {
-      border-color: var(--input-hover-border-color, #9ca3af);
-      box-shadow: var(--input-hover-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-    }
-
-    .input-field:focus {
-      border-color: var(--input-focus-border-color, #007bff);
-      box-shadow: var(--input-focus-shadow, 0 0 0 3px rgba(0, 123, 255, 0.1));
-    }
-
-    .input-field:disabled {
-      background-color: var(--input-disabled-bg-color, #f9fafb);
-      border-color: var(--input-disabled-border-color, #e5e7eb);
-      color: var(--input-disabled-color, #9ca3af);
-      cursor: not-allowed;
-    }
-
-    .input-field.error {
-      border-color: var(--input-error-border-color, #dc2626);
-      box-shadow: var(--input-error-shadow, 0 0 0 3px rgba(220, 38, 38, 0.1));
-    }
-
-    .input-field.success {
-      border-color: var(--input-success-border-color, #10b981);
-      box-shadow: var(
-        --input-success-shadow,
-        0 0 0 3px rgba(16, 185, 129, 0.1)
-      );
-    }
-
-    .input-icon {
-      position: absolute;
-      right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      color: var(--input-icon-color, #6b7280);
-      pointer-events: none;
-    }
-
-    .clear-button {
-      position: absolute;
-      right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--input-clear-size, 20px);
-      height: var(--input-clear-size, 20px);
-      background: var(--input-clear-bg, transparent);
-      border: var(--input-clear-border, none);
-      border-radius: var(--input-clear-border-radius, 4px);
-      cursor: pointer;
-      color: var(--input-clear-color, #9ca3af);
-      transition: var(--input-clear-transition, all 0.2s ease-in-out);
-      padding: 0;
-      font-size: var(--input-clear-font-size, 12px);
-      font-weight: var(--input-clear-font-weight, 500);
-    }
-
-    .clear-button:hover {
-      background-color: var(--input-clear-hover-bg, #f3f4f6);
-      color: var(--input-clear-hover-color, #6b7280);
-      transform: var(--input-clear-hover-transform, scale(1.1));
-    }
-
-    .clear-button:active {
-      transform: var(--input-clear-active-transform, scale(0.95));
-    }
-
-    .dropdown-container {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      border: var(
-        --input-dropdown-border,
-        var(--dropdown-options-border, 2px solid #d1d5db)
-      );
-      border-top: none;
-      border-radius: var(
-        --input-dropdown-border-radius,
-        var(--dropdown-options-border-radius, 0 0 8px 8px)
-      );
-      background-color: var(
-        --input-dropdown-bg-color,
-        var(--dropdown-options-bg-color, #ffffff)
-      );
-      box-shadow: var(
-        --input-dropdown-shadow,
-        var(--dropdown-options-shadow, 0 10px 15px rgba(0, 0, 0, 0.1))
-      );
-      z-index: var(--input-dropdown-z-index, var(--dropdown-z-index, 1000));
-      max-height: var(
-        --input-dropdown-max-height,
-        var(--dropdown-max-height, 200px)
-      );
-      overflow-y: auto;
-      animation: var(
-        --input-dropdown-animation,
-        var(--dropdown-animation, slideDown 0.15s ease-out)
-      );
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    inputStyles,
+    messageStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        width: var(--input-width, 100%);
+        font-family: var(--scientific-font-family);
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      .scientific-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: var(--scientific-spacing-sm);
+        width: 100%;
       }
-    }
 
-    .option {
-      padding: var(
-        --input-option-padding,
-        var(--dropdown-option-padding, 12px 16px)
-      );
-      cursor: pointer;
-      transition: background-color 0.15s ease-in-out;
-      border-bottom: var(
-        --input-option-border,
-        var(--dropdown-option-border, 1px solid #f3f4f6)
-      );
-      color: var(--input-option-color, var(--dropdown-option-color, #374151));
-      font-size: var(
-        --input-option-font-size,
-        var(--dropdown-option-font-size, 16px)
-      );
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        z-index: 1;
+      }
 
-    .option:last-child {
-      border-bottom: none;
-    }
+      .autocomplete-hint {
+        position: absolute;
+        padding: var(
+          --input-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        border: none;
+        border-radius: var(--scientific-border-radius);
+        background: transparent;
+        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
+        font-size: var(--scientific-text-base);
+        font-family: inherit;
+        pointer-events: none;
+        z-index: 1;
+        white-space: nowrap;
+        overflow: hidden;
+      }
 
-    .option:hover {
-      background-color: var(
-        --input-option-hover-bg-color,
-        var(--dropdown-option-hover-bg-color, #f9fafb)
-      );
-    }
+      .clear-button {
+        position: absolute;
+        right: var(--scientific-spacing-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--input-clear-size, 20px);
+        height: var(--input-clear-size, 20px);
+        background: transparent;
+        border: none;
+        border-radius: var(--scientific-border-radius-sm);
+        cursor: pointer;
+        color: var(--scientific-text-muted);
+        transition: var(--scientific-transition-fast);
+        padding: 0;
+        font-size: var(--scientific-text-xs);
+        font-weight: 500;
+      }
 
-    .option.highlighted {
-      background-color: var(
-        --input-option-highlighted-bg-color,
-        var(--dropdown-option-focused-bg-color, #f3f4f6)
-      );
-      color: var(
-        --input-option-highlighted-color,
-        var(--dropdown-option-color, #374151)
-      );
-    }
+      .clear-button:hover {
+        background-color: var(--scientific-bg-muted);
+        color: var(--scientific-text-secondary);
+        transform: scale(1.1);
+      }
 
-    .option.disabled {
-      background-color: var(--input-option-disabled-bg-color, #f9fafb);
-      color: var(--input-option-disabled-color, #9ca3af);
-      cursor: not-allowed;
-    }
+      .clear-button:active {
+        transform: scale(0.95);
+      }
 
-    .option-group {
-      padding: var(--input-option-group-padding, 8px 16px 4px);
-      font-size: var(--input-option-group-font-size, 12px);
-      font-weight: var(--input-option-group-font-weight, 600);
-      color: var(--input-option-group-color, #6b7280);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background-color: var(--input-option-group-bg-color, #f9fafb);
-      border-bottom: var(--input-option-group-border, 1px solid #e5e7eb);
-    }
+      .dropdown-container {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          border: var(--scientific-border);
+          border-top: none;
+          border-radius: 0 0 var(--scientific-border-radius)
+            var(--scientific-border-radius);
+          background-color: var(--scientific-bg-primary, #fff);
+          box-shadow: var(--scientific-shadow-lg);
+          z-index: var(--input-dropdown-z-index, 1000);
+          max-height: var(--input-dropdown-max-height, 200px);
+          overflow-y: auto;
+          animation: slideDown 0.15s ease-out;
+      }
 
-    .no-options {
-      padding: var(--input-no-options-padding, 16px);
-      text-align: center;
-      color: var(--input-no-options-color, #9ca3af);
-      font-style: italic;
-      font-size: var(--input-no-options-font-size, 14px);
-    }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .input-helper {
-      font-size: var(--input-helper-font-size, 12px);
-      color: var(--input-helper-color, #6b7280);
-      margin-top: var(--input-helper-margin-top, 4px);
-    }
+      .option {
+        padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
+        cursor: pointer;
+        transition: var(--scientific-transition-fast);
+        border-bottom: 1px solid var(--scientific-border-light);
+        color: var(--scientific-text-primary);
+        font-size: var(--scientific-text-base);
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+      }
 
-    .input-error {
-      font-size: var(--input-error-font-size, 12px);
-      color: var(--input-error-color, #dc2626);
-      margin-top: var(--input-error-margin-top, 4px);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+      .option:last-child {
+        border-bottom: none;
+      }
 
-    .input-success {
-      font-size: var(--input-success-font-size, 12px);
-      color: var(--input-success-color, #10b981);
-      margin-top: var(--input-success-margin-top, 4px);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+      .option:hover {
+        background-color: var(--scientific-bg-muted);
+      }
 
-    .input-field.small {
-      padding: var(--input-small-padding, 8px 12px);
-      font-size: var(--input-small-font-size, 14px);
-      min-height: var(--input-small-min-height, 36px);
-    }
+      .option.highlighted {
+        background-color: var(--scientific-bg-accent);
+        color: var(--scientific-text-primary);
+      }
 
-    .input-field.large {
-      padding: var(--input-large-padding, 16px 20px);
-      font-size: var(--input-large-font-size, 18px);
-      min-height: var(--input-large-min-height, 56px);
-    }
+      .option.disabled {
+        background-color: var(--scientific-bg-disabled);
+        color: var(--scientific-text-disabled);
+        cursor: not-allowed;
+      }
 
-    @media (max-width: 768px) {
+      .option-group {
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-lg)
+          var(--scientific-spacing-xs);
+        font-size: var(--scientific-text-xs);
+        font-weight: 600;
+        color: var(--scientific-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: var(--scientific-bg-muted);
+        border-bottom: 1px solid var(--scientific-border-light);
+      }
+
+      .no-options {
+        padding: var(--scientific-spacing-lg);
+        text-align: center;
+        color: var(--scientific-text-muted);
+        font-style: italic;
+        font-size: var(--scientific-text-sm);
+      }
+
       .input-field {
-        font-size: var(--input-mobile-font-size, 16px);
-        padding: var(--input-mobile-padding, 12px 16px);
+        padding: var(
+          --input-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        font-size: var(--input-font-size, var(--scientific-text-base));
+        min-height: var(--input-min-height, 44px);
       }
-    }
-  `;
+
+      .autocomplete-hint {
+        position: absolute;
+        padding: var(
+          --input-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        left: 2px;
+        border: none;
+        border-radius: var(--scientific-border-radius);
+        background: transparent;
+        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
+        font-size: var(--input-font-size, var(--scientific-text-base));
+        font-family: inherit;
+        pointer-events: none;
+        z-index: 1;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    `,
+  ];
 
   @property({type: String})
   label = '';
@@ -340,7 +226,7 @@ export class ScientificInput extends LitElement {
   @property({type: Boolean})
   clearable = true;
 
-  @property({type: String})
+  @property({type: String, reflect: true})
   size: 'small' | 'medium' | 'large' = 'medium';
 
   @property({type: String})
@@ -391,6 +277,10 @@ export class ScientificInput extends LitElement {
   @state()
   private autocompleteHint = '';
 
+  private _debouncedFilter = debounce(() => {
+    this._performFilter();
+  }, 150);
+
   override connectedCallback() {
     super.connectedCallback();
     this.inputValue = this.value;
@@ -416,26 +306,27 @@ export class ScientificInput extends LitElement {
     this.value = target.value;
 
     if (this.autoComplete) {
-      this.filterOptions();
+      this._debouncedFilter();
       this.isOpen =
         this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
     }
 
-    this.dispatchEvent(
-      new CustomEvent('input', {
+    dispatchMultipleEvents(this, [
+      {
+        name: 'input',
         detail: {value: this.inputValue},
-        bubbles: true,
-        composed: true,
-      })
-    );
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
+        detail: {value: this.inputValue},
+        options: {bubbles: true, composed: true},
+      },
+    ]);
+  }
 
-    this.dispatchEvent(
-      new CustomEvent('change', {
-        detail: {value: this.inputValue},
-        bubbles: true,
-        composed: true,
-      })
-    );
+  private _performFilter() {
+    this.filterOptions();
   }
 
   private filterOptions() {
@@ -450,13 +341,12 @@ export class ScientificInput extends LitElement {
     );
     this.highlightedIndex = -1;
 
-    // Set autocomplete hint for the first matching option
     if (this.filteredOptions.length > 0 && this.inputValue.length > 0) {
       const firstMatch = this.filteredOptions[0];
       const inputLower = this.inputValue.toLowerCase();
       const labelLower = firstMatch.label.toLowerCase();
 
-      if (labelLower.startsWith(inputLower)) {
+      if (labelLower.startsWith(inputLower) && inputLower !== labelLower) {
         this.autocompleteHint =
           this.inputValue + firstMatch.label.slice(this.inputValue.length);
       } else {
@@ -540,21 +430,18 @@ export class ScientificInput extends LitElement {
     this.highlightedIndex = -1;
     this.autocompleteHint = '';
 
-    this.dispatchEvent(
-      new CustomEvent('option-selected', {
+    dispatchMultipleEvents(this, [
+      {
+        name: 'option-selected',
         detail: {option, value: option.value, label: option.label},
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    this.dispatchEvent(
-      new CustomEvent('change', {
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
         detail: {value: option.value, label: option.label},
-        bubbles: true,
-        composed: true,
-      })
-    );
+        options: {bubbles: true, composed: true},
+      },
+    ]);
   }
 
   private selectCustomValue() {
@@ -563,21 +450,18 @@ export class ScientificInput extends LitElement {
     this.isOpen = false;
     this.highlightedIndex = -1;
 
-    this.dispatchEvent(
-      new CustomEvent('custom-value-selected', {
+    dispatchMultipleEvents(this, [
+      {
+        name: 'custom-value-selected',
         detail: {value: customValue},
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    this.dispatchEvent(
-      new CustomEvent('change', {
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
         detail: {value: customValue},
-        bubbles: true,
-        composed: true,
-      })
-    );
+        options: {bubbles: true, composed: true},
+      },
+    ]);
   }
 
   private handleOptionClick(option: InputOption) {
@@ -591,20 +475,18 @@ export class ScientificInput extends LitElement {
     this.highlightedIndex = -1;
     this.autocompleteHint = '';
 
-    this.dispatchEvent(
-      new CustomEvent('clear', {
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    this.dispatchEvent(
-      new CustomEvent('change', {
+    dispatchMultipleEvents(this, [
+      {
+        name: 'clear',
         detail: {value: ''},
-        bubbles: true,
-        composed: true,
-      })
-    );
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
+        detail: {value: ''},
+        options: {bubbles: true, composed: true},
+      },
+    ]);
 
     const input = this.shadowRoot?.querySelector(
       '.input-field'
@@ -619,37 +501,34 @@ export class ScientificInput extends LitElement {
         this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
     }
 
-    this.dispatchEvent(
-      new CustomEvent('focus', {
-        bubbles: true,
-        composed: true,
-      })
-    );
+    dispatchMultipleEvents(this, [
+      {
+        name: 'focus',
+        detail: {value: this.inputValue},
+        options: {bubbles: true, composed: true},
+      },
+    ]);
   }
 
   private handleBlur() {
     setTimeout(() => {
-      this.dispatchEvent(
-        new CustomEvent('blur', {
-          bubbles: true,
-          composed: true,
-        })
-      );
+      dispatchMultipleEvents(this, [
+        {
+          name: 'blur',
+          detail: {value: this.inputValue},
+          options: {bubbles: true, composed: true},
+        },
+      ]);
     }, 150);
   }
 
   private getInputClasses() {
-    const classes = ['input-field'];
-
-    if (this.size !== 'medium') {
-      classes.push(this.size);
-    }
-
-    if (this.state !== 'default') {
-      classes.push(this.state);
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'input-field',
+      'scientific-input',
+      this.size !== 'medium' && this.size,
+      this.state !== 'default' && this.state
+    );
   }
 
   private renderDropdownOptions() {
@@ -658,7 +537,10 @@ export class ScientificInput extends LitElement {
         return html`
           <div class="dropdown-container">
             <div
-              class="option ${this.highlightedIndex === 0 ? 'highlighted' : ''}"
+              class="${classNames(
+                'option',
+                this.highlightedIndex === 0 && 'highlighted'
+              )}"
               @click="${() => this.selectCustomValue()}"
             >
               Add "${this.inputValue}"
@@ -691,9 +573,11 @@ export class ScientificInput extends LitElement {
               const globalIndex = this.filteredOptions.indexOf(option);
               return html`
                 <div
-                  class="option ${this.highlightedIndex === globalIndex
-                    ? 'highlighted'
-                    : ''} ${option.disabled ? 'disabled' : ''}"
+                  class="${classNames(
+                    'option',
+                    this.highlightedIndex === globalIndex && 'highlighted',
+                    option.disabled && 'disabled'
+                  )}"
                   @click="${() => this.handleOptionClick(option)}"
                 >
                   ${option.label}
@@ -734,11 +618,15 @@ export class ScientificInput extends LitElement {
     const hasIcon = this.icon && !showClear;
 
     return html`
-      <div class="input-container">
+      <div class="scientific-container">
         ${this.label
           ? html`
-              <label class="input-label ${this.required ? 'required' : ''}">
-                ${this.label}
+              <label
+                class="${classNames(
+                  'scientific-header',
+                  this.required && 'required'
+                )}"
+                >>> ${this.label}
               </label>
             `
           : ''}
@@ -746,7 +634,13 @@ export class ScientificInput extends LitElement {
         <div class="input-wrapper">
           ${this.autocompleteHint
             ? html`
-                <div class="autocomplete-hint">${this.autocompleteHint}</div>
+                <div
+                  class="autocomplete-hint ${this.size !== 'medium'
+                    ? this.size
+                    : ''}"
+                >
+                  ${this.autocompleteHint}
+                </div>
               `
             : ''}
 
@@ -769,6 +663,7 @@ export class ScientificInput extends LitElement {
             aria-haspopup="listbox"
             aria-autocomplete="list"
           />
+          ${this.renderDropdownOptions()}
 
           ${showClear
             ? html`
@@ -786,18 +681,36 @@ export class ScientificInput extends LitElement {
           ${hasIcon ? html` <div class="input-icon">${this.icon}</div> ` : ''}
         </div>
 
-        ${this.renderDropdownOptions()}
         ${this.helperText
-          ? html` <div class="input-helper">${this.helperText}</div> `
+          ? html` <div class="scientific-message">${this.helperText}</div> `
           : ''}
         ${this.state === 'error' && this.errorMessage
-          ? html` <div class="input-error">⚠️ ${this.errorMessage}</div> `
+          ? html`
+              <div class="scientific-message scientific-message--error">
+                ⚠️ ${this.errorMessage}
+              </div>
+            `
           : ''}
         ${this.state === 'success' && this.successMessage
-          ? html` <div class="input-success">✓ ${this.successMessage}</div> `
+          ? html`
+              <div class="scientific-message scientific-message--success">
+                ✓ ${this.successMessage}
+              </div>
+            `
           : ''}
       </div>
     `;
+  }
+
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) {
+        this.classList.add('dropdown-open');
+      } else {
+        this.classList.remove('dropdown-open');
+      }
+    }
   }
 }
 

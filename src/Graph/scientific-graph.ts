@@ -376,6 +376,18 @@ export class ScientificGraph extends LitElement {
     }, 50);
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this._destroyChart();
+  }
+
+  private _destroyChart() {
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+  }
+
   override updated(changedProperties: Map<string, unknown>) {
     if (
       changedProperties.has('type') ||
@@ -408,10 +420,34 @@ export class ScientificGraph extends LitElement {
       return;
     }
 
+    // Destroy any existing chart on this canvas
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+
+    // Also check for any existing chart attached to the canvas element
     const existingChart = (canvas as HTMLCanvasElement & {chart?: Chart}).chart;
     if (existingChart) {
       console.warn('Canvas already has a chart, destroying it first');
       existingChart.destroy();
+    }
+
+    // Clear any Chart.js references to this canvas
+    try {
+      const ChartClass = (window as unknown as {Chart?: typeof Chart}).Chart;
+      if (ChartClass && 'getChart' in ChartClass) {
+        const existingChartInstance = (
+          ChartClass as unknown as {
+            getChart: (canvas: HTMLCanvasElement) => Chart | undefined;
+          }
+        ).getChart(canvas);
+        if (existingChartInstance) {
+          existingChartInstance.destroy();
+        }
+      }
+    } catch (error) {
+      // Ignore errors during cleanup
     }
 
     try {
@@ -509,7 +545,6 @@ export class ScientificGraph extends LitElement {
       });
 
       this.errorMessage = '';
-      console.log('Debug: Chart created successfully:', this.chart);
 
       this.requestUpdate();
     } catch (error) {
@@ -520,10 +555,7 @@ export class ScientificGraph extends LitElement {
   }
 
   private _recreateChart() {
-    if (this.chart) {
-      this.chart.destroy();
-      this.chart = null;
-    }
+    this._destroyChart();
     setTimeout(() => {
       this._createChart();
     }, 50);

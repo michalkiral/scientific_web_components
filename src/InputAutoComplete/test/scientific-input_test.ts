@@ -12,9 +12,9 @@ suite('ScientificInput', () => {
     const el = await fixture<ScientificInput>(
       html`<scientific-input></scientific-input>`
     );
-    const container = el.shadowRoot!.querySelector('.input-container');
+    const container = el.shadowRoot!.querySelector('.scientific-container');
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     assert.isNotNull(container);
@@ -37,9 +37,9 @@ suite('ScientificInput', () => {
       ></scientific-input>
     `);
 
-    const label = el.shadowRoot!.querySelector('.input-label');
+    const label = el.shadowRoot!.querySelector('.scientific-header');
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     assert.isNotNull(label);
@@ -54,7 +54,7 @@ suite('ScientificInput', () => {
       const el = await fixture<ScientificInput>(html`
         <scientific-input .size=${size}></scientific-input>
       `);
-      const input = el.shadowRoot!.querySelector('.input-field')!;
+      const input = el.shadowRoot!.querySelector('.scientific-input')!;
 
       if (size !== 'medium') {
         assert.include(
@@ -79,7 +79,7 @@ suite('ScientificInput', () => {
       const el = await fixture<ScientificInput>(html`
         <scientific-input .state=${state}></scientific-input>
       `);
-      const input = el.shadowRoot!.querySelector('.input-field')!;
+      const input = el.shadowRoot!.querySelector('.scientific-input')!;
 
       if (state !== 'default') {
         assert.include(
@@ -103,7 +103,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
     assert.isTrue(input.disabled);
     assert.isTrue(el.disabled);
@@ -114,7 +114,7 @@ suite('ScientificInput', () => {
       <scientific-input label="Required Field" required></scientific-input>
     `);
 
-    const label = el.shadowRoot!.querySelector('.input-label');
+    const label = el.shadowRoot!.querySelector('.scientific-header');
     assert.include(label!.className, 'required');
     assert.isTrue(el.required);
   });
@@ -135,7 +135,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.value = 'test input';
@@ -170,7 +170,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -202,11 +202,14 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.value = 'ap';
     input.dispatchEvent(new Event('input', {bubbles: true}));
+    await el.updateComplete;
+    // Wait for debounced filtering (150ms + buffer)
+    await aTimeout(200);
     await el.updateComplete;
 
     const displayedOptions = el.shadowRoot!.querySelectorAll('.option');
@@ -229,7 +232,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -239,7 +242,9 @@ suite('ScientificInput', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     await el.updateComplete;
 
-    const highlightedOption = el.shadowRoot!.querySelector('.option.highlighted');
+    const highlightedOption = el.shadowRoot!.querySelector(
+      '.option.highlighted'
+    );
     assert.isNotNull(
       highlightedOption,
       'First option should be highlighted after ArrowDown'
@@ -278,7 +283,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -342,7 +347,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.value = 'custom value';
@@ -365,7 +370,7 @@ suite('ScientificInput', () => {
       <scientific-input helperText="This is helper text"></scientific-input>
     `);
 
-    const helperText = el.shadowRoot!.querySelector('.input-helper');
+    const helperText = el.shadowRoot!.querySelector('.scientific-message');
     assert.isNotNull(helperText);
     assert.include(helperText!.textContent!, 'This is helper text');
   });
@@ -378,7 +383,9 @@ suite('ScientificInput', () => {
       ></scientific-input>
     `);
 
-    const errorMessage = el.shadowRoot!.querySelector('.input-error');
+    const errorMessage = el.shadowRoot!.querySelector(
+      '.scientific-message.scientific-message--error'
+    );
     assert.isNotNull(errorMessage);
     assert.include(errorMessage!.textContent!, 'This is an error');
   });
@@ -391,7 +398,9 @@ suite('ScientificInput', () => {
       ></scientific-input>
     `);
 
-    const successMessage = el.shadowRoot!.querySelector('.input-success');
+    const successMessage = el.shadowRoot!.querySelector(
+      '.scientific-message.scientific-message--success'
+    );
     assert.isNotNull(successMessage);
     assert.include(successMessage!.textContent!, 'This is success');
   });
@@ -417,7 +426,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -454,7 +463,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -479,7 +488,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
@@ -504,12 +513,15 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
     input.value = 'xyz';
     input.dispatchEvent(new Event('input', {bubbles: true}));
+    await el.updateComplete;
+    // Wait for debounced filtering (150ms + buffer)
+    await aTimeout(200);
     await el.updateComplete;
 
     const noOptions = el.shadowRoot!.querySelector('.no-options');
@@ -525,7 +537,7 @@ suite('ScientificInput', () => {
     await el.updateComplete;
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
     assert.isTrue(el.autoFocus);
     assert.isNotNull(input);
@@ -543,12 +555,15 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
     input.value = 'App';
     input.dispatchEvent(new Event('input', {bubbles: true}));
+    await el.updateComplete;
+    // Wait for debounced filtering (150ms + buffer)
+    await aTimeout(200);
     await el.updateComplete;
 
     input.dispatchEvent(
@@ -569,7 +584,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
     assert.equal(input.maxLength, 5);
   });
@@ -582,7 +597,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.input-field'
+      '.scientific-input'
     ) as HTMLInputElement;
 
     input.focus();
