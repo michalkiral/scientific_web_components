@@ -2,235 +2,187 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import '../Button/scientific-button';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  messageStyles,
+  loadingSpinnerStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
+import {classNames} from '../shared/utils/dom-utils.js';
 
 @customElement('scientific-form')
 export class ScientificForm extends LitElement {
-  static override styles = css`
-    .form-container {
-      position: relative;
-      background-color: var(--form-bg-color, #ffffff);
-      border: var(--form-border, 2px solid #e5e7eb);
-      border-radius: var(--form-border-radius, 12px);
-      padding: var(--form-padding, 24px);
-      margin: var(--form-margin, 0);
-      max-width: var(--form-max-width, 600px);
-      width: var(--form-width, 100%);
-      min-height: var(--form-min-height, auto);
-      box-shadow: var(--form-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-      transition: var(--form-transition, all 0.2s ease-in-out);
-      font-family: var(
-        --form-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-      display: flex;
-      flex-direction: column;
-      gap: var(--form-gap, 20px);
-    }
-
-    .form-container:hover {
-      box-shadow: var(--form-hover-shadow, 0 8px 12px rgba(0, 0, 0, 0.15));
-    }
-
-    .form-container.disabled {
-      opacity: var(--form-disabled-opacity, 0.6);
-      pointer-events: none;
-    }
-
-    .form-container.loading {
-      position: relative;
-    }
-
-    .form-loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: var(
-        --form-loading-overlay-bg,
-        rgba(255, 255, 255, 0.8)
-      );
-      border-radius: var(--form-border-radius, 12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: var(--form-loading-z-index, 10);
-    }
-
-    .form-loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--form-loading-spinner-color, #e5e7eb);
-      border-top: 3px solid var(--form-loading-spinner-active-color, #007bff);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    messageStyles,
+    loadingSpinnerStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
       }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
 
-    .form-header {
-      display: flex;
-      flex-direction: column;
-      gap: var(--form-header-gap, 8px);
-      padding-bottom: var(--form-header-padding-bottom, 16px);
-      border-bottom: var(--form-header-border, 1px solid #f3f4f6);
-    }
-
-    .form-title {
-      font-size: var(--form-title-font-size, 24px);
-      font-weight: var(--form-title-font-weight, 600);
-      color: var(--form-title-color, #111827);
-      margin: 0;
-      line-height: var(--form-title-line-height, 1.2);
-    }
-
-    .form-subtitle {
-      font-size: var(--form-subtitle-font-size, 16px);
-      font-weight: var(--form-subtitle-font-weight, 400);
-      color: var(--form-subtitle-color, #6b7280);
-      margin: 0;
-      line-height: var(--form-subtitle-line-height, 1.4);
-    }
-
-    .form-content {
-      display: flex;
-      flex-direction: column;
-      gap: var(--form-content-gap, 16px);
-      flex: 1;
-    }
-
-    .form-section {
-      display: flex;
-      flex-direction: column;
-      gap: var(--form-section-gap, 12px);
-    }
-
-    .form-section-title {
-      font-size: var(--form-section-title-font-size, 18px);
-      font-weight: var(--form-section-title-font-weight, 500);
-      color: var(--form-section-title-color, #374151);
-      margin: 0 0 8px 0;
-      padding-bottom: var(--form-section-title-padding-bottom, 4px);
-      border-bottom: var(--form-section-title-border, 1px solid #f3f4f6);
-    }
-
-    .form-error {
-      background-color: var(--form-error-bg-color, #fef2f2);
-      border: var(--form-error-border, 1px solid #fecaca);
-      border-radius: var(--form-error-border-radius, 8px);
-      padding: var(--form-error-padding, 12px 16px);
-      color: var(--form-error-color, #dc2626);
-      font-size: var(--form-error-font-size, 14px);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-success {
-      background-color: var(--form-success-bg-color, #f0fdf4);
-      border: var(--form-success-border, 1px solid #bbf7d0);
-      border-radius: var(--form-success-border-radius, 8px);
-      padding: var(--form-success-padding, 12px 16px);
-      color: var(--form-success-color, #16a34a);
-      font-size: var(--form-success-font-size, 14px);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-footer {
-      display: flex;
-      justify-content: var(--form-footer-justify, flex-end);
-      align-items: center;
-      gap: var(--form-footer-gap, 12px);
-      padding-top: var(--form-footer-padding-top, 16px);
-      border-top: var(--form-footer-border, 1px solid #f3f4f6);
-      flex-wrap: wrap;
-    }
-
-    .form-footer.full-width {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .form-footer.full-width scientific-button {
-      width: 100%;
-      display: block;
-    }
-
-    .form-footer.center {
-      justify-content: center;
-    }
-
-    .form-footer.start {
-      justify-content: flex-start;
-    }
-
-    .form-footer.space-between {
-      justify-content: space-between;
-    }
-
-    .form-progress {
-      width: 100%;
-      height: var(--form-progress-height, 4px);
-      background-color: var(--form-progress-bg-color, #f3f4f6);
-      border-radius: var(--form-progress-border-radius, 2px);
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .form-progress-bar {
-      height: 100%;
-      background-color: var(--form-progress-color, #007bff);
-      transition: width 0.3s ease-in-out;
-      border-radius: var(--form-progress-border-radius, 2px);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
       .form-container {
-        padding: var(--form-mobile-padding, 16px);
-        margin: var(--form-mobile-margin, 0);
-        border-radius: var(--form-mobile-border-radius, 8px);
+        /* Extends .scientific-container with form-specific customizations */
+        max-width: var(--form-max-width, 600px);
+        width: var(--form-width, 100%);
+        min-height: var(--form-min-height, auto);
+      }
+
+      .form-container.loading {
+        position: relative;
+      }
+
+      .form-header {
+        /* Extends .scientific-header with form-specific styling */
+        border-bottom: var(--form-header-border, 1px solid #f3f4f6);
+      }
+
+      .form-title {
+        /* Extends .scientific-title with form-specific sizing */
+        font-size: var(--form-title-font-size, var(--scientific-text-2xl));
+      }
+
+      .form-subtitle {
+        /* Extends .scientific-subtitle with form-specific sizing */
+        font-size: var(--form-subtitle-font-size, var(--scientific-text-base));
+      }
+
+      .form-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--form-content-gap, var(--scientific-spacing-lg));
+        flex: 1;
+      }
+
+      .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--form-section-gap, var(--scientific-spacing-md));
+      }
+
+      .form-section-title {
+        font-size: var(
+          --form-section-title-font-size,
+          var(--scientific-text-lg)
+        );
+        font-weight: var(--form-section-title-font-weight, 500);
+        color: var(--form-section-title-color, #374151);
+        margin: 0 0 var(--scientific-spacing-sm) 0;
+        padding-bottom: var(
+          --form-section-title-padding-bottom,
+          var(--scientific-spacing-xs)
+        );
+        border-bottom: var(--form-section-title-border, 1px solid #f3f4f6);
+      }
+
+      .form-error {
+        /* Extends .scientific-error with form-specific styling */
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+      }
+
+      .form-success {
+        /* Extends .scientific-success with form-specific styling */
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
       }
 
       .form-footer {
-        flex-direction: column-reverse;
+        display: flex;
+        justify-content: var(--form-footer-justify, flex-end);
+        align-items: center;
+        gap: var(--form-footer-gap, var(--scientific-spacing-md));
+        padding-top: var(
+          --form-footer-padding-top,
+          var(--scientific-spacing-lg)
+        );
+        border-top: var(--form-footer-border, 1px solid #f3f4f6);
+        flex-wrap: wrap;
+      }
+
+      .form-footer.full-width {
+        flex-direction: column;
         align-items: stretch;
       }
 
-      .form-footer scientific-button {
+      .form-footer.full-width scientific-button {
         width: 100%;
+        display: block;
       }
-    }
 
-    /* Compact variant */
-    .form-container.compact {
-      padding: var(--form-compact-padding, 16px);
-      gap: var(--form-compact-gap, 12px);
-    }
+      .form-footer.center {
+        justify-content: center;
+      }
 
-    .form-container.compact .form-header {
-      padding-bottom: var(--form-compact-header-padding-bottom, 8px);
-    }
+      .form-footer.start {
+        justify-content: flex-start;
+      }
 
-    .form-container.compact .form-content {
-      gap: var(--form-compact-content-gap, 12px);
-    }
+      .form-footer.space-between {
+        justify-content: space-between;
+      }
 
-    .form-container.compact .form-footer {
-      padding-top: var(--form-compact-footer-padding-top, 8px);
-    }
-  `;
+      .form-progress {
+        width: 100%;
+        height: var(--form-progress-height, var(--scientific-spacing-xs));
+        background-color: var(--form-progress-bg-color, #f3f4f6);
+        border-radius: var(
+          --form-progress-border-radius,
+          var(--scientific-border-radius)
+        );
+        overflow: hidden;
+        margin-bottom: var(--scientific-spacing-sm);
+      }
+
+      .form-progress-bar {
+        height: 100%;
+        background-color: var(
+          --form-progress-color,
+          var(--scientific-primary-color)
+        );
+        transition: width var(--scientific-transition-slow);
+        border-radius: var(
+          --form-progress-border-radius,
+          var(--scientific-border-radius)
+        );
+      }
+
+      @media (max-width: 768px) {
+        .form-footer {
+          flex-direction: column-reverse;
+          align-items: stretch;
+        }
+
+        .form-footer scientific-button {
+          width: 100%;
+        }
+      }
+
+      .form-container.compact {
+        min-height: var(--form-compact-min-height, auto);
+      }
+
+      .form-container.compact .form-content {
+        gap: var(--form-compact-content-gap, var(--scientific-spacing-md));
+      }
+
+      .form-container.compact .form-footer {
+        padding-top: var(
+          --form-compact-footer-padding-top,
+          var(--scientific-spacing-sm)
+        );
+      }
+    `,
+  ];
 
   @property({type: String})
   override title = '';
@@ -336,11 +288,10 @@ export class ScientificForm extends LitElement {
 
     const formData = new FormData(form);
 
-    this.dispatchEvent(
-      new CustomEvent('form-submit-start', {
-        detail: {formData, originalEvent: e},
-      })
-    );
+    dispatchCustomEvent(this, 'form-submit-start', {
+      formData,
+      originalEvent: e,
+    });
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -356,19 +307,16 @@ export class ScientificForm extends LitElement {
       }
 
       this.successMessage = 'Form submitted successfully!';
-      this.dispatchEvent(
-        new CustomEvent('form-submit-success', {
-          detail: {formData},
-        })
-      );
+      dispatchCustomEvent(this, 'form-submit-success', {
+        formData,
+      });
     } catch (error) {
       this.errorMessage =
         error instanceof Error ? error.message : 'An error occurred';
-      this.dispatchEvent(
-        new CustomEvent('form-submit-error', {
-          detail: {error, formData},
-        })
-      );
+      dispatchCustomEvent(this, 'form-submit-error', {
+        error,
+        formData,
+      });
     } finally {
       this.isLoading = false;
     }
@@ -377,7 +325,9 @@ export class ScientificForm extends LitElement {
   private _handleCancel() {
     if (this.isLoading) return;
 
-    this.dispatchEvent(new CustomEvent('form-cancel'));
+    dispatchCustomEvent(this, 'form-cancel', {
+      timestamp: new Date().toISOString(),
+    });
     this.onCancel?.();
   }
 
@@ -391,36 +341,27 @@ export class ScientificForm extends LitElement {
     this.successMessage = '';
     this.progress = 0;
 
-    this.dispatchEvent(new CustomEvent('form-reset'));
+    dispatchCustomEvent(this, 'form-reset', {
+      timestamp: new Date().toISOString(),
+    });
     this.onReset?.();
   }
 
   private _getFormClasses() {
-    const classes = ['form-container'];
-
-    if (this.variant !== 'default') {
-      classes.push(this.variant);
-    }
-
-    if (this.disabled) {
-      classes.push('disabled');
-    }
-
-    if (this.isLoading) {
-      classes.push('loading');
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'scientific-container',
+      'form-container',
+      this.variant !== 'default' && this.variant,
+      this.disabled && 'disabled',
+      this.isLoading && 'loading'
+    );
   }
 
   private _getFooterClasses() {
-    const classes = ['form-footer'];
-
-    if (this.footerLayout !== 'end') {
-      classes.push(this.footerLayout);
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'form-footer',
+      this.footerLayout !== 'end' && this.footerLayout
+    );
   }
 
   override firstUpdated() {
@@ -448,20 +389,24 @@ export class ScientificForm extends LitElement {
       >
         ${this.isLoading
           ? html`
-              <div class="form-loading-overlay">
-                <div class="form-loading-spinner"></div>
+              <div class="loading-overlay">
+                <div class="loading-spinner"></div>
               </div>
             `
           : ''}
         ${this.title || this.subtitle
           ? html`
-              <div class="form-header">
+              <div class="scientific-header form-header">
                 <slot name="header">
                   ${this.title
-                    ? html`<h2 class="form-title">${this.title}</h2>`
+                    ? html`<h2 class="scientific-title form-title">
+                        ${this.title}
+                      </h2>`
                     : ''}
                   ${this.subtitle
-                    ? html`<p class="form-subtitle">${this.subtitle}</p>`
+                    ? html`<p class="scientific-subtitle form-subtitle">
+                        ${this.subtitle}
+                      </p>`
                     : ''}
                 </slot>
               </div>
@@ -483,7 +428,7 @@ export class ScientificForm extends LitElement {
           : ''}
         ${this.errorMessage
           ? html`
-              <div class="form-error" role="alert">
+              <div class="scientific-error form-error" role="alert">
                 <span>⚠️</span>
                 <span>${this.errorMessage}</span>
               </div>
@@ -491,7 +436,7 @@ export class ScientificForm extends LitElement {
           : ''}
         ${this.successMessage
           ? html`
-              <div class="form-success" role="status">
+              <div class="scientific-success form-success" role="status">
                 <span>✅</span>
                 <span>${this.successMessage}</span>
               </div>
@@ -528,12 +473,6 @@ export class ScientificForm extends LitElement {
         </div>
       </form>
     `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'scientific-form': ScientificForm;
   }
 }
 

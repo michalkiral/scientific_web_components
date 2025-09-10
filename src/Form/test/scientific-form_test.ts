@@ -68,12 +68,8 @@ suite('ScientificForm', () => {
     await el.updateComplete;
 
     const container = el.shadowRoot!.querySelector('.form-container');
-    const loadingOverlay = el.shadowRoot!.querySelector(
-      '.form-loading-overlay'
-    );
-    const loadingSpinner = el.shadowRoot!.querySelector(
-      '.form-loading-spinner'
-    );
+    const loadingOverlay = el.shadowRoot!.querySelector('.loading-overlay');
+    const loadingSpinner = el.shadowRoot!.querySelector('.loading-spinner');
 
     assert.include(container!.className, 'loading');
     assert.isNotNull(loadingOverlay || loadingSpinner);
