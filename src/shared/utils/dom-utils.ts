@@ -1,7 +1,23 @@
 export function classNames(
-  ...classes: (string | false | null | undefined)[]
+  ...args: (string | Record<string, boolean> | false | null | undefined)[]
 ): string {
-  return classes.filter(Boolean).join(' ');
+  const classes: string[] = [];
+
+  for (const arg of args) {
+    if (!arg) continue;
+
+    if (typeof arg === 'string') {
+      classes.push(arg);
+    } else if (typeof arg === 'object') {
+      for (const [key, value] of Object.entries(arg)) {
+        if (value) {
+          classes.push(key);
+        }
+      }
+    }
+  }
+
+  return classes.join(' ');
 }
 
 export function getContainerClasses(

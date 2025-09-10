@@ -1,168 +1,248 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {
+  sharedVariables,
+  inputStyles,
+  messageStyles,
+  responsiveStyles,
+  dispatchCustomEvent,
+  classNames,
+} from '../shared/index.js';
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown extends LitElement {
-  static override styles = css`
-    .dropdown-container {
-      position: relative;
-      display: inline-block;
-      width: var(--dropdown-width, 100%);
-      font-family: var(
-        --dropdown-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-      z-index: var(--dropdown-container-z-index, 1);
-    }
-
-    .dropdown-label {
-      margin-bottom: var(--dropdown-label-margin-bottom, 8px);
-      display: block;
-      font-size: var(--dropdown-label-font-size, 14px);
-      font-weight: var(--dropdown-label-font-weight, 500);
-      color: var(--dropdown-label-color, #374151);
-    }
-
-    .dropdown-select {
-      width: 100%;
-      padding: var(--dropdown-padding, 12px 16px);
-      border: var(--dropdown-border, 2px solid #d1d5db);
-      border-radius: var(--dropdown-border-radius, 8px);
-      background-color: var(--dropdown-bg-color, #ffffff);
-      color: var(--dropdown-color, #374151);
-      font-size: var(--dropdown-font-size, 16px);
-      cursor: pointer;
-      transition: var(--dropdown-transition, all 0.2s ease-in-out);
-      box-shadow: var(--dropdown-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: var(--dropdown-min-height, 48px);
-    }
-
-    .dropdown-select:hover {
-      border-color: var(--dropdown-hover-border-color, #9ca3af);
-      box-shadow: var(--dropdown-hover-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-    }
-
-    .dropdown-select:focus {
-      outline: none;
-      border-color: var(--dropdown-focus-border-color, #007bff);
-      box-shadow: var(
-        --dropdown-focus-shadow,
-        0 0 0 3px rgba(0, 123, 255, 0.1)
-      );
-    }
-
-    .dropdown-select.open {
-      border-color: var(--dropdown-open-border-color, #007bff);
-    }
-
-    .dropdown-select.disabled {
-      background-color: var(--dropdown-disabled-bg-color, #f9fafb);
-      border-color: var(--dropdown-disabled-border-color, #e5e7eb);
-      color: var(--dropdown-disabled-color, #9ca3af);
-      cursor: not-allowed;
-    }
-
-    .dropdown-arrow {
-      width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 5px solid var(--dropdown-arrow-color, #6b7280);
-      transition: transform 0.2s ease-in-out;
-      margin-left: 8px;
-    }
-
-    .dropdown-arrow.open {
-      transform: rotate(180deg);
-    }
-
-    .dropdown-placeholder {
-      color: var(--dropdown-placeholder-color, #9ca3af);
-    }
-
-    .options-container {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      border: var(--dropdown-options-border, 2px solid #d1d5db);
-      border-top: none;
-      border-radius: var(--dropdown-options-border-radius, 0 0 8px 8px);
-      background-color: var(--dropdown-options-bg-color, #ffffff);
-      box-shadow: var(
-        --dropdown-options-shadow,
-        0 10px 15px rgba(0, 0, 0, 0.1)
-      );
-      z-index: var(--dropdown-z-index, 1000);
-      max-height: var(--dropdown-max-height, 200px);
-      overflow-y: auto;
-      animation: var(--dropdown-animation, slideDown 0.15s ease-out);
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
+  static override styles = [
+    sharedVariables,
+    inputStyles,
+    messageStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+        width: var(--dropdown-width, 100%);
+        z-index: var(--dropdown-container-z-index, 1);
       }
-    }
 
-    .option {
-      padding: var(--dropdown-option-padding, 12px 16px);
-      cursor: pointer;
-      transition: background-color 0.15s ease-in-out;
-      border-bottom: var(--dropdown-option-border, 1px solid #f3f4f6);
-      color: var(--dropdown-option-color, #374151);
-      font-size: var(--dropdown-option-font-size, 16px);
-    }
+      .dropdown-label {
+        margin-bottom: var(
+          --dropdown-label-margin-bottom,
+          var(--scientific-spacing-sm)
+        );
+        display: block;
+        font-size: var(--dropdown-label-font-size, var(--scientific-text-sm));
+        font-weight: var(--dropdown-label-font-weight, 500);
+        color: var(--dropdown-label-color, #374151);
+      }
 
-    .option:last-child {
-      border-bottom: none;
-    }
+      .dropdown-select {
+        width: 100%;
+        padding: var(
+          --dropdown-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        border: var(--dropdown-border, var(--scientific-border));
+        border-radius: var(
+          --dropdown-border-radius,
+          var(--scientific-border-radius)
+        );
+        background-color: var(--dropdown-bg-color, #ffffff);
+        color: var(--dropdown-color, #374151);
+        font-size: var(--dropdown-font-size, var(--scientific-text-base));
+        cursor: pointer;
+        transition: var(--dropdown-transition, var(--scientific-transition));
+        box-shadow: var(--dropdown-shadow, var(--scientific-shadow-sm));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: var(--dropdown-min-height, 48px);
+      }
 
-    .option:hover {
-      background-color: var(--dropdown-option-hover-bg-color, #f9fafb);
-    }
+      .dropdown-select:hover {
+        border-color: var(
+          --dropdown-hover-border-color,
+          var(--scientific-border-hover)
+        );
+        box-shadow: var(--dropdown-hover-shadow, var(--scientific-shadow));
+      }
 
-    .option.selected {
-      background-color: var(--dropdown-option-selected-bg-color, #eff6ff);
-      color: var(--dropdown-option-selected-color, #007bff);
-      font-weight: var(--dropdown-option-selected-font-weight, 500);
-    }
+      .dropdown-select:focus {
+        outline: none;
+        border-color: var(
+          --dropdown-focus-border-color,
+          var(--scientific-border-focus)
+        );
+        box-shadow: var(
+          --dropdown-focus-shadow,
+          0 0 0 3px rgba(0, 123, 255, 0.1)
+        );
+      }
 
-    .option.focused {
-      background-color: var(--dropdown-option-focused-bg-color, #f3f4f6);
-    }
+      .dropdown-select.open {
+        border-color: var(
+          --dropdown-open-border-color,
+          var(--scientific-border-focus)
+        );
+      }
 
-    .search-input {
-      width: 100%;
-      padding: var(--dropdown-search-padding, 12px 16px);
-      border: none;
-      border-bottom: var(--dropdown-search-border, 1px solid #e5e7eb);
-      background-color: var(--dropdown-search-bg-color, #f9fafb);
-      font-size: var(--dropdown-search-font-size, 14px);
-      outline: none;
-    }
+      .dropdown-select.disabled {
+        background-color: var(--dropdown-disabled-bg-color, #f9fafb);
+        border-color: var(--dropdown-disabled-border-color, #e5e7eb);
+        color: var(--dropdown-disabled-color, #9ca3af);
+        cursor: not-allowed;
+      }
 
-    .search-input:focus {
-      background-color: var(--dropdown-search-focus-bg-color, #ffffff);
-    }
+      .dropdown-arrow {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid var(--dropdown-arrow-color, #6b7280);
+        transition: transform var(--scientific-transition);
+        margin-left: var(--scientific-spacing-sm);
+      }
 
-    .no-options {
-      padding: var(--dropdown-no-options-padding, 16px);
-      text-align: center;
-      color: var(--dropdown-no-options-color, #9ca3af);
-      font-style: italic;
-    }
-  `;
+      .dropdown-arrow.open {
+        transform: rotate(180deg);
+      }
+
+      .dropdown-placeholder {
+        color: var(--dropdown-placeholder-color, #9ca3af);
+      }
+
+      .options-container {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        border: var(--dropdown-options-border, var(--scientific-border));
+        border-top: none;
+        border-radius: var(
+          --dropdown-options-border-radius,
+          0 0 var(--scientific-border-radius) var(--scientific-border-radius)
+        );
+        background-color: var(--dropdown-options-bg-color, #ffffff);
+        box-shadow: var(--dropdown-options-shadow, var(--scientific-shadow-lg));
+        z-index: var(--dropdown-z-index, 1000);
+        max-height: var(--dropdown-max-height, 200px);
+        overflow-y: auto;
+        animation: var(--dropdown-animation, slideDown 0.15s ease-out);
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .option {
+        padding: var(
+          --dropdown-option-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        cursor: pointer;
+        transition: background-color var(--scientific-transition-fast);
+        border-bottom: var(--dropdown-option-border, 1px solid #f3f4f6);
+        color: var(--dropdown-option-color, #374151);
+        font-size: var(
+          --dropdown-option-font-size,
+          var(--scientific-text-base)
+        );
+      }
+
+      .option:last-child {
+        border-bottom: none;
+      }
+
+      .option:hover {
+        background-color: var(--dropdown-option-hover-bg-color, #f9fafb);
+      }
+
+      .option.selected {
+        background-color: var(--dropdown-option-selected-bg-color, #eff6ff);
+        color: var(
+          --dropdown-option-selected-color,
+          var(--scientific-primary-color)
+        );
+        font-weight: var(--dropdown-option-selected-font-weight, 500);
+      }
+
+      .option.focused {
+        background-color: var(--dropdown-option-focused-bg-color, #f3f4f6);
+      }
+
+      .search-input {
+        /* Extends .scientific-input with dropdown-specific styling */
+        width: 100%;
+        border: none;
+        border-bottom: var(--dropdown-search-border, 1px solid #e5e7eb);
+        background-color: var(--dropdown-search-bg-color, #f9fafb);
+        font-size: var(--dropdown-search-font-size, var(--scientific-text-sm));
+        border-radius: 0;
+      }
+
+      .search-input:focus {
+        background-color: var(--dropdown-search-focus-bg-color, #ffffff);
+        box-shadow: none;
+      }
+
+      .no-options {
+        padding: var(
+          --dropdown-no-options-padding,
+          var(--scientific-spacing-lg)
+        );
+        text-align: center;
+        color: var(--dropdown-no-options-color, #9ca3af);
+        font-style: italic;
+      }
+
+      .clear-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0 var(--scientific-spacing-xs);
+        color: #6b7280;
+        font-size: var(--scientific-text-lg);
+        line-height: 1;
+        transition: color var(--scientific-transition);
+      }
+
+      .clear-button:hover {
+        color: var(--scientific-danger-color);
+      }
+
+      @media (max-width: 768px) {
+        .dropdown-select {
+          font-size: var(
+            --dropdown-mobile-font-size,
+            var(--scientific-text-base)
+          );
+          min-height: var(--dropdown-mobile-min-height, 44px);
+        }
+
+        .options-container {
+          max-height: var(--dropdown-mobile-max-height, 150px);
+        }
+
+        .option {
+          padding: var(
+            --dropdown-mobile-option-padding,
+            var(--scientific-spacing-sm) var(--scientific-spacing-md)
+          );
+        }
+      }
+    `,
+  ];
 
   @property({type: String})
   label = 'Select an option';
@@ -224,37 +304,32 @@ export class ScientificDropdown extends LitElement {
     this.selectedValue = value;
     this.isOpen = false;
     this.focusedOptionIndex = -1;
-    this.dispatchEvent(
-      new CustomEvent('option-selected', {
-        detail: {value, label},
-        bubbles: true,
-        composed: true,
-      })
-    );
-    this.dispatchEvent(
-      new CustomEvent('change', {
-        detail: {value, label},
-        bubbles: true,
-        composed: true,
-      })
-    );
+
+    dispatchCustomEvent(this, 'option-selected', {
+      value,
+      label,
+      timestamp: Date.now(),
+    });
+
+    dispatchCustomEvent(this, 'change', {
+      value,
+      label,
+      timestamp: Date.now(),
+    });
   }
 
   private clearSelection() {
     this.selectedValue = '';
-    this.dispatchEvent(
-      new CustomEvent('option-cleared', {
-        bubbles: true,
-        composed: true,
-      })
-    );
-    this.dispatchEvent(
-      new CustomEvent('change', {
-        detail: {value: '', label: ''},
-        bubbles: true,
-        composed: true,
-      })
-    );
+
+    dispatchCustomEvent(this, 'option-cleared', {
+      timestamp: Date.now(),
+    });
+
+    dispatchCustomEvent(this, 'change', {
+      value: '',
+      label: '',
+      timestamp: Date.now(),
+    });
   }
 
   private handleSearch(e: Event) {
@@ -364,15 +439,21 @@ export class ScientificDropdown extends LitElement {
           : ''}
 
         <div
-          class="dropdown-select ${this.isOpen ? 'open' : ''} ${this.disabled
-            ? 'disabled'
-            : ''}"
+          class="${classNames({
+            'dropdown-select': true,
+            open: this.isOpen,
+            disabled: this.disabled,
+          })}"
           @click="${this.toggleDropdown}"
           role="combobox"
           aria-expanded="${this.isOpen}"
           aria-haspopup="listbox"
         >
-          <span class="${!selectedLabel ? 'dropdown-placeholder' : ''}">
+          <span
+            class="${classNames({
+              'dropdown-placeholder': !selectedLabel,
+            })}"
+          >
             ${selectedLabel || this.placeholder}
           </span>
 
@@ -380,18 +461,24 @@ export class ScientificDropdown extends LitElement {
             ${this.clearable && selectedLabel
               ? html`
                   <button
+                    class="clear-button"
                     @click="${(e: Event) => {
                       e.stopPropagation();
                       this.clearSelection();
                     }}"
-                    style="background: none; border: none; cursor: pointer; padding: 0 4px; color: #6b7280;"
                     title="Clear selection"
+                    aria-label="Clear selection"
                   >
                     ✕
                   </button>
                 `
               : ''}
-            <div class="dropdown-arrow ${this.isOpen ? 'open' : ''}"></div>
+            <div
+              class="${classNames({
+                'dropdown-arrow': true,
+                open: this.isOpen,
+              })}"
+            ></div>
           </div>
         </div>
 
@@ -414,11 +501,11 @@ export class ScientificDropdown extends LitElement {
                   ? filteredOptions.map(
                       (option, index) => html`
                         <div
-                          class="option ${option.value === this.selectedValue
-                            ? 'selected'
-                            : ''} ${index === this.focusedOptionIndex
-                            ? 'focused'
-                            : ''}"
+                          class="${classNames({
+                            option: true,
+                            selected: option.value === this.selectedValue,
+                            focused: index === this.focusedOptionIndex,
+                          })}"
                           @click="${() =>
                             this.selectOption(option.value, option.label)}"
                           role="option"
