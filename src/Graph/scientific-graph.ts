@@ -3,6 +3,21 @@ import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  messageStyles,
+  loadingSpinnerStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
+import {
+  classNames,
+  formatValue,
+  roundToDecimals,
+} from '../shared/utils/dom-utils.js';
+import {getDefaultColor} from '../shared/utils/color-utils.js';
 
 export interface GraphDataset {
   label: string;
@@ -27,245 +42,183 @@ export interface GraphStatistics {
 
 @customElement('scientific-graph')
 export class ScientificGraph extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      font-family: var(
-        --graph-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-    }
-
-    .graph-container {
-      position: relative;
-      background-color: var(--graph-bg-color, #ffffff);
-      border: var(--graph-border, 2px solid #e5e7eb);
-      border-radius: var(--graph-border-radius, 12px);
-      padding: var(--graph-padding, 24px);
-      margin: var(--graph-margin, 0);
-      max-width: var(--graph-max-width, 100%);
-      width: var(--graph-width, 100%);
-      min-height: var(--graph-min-height, 400px);
-      box-shadow: var(--graph-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-      transition: var(--graph-transition, all 0.2s ease-in-out);
-      display: flex;
-      flex-direction: column;
-      gap: var(--graph-gap, 20px);
-    }
-
-    .graph-container:hover {
-      box-shadow: var(--graph-hover-shadow, 0 8px 12px rgba(0, 0, 0, 0.15));
-    }
-
-    .graph-container.loading {
-      position: relative;
-    }
-
-    .graph-loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: var(
-        --graph-loading-overlay-bg,
-        rgba(255, 255, 255, 0.8)
-      );
-      border-radius: var(--graph-border-radius, 12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: var(--graph-loading-z-index, 10);
-    }
-
-    .graph-loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--graph-loading-spinner-color, #e5e7eb);
-      border-top: 3px solid var(--graph-loading-spinner-active-color, #007bff);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    messageStyles,
+    loadingSpinnerStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
       }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
 
-    .graph-header {
-      display: flex;
-      flex-direction: column;
-      gap: var(--graph-header-gap, 8px);
-      padding-bottom: var(--graph-header-padding-bottom, 16px);
-      border-bottom: var(--graph-header-border, 1px solid #f3f4f6);
-    }
-
-    .graph-title {
-      font-size: var(--graph-title-font-size, 24px);
-      font-weight: var(--graph-title-font-weight, 600);
-      color: var(--graph-title-color, #111827);
-      margin: 0;
-      line-height: var(--graph-title-line-height, 1.2);
-    }
-
-    .graph-subtitle {
-      font-size: var(--graph-subtitle-font-size, 16px);
-      font-weight: var(--graph-subtitle-font-weight, 400);
-      color: var(--graph-subtitle-color, #6b7280);
-      margin: 0;
-      line-height: var(--graph-subtitle-line-height, 1.4);
-    }
-
-    .graph-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: var(--graph-toolbar-gap, 12px);
-      padding: var(--graph-toolbar-padding, 12px 0);
-      flex-wrap: wrap;
-      position: relative;
-      z-index: var(--graph-toolbar-z-index, 100);
-    }
-
-    .graph-controls {
-      display: flex;
-      gap: var(--graph-controls-gap, 8px);
-      align-items: center;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: var(--graph-controls-z-index, 101);
-    }
-
-    .graph-actions {
-      display: flex;
-      gap: var(--graph-actions-gap, 8px);
-      align-items: center;
-    }
-
-    .graph-canvas-container {
-      position: relative;
-      flex: 1;
-      min-height: var(--graph-canvas-min-height, 300px);
-      background-color: var(--graph-canvas-bg-color, #ffffff);
-      border-radius: var(--graph-canvas-border-radius, 8px);
-      overflow: hidden;
-    }
-
-    canvas {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-
-    .graph-error {
-      background-color: var(--graph-error-bg-color, #fef2f2);
-      border: var(--graph-error-border, 1px solid #fecaca);
-      border-radius: var(--graph-error-border-radius, 8px);
-      padding: var(--graph-error-padding, 12px 16px);
-      color: var(--graph-error-color, #dc2626);
-      font-size: var(--graph-error-font-size, 14px);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .graph-statistics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: var(--graph-stats-gap, 12px);
-      padding: var(--graph-stats-padding, 16px 0 0 0);
-      border-top: var(--graph-stats-border, 1px solid #f3f4f6);
-    }
-
-    .graph-stat-item {
-      text-align: center;
-      padding: var(--graph-stat-padding, 12px);
-      background-color: var(--graph-stat-bg-color, #f9fafb);
-      border-radius: var(--graph-stat-border-radius, 8px);
-      border: var(--graph-stat-border, 1px solid #f3f4f6);
-    }
-
-    .graph-stat-label {
-      font-size: var(--graph-stat-label-font-size, 12px);
-      font-weight: var(--graph-stat-label-font-weight, 500);
-      color: var(--graph-stat-label-color, #6b7280);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .graph-stat-value {
-      font-size: var(--graph-stat-value-font-size, 18px);
-      font-weight: var(--graph-stat-value-font-weight, 600);
-      color: var(--graph-stat-value-color, #111827);
-    }
-
-    .graph-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--graph-legend-gap, 12px);
-      padding: var(--graph-legend-padding, 12px 0);
-      border-top: var(--graph-legend-border, 1px solid #f3f4f6);
-      justify-content: center;
-    }
-
-    .graph-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: var(--graph-legend-font-size, 14px);
-      color: var(--graph-legend-color, #374151);
-    }
-
-    .graph-legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    @media (max-width: 768px) {
       .graph-container {
-        padding: var(--graph-mobile-padding, 16px);
-        gap: var(--graph-mobile-gap, 16px);
+        width: var(--graph-width, 100%);
+        max-width: var(--graph-max-width, 100%);
+        min-height: var(--graph-min-height, 400px);
+      }
+
+      .graph-container.loading {
+        position: relative;
+      }
+
+      .graph-header {
+        border-bottom: var(--graph-header-border, 1px solid #f3f4f6);
+      }
+
+      .graph-title {
+        font-size: var(--graph-title-font-size, var(--scientific-text-2xl));
+      }
+
+      .graph-subtitle {
+        font-size: var(--graph-subtitle-font-size, var(--scientific-text-base));
       }
 
       .graph-toolbar {
-        flex-direction: column;
-        align-items: stretch;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--graph-toolbar-gap, var(--scientific-spacing-md));
+        padding: var(--graph-toolbar-padding, var(--scientific-spacing-md) 0);
+        flex-wrap: wrap;
+        position: relative;
+        z-index: var(--graph-toolbar-z-index, 100);
       }
 
-      .graph-controls,
+      .graph-controls {
+        display: flex;
+        gap: var(--graph-controls-gap, var(--scientific-spacing-sm));
+        align-items: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: var(--graph-controls-z-index, 101);
+      }
+
       .graph-actions {
-        justify-content: center;
+        display: flex;
+        gap: var(--graph-actions-gap, var(--scientific-spacing-sm));
+        align-items: center;
+      }
+
+      .graph-canvas-container {
+        position: relative;
+        flex: 1;
+        min-height: var(--graph-canvas-min-height, 300px);
+        background-color: var(--graph-canvas-bg-color, #ffffff);
+        border-radius: var(
+          --graph-canvas-border-radius,
+          var(--scientific-border-radius)
+        );
+        overflow: hidden;
+      }
+
+      canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+
+      .graph-error {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
       }
 
       .graph-statistics {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: var(--graph-mobile-stats-gap, 8px);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: var(--graph-stats-gap, var(--scientific-spacing-md));
+        padding: var(--graph-stats-padding, var(--scientific-spacing-lg) 0 0 0);
+        border-top: var(--graph-stats-border, 1px solid #f3f4f6);
       }
-    }
 
-    .graph-container.compact {
-      padding: var(--graph-compact-padding, 16px);
-      gap: var(--graph-compact-gap, 12px);
-      min-height: var(--graph-compact-min-height, 250px);
-    }
+      .graph-stat-item {
+        text-align: center;
+        padding: var(--graph-stat-padding, var(--scientific-spacing-md));
+        background-color: var(--graph-stat-bg-color, #f9fafb);
+        border-radius: var(
+          --graph-stat-border-radius,
+          var(--scientific-border-radius)
+        );
+        border: var(--graph-stat-border, 1px solid #f3f4f6);
+      }
 
-    .graph-container.compact .graph-canvas-container {
-      min-height: var(--graph-compact-canvas-min-height, 200px);
-    }
+      .graph-stat-label {
+        font-size: var(--graph-stat-label-font-size, var(--scientific-text-xs));
+        font-weight: var(--graph-stat-label-font-weight, 500);
+        color: var(--graph-stat-label-color, #6b7280);
+        margin-bottom: var(--scientific-spacing-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-    .graph-container.compact .graph-statistics {
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    }
-  `;
+      .graph-stat-value {
+        font-size: var(--graph-stat-value-font-size, var(--scientific-text-lg));
+        font-weight: var(--graph-stat-value-font-weight, 600);
+        color: var(--graph-stat-value-color, #111827);
+      }
+
+      .graph-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--graph-legend-gap, var(--scientific-spacing-md));
+        padding: var(--graph-legend-padding, var(--scientific-spacing-md) 0);
+        border-top: var(--graph-legend-border, 1px solid #f3f4f6);
+        justify-content: center;
+      }
+
+      .graph-legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+        font-size: var(--graph-legend-font-size, var(--scientific-text-sm));
+        color: var(--graph-legend-color, #374151);
+      }
+
+      .graph-legend-color {
+        width: var(--scientific-spacing-md);
+        height: var(--scientific-spacing-md);
+        border-radius: 2px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .graph-container {
+          min-height: var(--graph-mobile-min-height, 300px);
+        }
+
+        .graph-toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .graph-controls,
+        .graph-actions {
+          justify-content: center;
+        }
+
+        .graph-statistics {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: var(--graph-mobile-stats-gap, var(--scientific-spacing-sm));
+        }
+      }
+
+      .graph-container.compact {
+        min-height: var(--graph-compact-min-height, 250px);
+      }
+
+      .graph-container.compact .graph-canvas-container {
+        min-height: var(--graph-compact-canvas-min-height, 200px);
+      }
+
+      .graph-container.compact .graph-statistics {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      }
+    `,
+  ];
 
   @property({type: String})
   override title = 'Scientific Graph';
@@ -420,20 +373,17 @@ export class ScientificGraph extends LitElement {
       return;
     }
 
-    // Destroy any existing chart on this canvas
     if (this.chart) {
       this.chart.destroy();
       this.chart = null;
     }
 
-    // Also check for any existing chart attached to the canvas element
     const existingChart = (canvas as HTMLCanvasElement & {chart?: Chart}).chart;
     if (existingChart) {
       console.warn('Canvas already has a chart, destroying it first');
       existingChart.destroy();
     }
 
-    // Clear any Chart.js references to this canvas
     try {
       const ChartClass = (window as unknown as {Chart?: typeof Chart}).Chart;
       if (ChartClass && 'getChart' in ChartClass) {
@@ -457,8 +407,8 @@ export class ScientificGraph extends LitElement {
           ...dataset,
           backgroundColor:
             dataset.backgroundColor ||
-            this._getDefaultColor(index, this.isAreaChart ? 0.3 : 0.2),
-          borderColor: dataset.borderColor || this._getDefaultColor(index, 1),
+            getDefaultColor(index, this.isAreaChart ? 0.3 : 0.2),
+          borderColor: dataset.borderColor || getDefaultColor(index, 1),
           borderWidth: dataset.borderWidth || 2,
           fill: this.isAreaChart ? true : dataset.fill ?? false,
         })),
@@ -561,29 +511,6 @@ export class ScientificGraph extends LitElement {
     }, 50);
   }
 
-  private _getDefaultColor(index: number, alpha: number): string {
-    const colors = [
-      '#007bff',
-      '#28a745',
-      '#dc3545',
-      '#ffc107',
-      '#17a2b8',
-      '#6f42c1',
-      '#e83e8c',
-      '#fd7e14',
-      '#20c997',
-      '#6c757d',
-    ];
-    const color = colors[index % colors.length];
-
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-
   private _calculateStatistics(): GraphStatistics | null {
     if (!this.datasets.length || !this.datasets[0]?.data.length) {
       return null;
@@ -610,12 +537,12 @@ export class ScientificGraph extends LitElement {
     const standardDeviation = Math.sqrt(variance);
 
     return {
-      mean: Number(mean.toFixed(2)),
-      median: Number(median.toFixed(2)),
+      mean: roundToDecimals(mean, 2),
+      median: roundToDecimals(median, 2),
       min,
       max,
-      standardDeviation: Number(standardDeviation.toFixed(2)),
-      variance: Number(variance.toFixed(2)),
+      standardDeviation: roundToDecimals(standardDeviation, 2),
+      variance: roundToDecimals(variance, 2),
     };
   }
 
@@ -625,11 +552,10 @@ export class ScientificGraph extends LitElement {
     this.isAreaChart = label === 'Area Chart';
     this.type = value as ChartType;
 
-    this.dispatchEvent(
-      new CustomEvent('graph-type-changed', {
-        detail: {type: this.type, isAreaChart: this.isAreaChart},
-      })
-    );
+    dispatchCustomEvent(this, 'graph-type-changed', {
+      type: this.type,
+      isAreaChart: this.isAreaChart,
+    });
   }
 
   private _handleExport = (format: 'png' | 'jpg' | 'pdf') => {
@@ -649,13 +575,10 @@ export class ScientificGraph extends LitElement {
           }
         }
 
-        this.dispatchEvent(
-          new CustomEvent('graph-exported', {
-            detail: {format, title: this.title},
-            bubbles: true,
-            composed: true,
-          })
-        );
+        dispatchCustomEvent(this, 'graph-exported', {
+          format,
+          title: this.title,
+        });
       } catch (error) {
         console.error('Export error:', error);
         this.errorMessage = `Failed to export chart as ${format.toUpperCase()}`;
@@ -801,22 +724,19 @@ export class ScientificGraph extends LitElement {
   private _handleDataRefresh = () => {
     return () => {
       this._recreateChart();
-      this.dispatchEvent(new CustomEvent('graph-refreshed'));
+      dispatchCustomEvent(this, 'graph-refreshed', {
+        timestamp: new Date().toISOString(),
+      });
     };
   };
 
   private _getContainerClasses() {
-    const classes = ['graph-container'];
-
-    if (this.variant !== 'default') {
-      classes.push(this.variant);
-    }
-
-    if (this.isLoading) {
-      classes.push('loading');
-    }
-
-    return classes.join(' ');
+    return classNames(
+      'scientific-container',
+      'graph-container',
+      this.variant !== 'default' && this.variant,
+      this.isLoading && 'loading'
+    );
   }
 
   private _renderStatistics() {
@@ -829,27 +749,39 @@ export class ScientificGraph extends LitElement {
       <div class="graph-statistics">
         <div class="graph-stat-item">
           <div class="graph-stat-label">Mean</div>
-          <div class="graph-stat-value">${stats.mean}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.mean, {decimals: 2})}
+          </div>
         </div>
         <div class="graph-stat-item">
           <div class="graph-stat-label">Median</div>
-          <div class="graph-stat-value">${stats.median}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.median, {decimals: 2})}
+          </div>
         </div>
         <div class="graph-stat-item">
           <div class="graph-stat-label">Min</div>
-          <div class="graph-stat-value">${stats.min}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.min, {decimals: 0})}
+          </div>
         </div>
         <div class="graph-stat-item">
           <div class="graph-stat-label">Max</div>
-          <div class="graph-stat-value">${stats.max}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.max, {decimals: 0})}
+          </div>
         </div>
         <div class="graph-stat-item">
           <div class="graph-stat-label">Std Dev</div>
-          <div class="graph-stat-value">${stats.standardDeviation}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.standardDeviation, {decimals: 2})}
+          </div>
         </div>
         <div class="graph-stat-item">
           <div class="graph-stat-label">Variance</div>
-          <div class="graph-stat-value">${stats.variance}</div>
+          <div class="graph-stat-value">
+            ${formatValue(stats.variance, {decimals: 2})}
+          </div>
         </div>
       </div>
     `;
@@ -866,7 +798,7 @@ export class ScientificGraph extends LitElement {
               <div
                 class="graph-legend-color"
                 style="background-color: ${dataset.borderColor ||
-                this._getDefaultColor(index, 1)}"
+                getDefaultColor(index, 1)}"
               ></div>
               <span>${dataset.label}</span>
             </div>
@@ -881,20 +813,24 @@ export class ScientificGraph extends LitElement {
       <div class="${this._getContainerClasses()}">
         ${this.isLoading
           ? html`
-              <div class="graph-loading-overlay">
-                <div class="graph-loading-spinner"></div>
+              <div class="loading-overlay">
+                <div class="loading-spinner"></div>
               </div>
             `
           : ''}
         ${this.title || this.subtitle
           ? html`
-              <div class="graph-header">
+              <div class="scientific-header graph-header">
                 <slot name="header">
                   ${this.title
-                    ? html`<h2 class="graph-title">${this.title}</h2>`
+                    ? html`<h2 class="scientific-title graph-title">
+                        ${this.title}
+                      </h2>`
                     : ''}
                   ${this.subtitle
-                    ? html`<p class="graph-subtitle">${this.subtitle}</p>`
+                    ? html`<p class="scientific-subtitle graph-subtitle">
+                        ${this.subtitle}
+                      </p>`
                     : ''}
                 </slot>
               </div>
@@ -920,7 +856,7 @@ export class ScientificGraph extends LitElement {
                         ${this.exportFormats.includes('png')
                           ? html`
                               <scientific-button
-                                .label=${'📊 PNG'}
+                                .label=${'PNG'}
                                 .variant=${'outline'}
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
@@ -932,7 +868,7 @@ export class ScientificGraph extends LitElement {
                         ${this.exportFormats.includes('jpg')
                           ? html`
                               <scientific-button
-                                .label=${'🖼️ JPG'}
+                                .label=${'JPG'}
                                 .variant=${'outline'}
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
@@ -944,7 +880,7 @@ export class ScientificGraph extends LitElement {
                         ${this.exportFormats.includes('pdf')
                           ? html`
                               <scientific-button
-                                .label=${'📄 PDF'}
+                                .label=${'PDF'}
                                 .variant=${'outline'}
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
@@ -956,7 +892,7 @@ export class ScientificGraph extends LitElement {
                       `
                     : ''}
                   <scientific-button
-                    .label=${'🔄 Refresh'}
+                    .label=${'Refresh'}
                     .variant=${'outline'}
                     .size=${'small'}
                     .disabled=${this.isLoading}
@@ -964,7 +900,6 @@ export class ScientificGraph extends LitElement {
                     title="Refresh Chart"
                   ></scientific-button>
 
-                  <!-- Slot for custom actions -->
                   <slot name="actions"></slot>
                 </div>
               </div>
@@ -972,7 +907,7 @@ export class ScientificGraph extends LitElement {
           : ''}
         ${this.errorMessage
           ? html`
-              <div class="graph-error" role="alert">
+              <div class="scientific-error graph-error" role="alert">
                 <span>⚠️</span>
                 <span>${this.errorMessage}</span>
               </div>
