@@ -1,197 +1,70 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
+import {
+  sharedVariables,
+  buttonStyles,
+  loadingSpinnerStyles,
+  responsiveStyles,
+  classNames,
+} from '../shared/index.js';
 
 @customElement('scientific-button')
 export class ScientificButton extends LitElement {
-  static override styles = css`
-    :host {
-      display: inline-block;
-    }
-
-    :host([fullwidth]) {
-      display: block;
-      width: 100%;
-    }
-
-    :host([fullwidth]) button {
-      width: 100%;
-    }
-
-    button {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--button-gap, 8px);
-      font-family: var(
-        --button-font-family,
-        system-ui,
-        -apple-system,
-        sans-serif
-      );
-      font-size: var(--button-font-size, 16px);
-      font-weight: var(--button-font-weight, 500);
-      line-height: var(--button-line-height, 1.5);
-      padding: var(--button-padding, 12px 24px);
-      min-height: var(--button-min-height, 48px);
-      border: var(--button-border, 2px solid transparent);
-      border-radius: var(--button-border-radius, 8px);
-      background-color: var(--button-bg-color, #007bff);
-      color: var(--button-color, #ffffff);
-      cursor: pointer;
-      transition: var(--button-transition, all 0.2s ease-in-out);
-      box-shadow: var(--button-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
-      text-decoration: none;
-      outline: none;
-      user-select: none;
-      width: var(--button-width, auto);
-      max-width: var(--button-max-width, 100%);
-    }
-
-    button:hover {
-      background-color: var(--button-hover-bg-color, #0056b3);
-      box-shadow: var(--button-hover-shadow, 0 4px 8px rgba(0, 0, 0, 0.15));
-      transform: var(--button-hover-transform, translateY(-1px));
-    }
-
-    button:focus {
-      outline: none;
-      box-shadow: var(--button-focus-shadow, 0 0 0 3px rgba(0, 123, 255, 0.25));
-      border-color: var(--button-focus-border-color, #007bff);
-    }
-
-    button:active {
-      transform: var(--button-active-transform, translateY(0));
-      box-shadow: var(--button-active-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
-    }
-
-    button[disabled] {
-      background-color: var(--button-disabled-bg-color, #e9ecef);
-      color: var(--button-disabled-color, #6c757d);
-      border-color: var(--button-disabled-border-color, #dee2e6);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    button[disabled]:hover {
-      background-color: var(--button-disabled-bg-color, #e9ecef);
-      box-shadow: none;
-      transform: none;
-    }
-
-    button.secondary {
-      background-color: var(--button-secondary-bg-color, #6c757d);
-      color: var(--button-secondary-color, #ffffff);
-    }
-
-    button.secondary:hover {
-      background-color: var(--button-secondary-hover-bg-color, #545b62);
-    }
-
-    button.outline {
-      background-color: var(--button-outline-bg-color, transparent);
-      color: var(--button-outline-color, #007bff);
-      border-color: var(--button-outline-border-color, #007bff);
-    }
-
-    button.outline:hover {
-      background-color: var(--button-outline-hover-bg-color, #007bff);
-      color: var(--button-outline-hover-color, #ffffff);
-    }
-
-    button.ghost {
-      background-color: var(--button-ghost-bg-color, transparent);
-      color: var(--button-ghost-color, #007bff);
-      border-color: var(--button-ghost-border-color, transparent);
-      box-shadow: none;
-    }
-
-    button.ghost:hover {
-      background-color: var(
-        --button-ghost-hover-bg-color,
-        rgba(0, 123, 255, 0.1)
-      );
-    }
-
-    button.danger {
-      background-color: var(--button-danger-bg-color, #dc3545);
-      color: var(--button-danger-color, #ffffff);
-    }
-
-    button.danger:hover {
-      background-color: var(--button-danger-hover-bg-color, #c82333);
-    }
-
-    button.success {
-      background-color: var(--button-success-bg-color, #28a745);
-      color: var(--button-success-color, #ffffff);
-    }
-
-    button.success:hover {
-      background-color: var(--button-success-hover-bg-color, #218838);
-    }
-
-    button.small {
-      font-size: var(--button-small-font-size, 14px);
-      padding: var(--button-small-padding, 8px 16px);
-      min-height: var(--button-small-min-height, 36px);
-    }
-
-    button.large {
-      font-size: var(--button-large-font-size, 18px);
-      padding: var(--button-large-padding, 16px 32px);
-      min-height: var(--button-large-min-height, 56px);
-    }
-
-    button.loading {
-      color: transparent;
-    }
-
-    button.loading-text-only {
-      color: inherit;
-    }
-
-    .loading-spinner {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 16px;
-      height: 16px;
-      border: 2px solid transparent;
-      border-top: 2px solid var(--button-loading-color, #000000);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: translate(-50%, -50%) rotate(0deg);
+  static override styles = [
+    sharedVariables,
+    buttonStyles,
+    loadingSpinnerStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: inline-block;
+        font-family: var(--scientific-font-family);
       }
-      100% {
-        transform: translate(-50%, -50%) rotate(360deg);
+
+      :host([fullwidth]) {
+        display: block;
+        width: 100%;
       }
-    }
 
-    .button-icon {
-      display: inline-flex;
-      align-items: center;
-      width: var(--button-icon-size, 18px);
-      height: var(--button-icon-size, 18px);
-    }
+      :host([fullwidth]) button {
+        width: 100%;
+      }
 
-    .button-icon svg {
-      width: 100%;
-      height: 100%;
-      fill: currentColor;
-    }
+      .scientific-button .loading-spinner {
+        --loading-spinner-size: 18px;
+      }
 
-    button.full-width {
-      width: 100%;
-    }
-  `;
+      .scientific-button.primary .loading-spinner {
+        border-color: rgba(255, 255, 255, 0.3);
+        border-top-color: #ffffff;
+      }
+
+      .scientific-button.outline .loading-spinner,
+      .scientific-button.ghost .loading-spinner {
+        border-color: rgba(0, 123, 255, 0.3);
+        border-top-color: #007bff;
+      }
+
+      @media (max-width: 768px) {
+        .scientific-button {
+          font-size: var(
+            --button-mobile-font-size,
+            var(--scientific-text-base)
+          );
+          min-height: var(--button-mobile-min-height, 44px);
+        }
+
+        .scientific-button.small {
+          min-height: var(--button-small-mobile-min-height, 32px);
+        }
+
+        .scientific-button.large {
+          min-height: var(--button-large-mobile-min-height, 52px);
+        }
+      }
+    `,
+  ];
 
   @property({attribute: false})
   action: (() => Promise<void>) | (() => void) | undefined;
@@ -244,7 +117,6 @@ export class ScientificButton extends LitElement {
   @property({type: Boolean})
   autoFocus = false;
 
-  // Form-related properties
   @property({type: String})
   form = '';
 
@@ -264,7 +136,6 @@ export class ScientificButton extends LitElement {
       return;
     }
 
-    // Handle form submission/reset without custom action
     if (this.type === 'submit' || this.type === 'reset') {
       if (!this.action) {
         return;
@@ -285,7 +156,9 @@ export class ScientificButton extends LitElement {
 
     try {
       await this.action();
+
       this.dispatchEvent(new CustomEvent('button-click-complete'));
+
       this.dispatchEvent(new CustomEvent('success'));
     } catch (error) {
       this.dispatchEvent(
@@ -304,29 +177,14 @@ export class ScientificButton extends LitElement {
   }
 
   private _getButtonClasses() {
-    const classes = ['button'];
-
-    if (this.variant !== 'primary') {
-      classes.push(this.variant);
-    }
-
-    if (this.size !== 'medium') {
-      classes.push(this.size);
-    }
-
-    if (this.loading) {
-      if (this.showSpinner) {
-        classes.push('loading');
-      } else {
-        classes.push('loading-text-only');
-      }
-    }
-
-    if (this.fullWidth) {
-      classes.push('full-width');
-    }
-
-    return classes.join(' ');
+    return classNames({
+      'scientific-button': true,
+      [this.variant]: this.variant !== 'primary',
+      [this.size]: this.size !== 'medium',
+      loading: this.loading && this.showSpinner,
+      'loading-text-only': this.loading && !this.showSpinner,
+      'full-width': this.fullWidth,
+    });
   }
 
   private _renderIcon(iconName: string, position: 'left' | 'right') {
