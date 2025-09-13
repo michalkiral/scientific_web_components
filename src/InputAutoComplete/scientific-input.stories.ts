@@ -352,7 +352,7 @@ export const DisabledAndRequired: Story = {
       <scientific-input
         label="Required Input"
         placeholder="This field is required..."
-        required
+        .required=${true}
         .options=${[
           {label: 'Option 1', value: '1'},
           {label: 'Option 2', value: '2'},

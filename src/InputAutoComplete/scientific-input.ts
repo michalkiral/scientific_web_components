@@ -97,20 +97,20 @@ export class ScientificInput extends LitElement {
       }
 
       .dropdown-container {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          border: var(--scientific-border);
-          border-top: none;
-          border-radius: 0 0 var(--scientific-border-radius)
-            var(--scientific-border-radius);
-          background-color: var(--scientific-bg-primary, #fff);
-          box-shadow: var(--scientific-shadow-lg);
-          z-index: var(--input-dropdown-z-index, 1000);
-          max-height: var(--input-dropdown-max-height, 200px);
-          overflow-y: auto;
-          animation: slideDown 0.15s ease-out;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        border: var(--scientific-border);
+        border-top: none;
+        border-radius: 0 0 var(--scientific-border-radius)
+          var(--scientific-border-radius);
+        background-color: var(--scientific-bg-primary, #fff);
+        box-shadow: var(--scientific-shadow-lg);
+        z-index: var(--input-dropdown-z-index, 1000);
+        max-height: var(--input-dropdown-max-height, 200px);
+        overflow-y: auto;
+        animation: slideDown 0.15s ease-out;
       }
 
       @keyframes slideDown {
@@ -626,7 +626,8 @@ export class ScientificInput extends LitElement {
                   'scientific-header',
                   this.required && 'required'
                 )}"
-                >>> ${this.label}
+              >
+                ${this.label}
               </label>
             `
           : ''}
@@ -664,7 +665,6 @@ export class ScientificInput extends LitElement {
             aria-autocomplete="list"
           />
           ${this.renderDropdownOptions()}
-
           ${showClear
             ? html`
                 <button

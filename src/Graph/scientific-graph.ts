@@ -97,6 +97,23 @@ export class ScientificGraph extends LitElement {
         z-index: var(--graph-controls-z-index, 101);
       }
 
+      .graph-controls scientific-dropdown {
+        --dropdown-min-height: 36px;
+        --dropdown-padding: var(--scientific-spacing-sm)
+          var(--scientific-spacing-md);
+        --dropdown-font-size: var(--scientific-text-sm);
+        --dropdown-label-font-size: var(--scientific-text-xs);
+        --dropdown-label-margin-bottom: var(--scientific-spacing-xs);
+        --dropdown-options-border-radius: var(--scientific-border-radius);
+        --dropdown-z-index: 1100;
+        --dropdown-width: 180px;
+        --dropdown-options-width: 180px;
+        --dropdown-options-min-width: 180px;
+        --dropdown-options-max-width: 180px;
+        width: 180px;
+        display: block;
+      }
+
       .graph-actions {
         display: flex;
         gap: var(--graph-actions-gap, var(--scientific-spacing-sm));
@@ -319,7 +336,7 @@ export class ScientificGraph extends LitElement {
     {label: 'Pie Chart', value: 'pie'},
     {label: 'Doughnut Chart', value: 'doughnut'},
     {label: 'Scatter Plot', value: 'scatter'},
-    {label: 'Area Chart', value: 'line'},
+    {label: 'Area Chart', value: 'area'},
     {label: 'Radar Chart', value: 'radar'},
   ];
 
@@ -547,10 +564,10 @@ export class ScientificGraph extends LitElement {
   }
 
   private _handleTypeChange(e: CustomEvent) {
-    const {value, label} = e.detail;
+    const {value} = e.detail;
 
-    this.isAreaChart = label === 'Area Chart';
-    this.type = value as ChartType;
+    this.isAreaChart = value === 'area';
+    this.type = this.isAreaChart ? 'line' : (value as ChartType);
 
     dispatchCustomEvent(this, 'graph-type-changed', {
       type: this.type,
@@ -843,7 +860,7 @@ export class ScientificGraph extends LitElement {
                   <scientific-dropdown
                     .label=${'Chart Type'}
                     .options=${this.chartTypeOptions}
-                    .selectedValue=${this.isAreaChart ? 'line' : this.type}
+                    .selectedValue=${this.isAreaChart ? 'area' : this.type}
                     .disabled=${this.isLoading}
                     .placeholder=${'Select chart type'}
                     @option-selected=${this._handleTypeChange}

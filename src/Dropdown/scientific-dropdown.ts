@@ -24,8 +24,11 @@ export class ScientificDropdown extends LitElement {
 
       .dropdown-container {
         position: relative;
-        display: inline-block;
+        display: block;
         width: var(--dropdown-width, 100%);
+        min-width: var(--dropdown-min-width, auto);
+        max-width: var(--dropdown-max-width, none);
+        box-sizing: border-box;
         z-index: var(--dropdown-container-z-index, 1);
       }
 
@@ -119,7 +122,10 @@ export class ScientificDropdown extends LitElement {
         position: absolute;
         top: 100%;
         left: 0;
-        right: 0;
+        width: 100%;
+        min-width: var(--dropdown-options-min-width, 100%);
+        max-width: var(--dropdown-options-max-width, none);
+        box-sizing: border-box;
         border: var(--dropdown-options-border, var(--scientific-border));
         border-top: none;
         border-radius: var(
@@ -296,7 +302,24 @@ export class ScientificDropdown extends LitElement {
           ) as HTMLInputElement;
           searchInput?.focus();
         }
+        // Ensure options container matches dropdown width
+        this.syncOptionsWidth();
       }, 0);
+    }
+  }
+
+  private syncOptionsWidth() {
+    const dropdownSelect = this.shadowRoot?.querySelector(
+      '.dropdown-select'
+    ) as HTMLElement;
+    const optionsContainer = this.shadowRoot?.querySelector(
+      '.options-container'
+    ) as HTMLElement;
+
+    if (dropdownSelect && optionsContainer) {
+      const dropdownWidth = dropdownSelect.offsetWidth;
+      optionsContainer.style.width = `${dropdownWidth}px`;
+      optionsContainer.style.minWidth = `${dropdownWidth}px`;
     }
   }
 

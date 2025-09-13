@@ -116,6 +116,11 @@ export class ScientificTable extends LitElement {
         flex-wrap: wrap;
       }
 
+      .table-controls scientific-input {
+        max-width: var(--table-search-max-width, 300px);
+        min-width: var(--table-search-min-width, 200px);
+      }
+
       .table-wrapper {
         overflow: auto;
         max-height: var(--table-max-height, 500px);
@@ -867,7 +872,6 @@ export class ScientificTable extends LitElement {
                           .size=${'medium'}
                           .clearable=${true}
                           .autoComplete=${false}
-                          style="min-width: 200px;"
                         ></scientific-input>
                       </div>
                     `

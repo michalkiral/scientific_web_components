@@ -127,6 +127,13 @@ export const headerStyles = css`
     border-bottom: var(--header-border, 1px solid #f3f4f6);
   }
 
+  .scientific-header.required::after {
+    content: ' *';
+    color: var(--required-indicator-color, var(--scientific-danger-color));
+    font-weight: var(--required-indicator-weight, 600);
+    margin-left: var(--required-indicator-spacing, 2px);
+  }
+
   .scientific-title {
     font-size: var(--title-font-size, var(--scientific-text-2xl));
     font-weight: var(--title-font-weight, 600);
