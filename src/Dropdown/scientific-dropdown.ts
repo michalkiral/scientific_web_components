@@ -136,8 +136,16 @@ export class ScientificDropdown extends LitElement {
         box-shadow: var(--dropdown-options-shadow, var(--scientific-shadow-lg));
         z-index: var(--dropdown-z-index, 1000);
         max-height: var(--dropdown-max-height, 200px);
-        overflow-y: auto;
+        overflow: hidden;
         animation: var(--dropdown-animation, slideDown 0.15s ease-out);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .options-list {
+        overflow-y: auto;
+        flex: 1;
+        max-height: inherit;
       }
 
       @keyframes slideDown {
@@ -188,13 +196,20 @@ export class ScientificDropdown extends LitElement {
       }
 
       .search-input {
-        /* Extends .scientific-input with dropdown-specific styling */
         width: 100%;
         border: none;
         border-bottom: var(--dropdown-search-border, 1px solid #e5e7eb);
         background-color: var(--dropdown-search-bg-color, #f9fafb);
         font-size: var(--dropdown-search-font-size, var(--scientific-text-sm));
         border-radius: 0;
+        padding: var(
+          --dropdown-search-padding,
+          var(--scientific-spacing-md) var(--scientific-spacing-lg)
+        );
+        box-sizing: border-box;
+        outline: none;
+        font-family: inherit;
+        color: var(--dropdown-search-color, #374151);
       }
 
       .search-input:focus {
@@ -520,25 +535,28 @@ export class ScientificDropdown extends LitElement {
                       />
                     `
                   : ''}
-                ${filteredOptions.length > 0
-                  ? filteredOptions.map(
-                      (option, index) => html`
-                        <div
-                          class="${classNames({
-                            option: true,
-                            selected: option.value === this.selectedValue,
-                            focused: index === this.focusedOptionIndex,
-                          })}"
-                          @click="${() =>
-                            this.selectOption(option.value, option.label)}"
-                          role="option"
-                          aria-selected="${option.value === this.selectedValue}"
-                        >
-                          ${option.label}
-                        </div>
-                      `
-                    )
-                  : html`<div class="no-options">${this.noOptionsText}</div>`}
+                <div class="options-list">
+                  ${filteredOptions.length > 0
+                    ? filteredOptions.map(
+                        (option, index) => html`
+                          <div
+                            class="${classNames({
+                              option: true,
+                              selected: option.value === this.selectedValue,
+                              focused: index === this.focusedOptionIndex,
+                            })}"
+                            @click="${() =>
+                              this.selectOption(option.value, option.label)}"
+                            role="option"
+                            aria-selected="${option.value ===
+                            this.selectedValue}"
+                          >
+                            ${option.label}
+                          </div>
+                        `
+                      )
+                    : html`<div class="no-options">${this.noOptionsText}</div>`}
+                </div>
               </div>
             `
           : ''}

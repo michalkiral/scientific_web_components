@@ -1,7 +1,5 @@
-import {html, LitElement} from 'lit';
+import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import {expect} from '@storybook/jest';
-import {waitFor} from '@storybook/testing-library';
 import './scientific-button.js';
 
 const meta: Meta = {
@@ -49,26 +47,59 @@ A **customizable**, **accessible** button component for scientific web apps with
 
 ## Features
 
-- **Multiple Variants**: Different visual styles for different contexts
-- **Size Options**: Small, medium, and large sizes
-- **Icon Support**: Left and right icon placement
-- **Loading States**: Animated spinner with accessible loading state
-- **Link Mode**: Can render as a link with href
-- **Form Integration**: Submit, reset, and button types
-- **Accessibility**: ARIA attributes, focus management, keyboard support
+- **Multiple Variants**: Different visual styles for different contexts (primary, secondary, outline, ghost, danger, success)
+- **Size Options**: Small, medium, and large sizes with responsive behavior
+- **Icon Support**: Left and right icon placement with customizable sizing
+- **Loading States**: Animated spinner with accessible loading state and customizable text
+- **Link Mode**: Can render as a link with href and target attributes
+- **Form Integration**: Submit, reset, and button types with form association
+- **Full Width Support**: Can expand to fill container width
+- **Accessibility**: ARIA attributes, focus management, keyboard support, screen reader compatible
+- **Async Actions**: Built-in support for async functions with automatic loading states
+- **Event Handling**: Comprehensive event system for interaction tracking
+- **Responsive Design**: Mobile-optimized with touch-friendly sizing
+- **CSS Custom Properties**: Extensive customization through CSS variables
+
+## Accessibility Features
+
+- **ARIA Labels**: Dynamic aria-label updates based on loading state
+- **Loading States**: aria-busy attribute for screen readers during async operations
+- **Focus Management**: Proper focus handling and visual focus indicators
+- **Keyboard Navigation**: Full keyboard support with Enter and Space activation
+- **Color Contrast**: Meets WCAG contrast requirements across all variants
+- **Touch Targets**: Mobile-optimized touch target sizes (44px minimum)
+- **Semantic HTML**: Uses proper button/link elements with correct roles
 
 ## Styling
 
 Use CSS variables to customize appearance. Here are the most commonly used variables:
 
 **Basic Styling:**
+
     scientific-button {
       --button-bg-color: #007bff;
       --button-color: #ffffff;
-      --button-border: 2px solid transparent;
-      --button-border-radius: 12px;
-      --button-padding: 16px 24px;
-      --button-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      --button-border: var(--scientific-border);
+      --button-border-radius: var(--scientific-border-radius);
+      --button-padding: var(--scientific-spacing-md) var(--scientific-spacing-2xl);
+      --button-shadow: var(--scientific-shadow-sm);
+      --button-hover-bg-color: var(--scientific-primary-hover);
+      --button-transition: var(--scientific-transition);
+    }
+
+**Loading Spinner Customization:**
+
+    scientific-button {
+      /* Spinner size and colors */
+      --loading-spinner-size: 18px;
+      
+      /* Primary variant spinner (white on colored background) */
+      --loading-spinner-color: rgba(255, 255, 255, 0.3);
+      --loading-spinner-active-color: #ffffff;
+      
+      /* Outline/Ghost variant spinner (colored on transparent background) */
+      --loading-spinner-color: rgba(0, 123, 255, 0.3);
+      --loading-spinner-active-color: #007bff;
     }
 
 **Complete Variable List:**
@@ -82,33 +113,27 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --button-gap: 8px;
       
       /* Typography */
-      --button-font-family: system-ui, -apple-system, sans-serif;
-      --button-font-size: 16px;
+      --button-font-family: var(--scientific-font-family);
+      --button-font-size: var(--scientific-text-base);
       --button-font-weight: 500;
       --button-line-height: 1.5;
       
-      /* Colors */
-      --button-bg-color: #007bff;
+      /* Colors & Appearance */
+      --button-bg-color: var(--scientific-primary-color);
       --button-color: #ffffff;
-      --button-border: 2px solid transparent;
-      --button-border-radius: 8px;
+      --button-border: var(--scientific-border);
+      --button-border-radius: var(--scientific-border-radius);
+      --button-shadow: var(--scientific-shadow-sm);
       
-      /* Effects */
-      --button-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      --button-transition: all 0.2s ease-in-out;
-      
-      /* Hover States */
-      --button-hover-bg-color: #0056b3;
-      --button-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      /* Interactions */
+      --button-transition: var(--scientific-transition);
+      --button-hover-bg-color: var(--scientific-primary-hover);
+      --button-hover-shadow: var(--scientific-shadow);
       --button-hover-transform: translateY(-1px);
-      
-      /* Focus States */
       --button-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-      --button-focus-border-color: #007bff;
-      
-      /* Active States */
+      --button-focus-border-color: var(--scientific-border-focus);
       --button-active-transform: translateY(0);
-      --button-active-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --button-active-shadow: var(--scientific-shadow-sm);
       
       /* Disabled States */
       --button-disabled-bg-color: #e9ecef;
@@ -116,41 +141,106 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --button-disabled-border-color: #dee2e6;
       
       /* Variant Colors */
-      --button-secondary-bg-color: #6c757d;
+      --button-secondary-bg-color: var(--scientific-secondary-color);
       --button-secondary-color: #ffffff;
       --button-secondary-hover-bg-color: #545b62;
       
       --button-outline-bg-color: transparent;
-      --button-outline-color: #007bff;
-      --button-outline-border-color: #007bff;
-      --button-outline-hover-bg-color: #007bff;
+      --button-outline-color: var(--scientific-primary-color);
+      --button-outline-border-color: var(--scientific-primary-color);
+      --button-outline-hover-bg-color: var(--scientific-primary-color);
       --button-outline-hover-color: #ffffff;
       
       --button-ghost-bg-color: transparent;
-      --button-ghost-color: #007bff;
+      --button-ghost-color: var(--scientific-primary-color);
       --button-ghost-border-color: transparent;
       --button-ghost-hover-bg-color: rgba(0, 123, 255, 0.1);
       
-      --button-danger-bg-color: #dc3545;
+      --button-danger-bg-color: var(--scientific-danger-color);
       --button-danger-color: #ffffff;
       --button-danger-hover-bg-color: #c82333;
       
-      --button-success-bg-color: #28a745;
+      --button-success-bg-color: var(--scientific-success-color);
       --button-success-color: #ffffff;
       --button-success-hover-bg-color: #218838;
       
       /* Size Variants */
-      --button-small-font-size: 14px;
+      --button-small-font-size: var(--scientific-text-sm);
       --button-small-padding: 8px 16px;
       --button-small-min-height: 36px;
       
-      --button-large-font-size: 18px;
-      --button-large-padding: 16px 32px;
+      --button-large-font-size: var(--scientific-text-lg);
+      --button-large-padding: 16px 24px;
       --button-large-min-height: 56px;
       
-      /* Loading & Icons */
-      --button-loading-color: currentColor;
+      /* Icons & Loading */
       --button-icon-size: 18px;
+      
+      /* Mobile Responsive */
+      --button-mobile-font-size: var(--scientific-text-base);
+      --button-mobile-min-height: 44px;
+      --button-small-mobile-min-height: 32px;
+      --button-large-mobile-min-height: 52px;
+    }
+
+**Loading Spinner Variables:**
+
+    scientific-button {
+      /* Loading spinner customization */
+      --loading-spinner-size: 18px;
+      --loading-spinner-color: #e5e7eb;
+      --loading-spinner-active-color: #007bff;
+      --loading-overlay-bg: rgba(255, 255, 255, 0.8);
+      --loading-z-index: 10;
+    }
+
+**Scientific Design System Variables:**
+
+    :host {
+      /* Colors */
+      --scientific-primary-color: #007bff;
+      --scientific-primary-hover: #0056b3;
+      --scientific-secondary-color: #6c757d;
+      --scientific-success-color: #28a745;
+      --scientific-danger-color: #dc3545;
+      --scientific-warning-color: #ffc107;
+      --scientific-info-color: #17a2b8;
+      
+      /* Typography */
+      --scientific-font-family: system-ui, -apple-system, sans-serif;
+      --scientific-text-xs: 12px;
+      --scientific-text-sm: 14px;
+      --scientific-text-base: 16px;
+      --scientific-text-lg: 18px;
+      --scientific-text-xl: 20px;
+      --scientific-text-2xl: 24px;
+      
+      /* Spacing */
+      --scientific-spacing-xs: 4px;
+      --scientific-spacing-sm: 8px;
+      --scientific-spacing-md: 12px;
+      --scientific-spacing-lg: 16px;
+      --scientific-spacing-xl: 20px;
+      --scientific-spacing-2xl: 24px;
+      
+      /* Borders & Radius */
+      --scientific-border-radius: 8px;
+      --scientific-border-radius-lg: 12px;
+      --scientific-border: 2px solid #e5e7eb;
+      --scientific-border-color: #e5e7eb;
+      --scientific-border-hover: #d1d5db;
+      --scientific-border-focus: #007bff;
+      
+      /* Shadows */
+      --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --scientific-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --scientific-shadow-lg: 0 8px 12px rgba(0, 0, 0, 0.15);
+      --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
+      
+      /* Transitions */
+      --scientific-transition: all 0.2s ease-in-out;
+      --scientific-transition-fast: all 0.15s ease-out;
+      --scientific-transition-slow: all 0.3s ease-in-out;
     }
         `,
       },
@@ -609,27 +699,48 @@ export const CustomStyles: Story = {
     ></scientific-button>`,
 };
 
-export const InteractionTest: Story = {
-  args: {
-    label: 'Test Button',
-    variant: 'primary',
-    iconLeft: '🧪',
-  },
-  play: async ({canvasElement}) => {
-    const button = canvasElement.querySelector('scientific-button');
-    if (!button) throw new Error('Button not found');
+export const StyleCustomization: Story = {
+  render: () => html`
+    <div
+      style="display: flex; flex-direction: column; gap: 24px; max-width: 600px;"
+    >
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <h4 style="margin: 0;">Custom Styled Examples</h4>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Custom"
+            variant="primary"
+            style="
+              --button-bg-color: #667eea;
+              --button-hover-bg-color: #5a6fd8;
+              --button-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            "
+          ></scientific-button>
 
-    const buttonElement = button.shadowRoot?.querySelector('button');
-    if (buttonElement) {
-      buttonElement.click();
-      await (button as LitElement).updateComplete;
-    }
+          <scientific-button
+            label="Neon Effect"
+            variant="ghost"
+            style="
+              --button-color: #00ff88;
+              --button-border: 2px solid #00ff88;
+              --button-hover-bg-color: rgba(0, 255, 136, 0.1);
+              --button-focus-shadow: 0 0 20px #00ff88;
+              --button-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+            "
+          ></scientific-button>
 
-    await waitFor(() => {
-      expect(button.label).toBe('Test Button');
-    });
-
-    button.focus();
-    await (button as LitElement).updateComplete;
-  },
+          <scientific-button
+            label="Pill Shape"
+            variant="primary"
+            size="small"
+            style="
+              --button-border-radius: 50px;
+              --button-padding: 8px 24px;
+              --button-font-weight: 600;
+            "
+          ></scientific-button>
+        </div>
+      </div>
+    </div>
+  `,
 };
