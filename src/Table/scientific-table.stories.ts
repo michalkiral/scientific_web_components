@@ -238,26 +238,274 @@ const meta: Meta<ScientificTable> = {
     docs: {
       description: {
         component: `
-# Scientific Table Component
+# Scientific Table
 
-A comprehensive data table component designed for scientific applications with advanced features including:
+A **comprehensive**, **accessible** data table component designed for scientific web applications with advanced features.
 
-## Key Features
-- **Advanced Sorting**: Multi-type sorting (text, number, date, boolean)
-- **Search & Filtering**: Global search with column-specific filters
-- **Pagination**: Configurable page sizes and navigation
-- **Selection**: Single and multi-row selection capabilities
-- **Data Types**: Support for various data types with custom formatters
-- **Responsive Design**: Mobile-optimized layout
-- **CSV Loading**: Direct CSV file loading capability
-- **Customizable Styling**: Extensive CSS custom properties
-- **Accessibility**: ARIA labels and keyboard navigation
+---
 
-## Data Format
-The table accepts data in the \`TableData\` format with optional \`TableColumn\` definitions for enhanced functionality.
+## Props
+
+- \`title\` — Table title displayed in header
+- \`description\` — Table description displayed below title
+- \`columns\` — Array of column definitions with sorting, filtering, and formatting options
+- \`data\` — Array of data objects to display in the table
+- \`csvPath\` — Path to CSV file for automatic data loading
+- \`loading\` — Show loading spinner overlay
+- \`sortable\` — Enable column sorting functionality
+- \`filterable\` — Enable column filtering functionality
+- \`selectable\` — Enable row selection with checkboxes
+- \`pagination\` — Enable pagination controls
+- \`pageSize\` — Number of rows per page
+- \`currentPage\` — Current active page
+- \`pageSizeOptions\` — Available page size options
+- \`variant\` — Table size variant: default, compact
+- \`showSearch\` — Show global search input
+- \`searchPlaceholder\` — Placeholder text for search input
+- \`emptyStateTitle\` — Title shown when no data is available
+- \`emptyStateDescription\` — Description shown when no data is available
+- \`emptyStateIcon\` — Icon shown in empty state
+- \`onRowClick\` — Callback fired when a row is clicked
+- \`onSelectionChange\` — Callback fired when selection changes
+- \`onSort\` — Callback fired when sorting changes
+- \`onFilter\` — Callback fired when filters change
+
+## Events
+
+- \`row-click\` — Fired when a row is clicked with row data and index
+- \`selection-change\` — Fired when row selection changes
+- \`sort-change\` — Fired when column sorting changes
+- \`filter-change\` — Fired when column filters change
+- \`page-change\` — Fired when pagination changes
+
+## Basic Usage
+
+\`\`\`html
+<scientific-table
+  title="Chemical Compounds Database"
+  description="A comprehensive table of chemical compounds"
+  .columns="\${[
+    {key: 'name', label: 'Compound Name', type: 'text', sortable: true},
+    {key: 'formula', label: 'Formula', type: 'text', align: 'center'},
+    {key: 'mass', label: 'Molar Mass', type: 'number', align: 'right'}
+  ]}"
+  .data="\${compounds}"
+  sortable
+  filterable
+  pagination
+  showSearch
+></scientific-table>
+\`\`\`
+
+**Advanced Usage with Custom Formatting:**
+\`\`\`html
+<scientific-table
+  .columns="\${[
+    {
+      key: 'temperature',
+      label: 'Temperature',
+      type: 'number',
+      formatter: (value) => \`\${value}°C\`
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      type: 'boolean',
+      formatter: (value) => value ? '✅ Active' : '❌ Inactive'
+    }
+  ]}"
+  .data="\${experimentData}"
+  selectable
+  @selection-change="\${handleSelection}"
+></scientific-table>
+\`\`\`
+
+## Features
+
+- **Advanced Sorting**: Multi-type sorting (text, number, date, boolean) with custom sort functions
+- **Search & Filtering**: Global search with column-specific filters and operators
+- **Pagination**: Configurable page sizes and navigation with large dataset support
+- **Selection**: Single and multi-row selection capabilities with selection events
+- **Data Types**: Support for various data types with custom formatters and validators
+- **CSV Loading**: Direct CSV file loading capability with automatic column detection
+- **Custom Formatting**: Rich formatting options with HTML support and custom renderers
+- **Responsive Design**: Mobile-optimized layout with horizontal scrolling and touch support
+- **Performance**: Virtualized rendering for large datasets with lazy loading
+- **Form Integration**: Built-in form controls and validation support
+- **Export Capabilities**: CSV and JSON export functionality
+- **Customizable Styling**: Extensive CSS custom properties for complete theming
+
+## Accessibility Features
+
+- **Keyboard Navigation**: Full keyboard support with arrow keys, Tab, Enter, Space
+- **Screen Reader Support**: Proper ARIA labels, roles, and live region announcements
+- **Focus Management**: Logical focus flow and visible focus indicators
+- **Table Semantics**: Proper table structure with headers, captions, and data associations
+- **High Contrast**: Support for high contrast mode and custom color schemes
+- **Sort Announcements**: Screen reader announcements for sort direction changes
+- **Selection States**: Clear indication of selected rows and selection counts
+- **Error Handling**: Accessible error messages and validation feedback
+- **Loading States**: Accessible loading indicators with proper ARIA attributes
+
+## Column Configuration
+
+Each column supports these properties:
+
+    interface TableColumn {
+      key: string;                    // Data property key
+      label: string;                  // Display label
+      type?: 'text' | 'number' | 'date' | 'boolean';  // Data type
+      sortable?: boolean;             // Enable sorting
+      filterable?: boolean;           // Enable filtering
+      width?: string;                 // Column width (CSS)
+      align?: 'left' | 'center' | 'right';  // Text alignment
+      formatter?: (value, row) => string;   // Custom formatter
+    }
 
 ## Styling
-Customize appearance using CSS custom properties prefixed with \`--table-\`.
+
+Use CSS variables to customize appearance. Here are the most commonly used variables:
+
+**Basic Styling:**
+    scientific-table {
+      --table-bg-color: #ffffff;
+      --table-border: 1px solid #e5e7eb;
+      --table-border-radius: 8px;
+      --table-header-bg-color: #f9fafb;
+      --table-row-hover-bg-color: #f3f4f6;
+      --table-cell-padding: 12px;
+      --table-font-size: 14px;
+    }
+
+**Complete Variable List:**
+
+    scientific-table {
+      /* Container & Layout */
+      --table-width: 100%;
+      --table-max-width: 100%;
+      --table-height: auto;
+      --table-max-height: none;
+      --table-overflow: auto;
+      
+      /* Table Container */
+      --table-bg-color: #ffffff;
+      --table-border: 1px solid #e5e7eb;
+      --table-border-radius: 8px;
+      --table-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --table-margin: 0;
+      --table-padding: 0;
+      
+      /* Header Styling */
+      --table-header-bg-color: #f9fafb;
+      --table-header-border-bottom: 2px solid #e5e7eb;
+      --table-header-font-weight: 600;
+      --table-header-font-size: 14px;
+      --table-header-color: #374151;
+      --table-header-padding: 16px 12px;
+      --table-header-text-transform: none;
+      
+      /* Cell Styling */
+      --table-cell-padding: 12px;
+      --table-cell-border-bottom: 1px solid #f3f4f6;
+      --table-cell-font-size: 14px;
+      --table-cell-color: #374151;
+      --table-cell-line-height: 1.5;
+      
+      /* Row Styling */
+      --table-row-bg-color: #ffffff;
+      --table-row-hover-bg-color: #f3f4f6;
+      --table-row-selected-bg-color: #eff6ff;
+      --table-row-striped-bg-color: #f9fafb;
+      --table-row-transition: background-color 0.15s ease-in-out;
+      
+      /* Sorting */
+      --table-sort-icon-color: #9ca3af;
+      --table-sort-icon-active-color: #374151;
+      --table-sort-hover-bg-color: #f3f4f6;
+      
+      /* Search & Filters */
+      --table-search-bg-color: #ffffff;
+      --table-search-border: 1px solid #d1d5db;
+      --table-search-border-radius: 6px;
+      --table-search-padding: 8px 12px;
+      --table-search-font-size: 14px;
+      --table-search-placeholder-color: #9ca3af;
+      
+      /* Filter Controls */
+      --table-filter-bg-color: #f9fafb;
+      --table-filter-border: 1px solid #e5e7eb;
+      --table-filter-border-radius: 4px;
+      --table-filter-padding: 6px 8px;
+      --table-filter-font-size: 12px;
+      
+      /* Pagination */
+      --table-pagination-bg-color: #ffffff;
+      --table-pagination-border-top: 1px solid #e5e7eb;
+      --table-pagination-padding: 16px;
+      --table-pagination-gap: 8px;
+      --table-pagination-button-bg-color: #ffffff;
+      --table-pagination-button-border: 1px solid #d1d5db;
+      --table-pagination-button-color: #374151;
+      --table-pagination-button-hover-bg-color: #f3f4f6;
+      --table-pagination-button-active-bg-color: #3b82f6;
+      --table-pagination-button-active-color: #ffffff;
+      
+      /* Selection */
+      --table-checkbox-color: #3b82f6;
+      --table-selection-bg-color: #eff6ff;
+      --table-selection-border-color: #3b82f6;
+      
+      /* Loading States */
+      --table-loading-overlay-bg: rgba(255, 255, 255, 0.8);
+      --table-loading-spinner-color: #3b82f6;
+      --table-loading-z-index: 10;
+      
+      /* Empty States */
+      --table-empty-bg-color: #f9fafb;
+      --table-empty-color: #6b7280;
+      --table-empty-font-size: 16px;
+      --table-empty-padding: 48px 24px;
+      --table-empty-icon-size: 48px;
+      
+      /* Error States */
+      --table-error-bg-color: #fef2f2;
+      --table-error-border-color: #fecaca;
+      --table-error-color: #dc2626;
+      
+      /* Compact Variant */
+      --table-compact-cell-padding: 8px;
+      --table-compact-header-padding: 12px 8px;
+      --table-compact-font-size: 13px;
+      --table-compact-row-height: auto;
+      
+      /* Mobile Responsive */
+      --table-mobile-font-size: 14px;
+      --table-mobile-cell-padding: 8px;
+      --table-mobile-header-padding: 12px 8px;
+      --table-mobile-pagination-button-size: 44px;
+      
+      /* Scrollbar Styling */
+      --table-scrollbar-width: 8px;
+      --table-scrollbar-track-color: #f1f5f9;
+      --table-scrollbar-thumb-color: #cbd5e1;
+      --table-scrollbar-thumb-hover-color: #94a3b8;
+    }
+
+## Data Format
+
+The table accepts data in the \`TableData\` format:
+
+    interface TableData {
+      [key: string]: unknown;    // Dynamic properties
+      _id?: string;             // Optional unique identifier
+    }
+
+## Performance Tips
+
+- Use \`_id\` property for efficient row tracking
+- Implement pagination for large datasets (>100 rows)
+- Use column \`width\` properties to prevent layout shifts
+- Consider virtualization for extremely large datasets (>1000 rows)
         `,
       },
     },
@@ -416,6 +664,38 @@ Customize appearance using CSS custom properties prefixed with \`--table-\`.
       table: {
         type: {summary: 'string'},
         defaultValue: {summary: "'📊'"},
+      },
+    },
+    onRowClick: {
+      control: false,
+      description: 'Callback fired when a row is clicked',
+      table: {
+        type: {summary: '(row: TableData, index: number) => void'},
+        defaultValue: {summary: 'undefined'},
+      },
+    },
+    onSelectionChange: {
+      control: false,
+      description: 'Callback fired when selection changes',
+      table: {
+        type: {summary: '(selectedRows: TableData[]) => void'},
+        defaultValue: {summary: 'undefined'},
+      },
+    },
+    onSort: {
+      control: false,
+      description: 'Callback fired when sorting changes',
+      table: {
+        type: {summary: '(sort: TableSort) => void'},
+        defaultValue: {summary: 'undefined'},
+      },
+    },
+    onFilter: {
+      control: false,
+      description: 'Callback fired when filters change',
+      table: {
+        type: {summary: '(filters: TableFilter[]) => void'},
+        defaultValue: {summary: 'undefined'},
       },
     },
   },
