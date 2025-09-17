@@ -12,42 +12,256 @@ const meta: Meta<ScientificSlider> = {
     docs: {
       description: {
         component: `
-A highly customizable and accessible slider component for scientific applications:
+# Scientific Slider
+
+A **highly customizable**, **accessible** slider component for scientific web apps with advanced features.
+
+---
+
+## Props
+
+- \`label\` — Label text displayed above the slider
+- \`description\` — Description text displayed below the label
+- \`min\` — Minimum value of the slider range
+- \`max\` — Maximum value of the slider range
+- \`step\` — Step increment for value changes
+- \`value\` — Current value of the slider
+- \`disabled\` — Whether the slider is disabled
+- \`required\` — Whether the slider is required (shows asterisk)
+- \`variant\` — Visual variant: default, compact
+- \`size\` — Size variant: small, medium, large
+- \`showTooltip\` — Whether to show tooltip on hover/drag
+- \`showValue\` — Whether to show current value in header
+- \`showRangeLabels\` — Whether to show min/max labels below slider
+- \`marks\` — Array of mark objects with value and optional label
+- \`unit\` — Unit suffix for displayed values (e.g., "px", "%", "°C")
+- \`helperText\` — Helper text displayed below the slider
+- \`errorMessage\` — Error message displayed when state is error
+- \`state\` — Visual state: default, error
+- \`formatValue\` — Custom function to format displayed values
+- \`onValueChange\` — Callback function fired when value changes
+
+## Events
+
+- \`value-changed\` — Fired when value changes with detail.value
+- \`change\` — Standard change event for form integration
+
+## Basic Usage
+
+\`\`\`html
+<scientific-slider
+  label="Volume Control"
+  description="Adjust the volume level"
+  min="0"
+  max="100"
+  step="1"
+  value="50"
+  unit="%"
+  showValue
+  showTooltip
+  @value-changed="\${handleVolumeChange}"
+></scientific-slider>
+\`\`\`
+
+**Advanced Usage with Marks:**
+\`\`\`html
+<scientific-slider
+  label="Quality Setting"
+  min="0"
+  max="4"
+  step="1"
+  value="2"
+  showValue
+  .marks="\${[
+    {value: 0, label: 'Low'},
+    {value: 2, label: 'Medium'},
+    {value: 4, label: 'High'}
+  ]}"
+  .formatValue="\${(value) => qualityLabels[value]}"
+></scientific-slider>
+\`\`\`
 
 ## Features
+
 - **Range Control**: Configurable min/max values with custom step sizes
 - **Multiple Variants**: Default and compact layouts for different use cases
 - **Size Options**: Small, medium, and large sizes for various contexts
 - **Visual States**: Error state with custom styling and validation messages
 - **Custom Marks**: Add labeled marks at specific values for reference points
 - **Tooltips**: Show current value on hover or during interaction
-- **Accessibility**: Full keyboard navigation and ARIA support
 - **Custom Formatting**: Format display values with units or custom functions
+- **Form Integration**: Standard form events and validation support
 - **Event Handling**: Comprehensive event system for value changes
 - **Responsive Design**: Optimized for mobile and desktop interactions
+- **Scientific Applications**: Perfect for parameter adjustment and data filtering
+
+## Accessibility Features
+
+- **Keyboard Navigation**: Full keyboard support with arrow keys, Page Up/Down, Home/End
+- **ARIA Support**: Proper ARIA roles, labels, and value announcements
+- **Screen Reader Compatible**: Value changes announced to assistive technologies
+- **Focus Management**: Clear visual focus indicators and logical focus flow
+- **Touch Friendly**: Optimized touch targets for mobile devices
+- **High Contrast**: Supports high contrast mode and custom color schemes
+- **Reduced Motion**: Respects user preferences for reduced motion
 
 ## Keyboard Navigation
+
 - **Arrow Keys**: Increase/decrease by step value
 - **Page Up/Down**: Increase/decrease by 10x step value
 - **Home/End**: Jump to min/max values
 - **Tab**: Focus navigation
 
-## CSS Custom Properties
-Extensive customization through CSS variables:
-- \`--slider-width\`: Component width
-- \`--slider-bg-color\`: Background color
-- \`--slider-border\`: Border styling
-- \`--slider-track-color\`: Track background color
-- \`--slider-fill-color\`: Fill/progress color
-- \`--slider-thumb-color\`: Thumb color
-- \`--slider-thumb-size\`: Thumb dimensions
-- And many more for complete styling control...
+## Styling
 
-## Events
-- \`value-changed\`: Fired when value changes with detail.value
-- \`change\`: Standard change event for form integration
+Use CSS variables to customize appearance. Here are the most commonly used variables:
+
+**Basic Styling:**
+    scientific-slider {
+      --slider-width: 100%;
+      --slider-bg-color: #ffffff;
+      --slider-border: 2px solid #e5e7eb;
+      --slider-border-radius: 8px;
+      --slider-track-color: #f3f4f6;
+      --slider-fill-color: #007bff;
+      --slider-thumb-color: #007bff;
+      --slider-thumb-size: 20px;
+    }
+
+**Complete Variable List:**
+
+    scientific-slider {
+      /* Container & Layout */
+      --slider-width: 100%;
+      --slider-max-width: 100%;
+      --slider-height: auto;
+      --slider-padding: 16px;
+      --slider-margin: 0;
+      --slider-gap: 12px;
+      
+      /* Container Styling */
+      --slider-bg-color: #ffffff;
+      --slider-border: 2px solid #e5e7eb;
+      --slider-border-radius: 8px;
+      --slider-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --slider-transition: all 0.2s ease-in-out;
+      
+      /* Label & Description */
+      --slider-label-font-size: 14px;
+      --slider-label-font-weight: 500;
+      --slider-label-color: #374151;
+      --slider-label-margin-bottom: 6px;
+      --slider-description-font-size: 12px;
+      --slider-description-color: #6b7280;
+      
+      /* Value Display */
+      --slider-value-bg-color: #f3f4f6;
+      --slider-value-border: 1px solid #e5e7eb;
+      --slider-value-border-radius: 6px;
+      --slider-value-padding: 4px 8px;
+      --slider-value-font-size: 14px;
+      --slider-value-font-weight: 500;
+      --slider-value-color: #374151;
+      
+      /* Track Styling */
+      --slider-track-height: 8px;
+      --slider-track-color: #f3f4f6;
+      --slider-track-border-radius: 4px;
+      --slider-track-border: 1px solid #e5e7eb;
+      
+      /* Fill/Progress Styling */
+      --slider-fill-color: #007bff;
+      --slider-fill-height: 8px;
+      --slider-fill-border-radius: 4px;
+      --slider-fill-transition: width 0.1s ease-out;
+      
+      /* Thumb Styling */
+      --slider-thumb-size: 20px;
+      --slider-thumb-color: #007bff;
+      --slider-thumb-border: 3px solid #ffffff;
+      --slider-thumb-border-radius: 50%;
+      --slider-thumb-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      --slider-thumb-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      --slider-thumb-active-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+      --slider-thumb-transition: all 0.2s ease-in-out;
+      
+      /* Hover States */
+      --slider-hover-thumb-color: #0056b3;
+      --slider-hover-fill-color: #0056b3;
+      
+      /* Focus States */
+      --slider-focus-thumb-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+      --slider-focus-outline: none;
+      
+      /* Disabled States */
+      --slider-disabled-bg-color: #f9fafb;
+      --slider-disabled-border-color: #e5e7eb;
+      --slider-disabled-track-color: #f3f4f6;
+      --slider-disabled-fill-color: #9ca3af;
+      --slider-disabled-thumb-color: #9ca3af;
+      --slider-disabled-color: #9ca3af;
+      
+      /* Error States */
+      --slider-error-border-color: #ef4444;
+      --slider-error-fill-color: #ef4444;
+      --slider-error-thumb-color: #ef4444;
+      --slider-error-focus-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
+      
+      /* Range Labels */
+      --slider-range-label-font-size: 12px;
+      --slider-range-label-color: #6b7280;
+      --slider-range-label-margin-top: 8px;
+      
+      /* Marks */
+      --slider-mark-tick-size: 8px;
+      --slider-mark-tick-color: #d1d5db;
+      --slider-mark-tick-active-color: #007bff;
+      --slider-mark-label-font-size: 11px;
+      --slider-mark-label-color: #6b7280;
+      --slider-mark-label-margin-top: 4px;
+      
+      /* Tooltip */
+      --slider-tooltip-bg-color: #374151;
+      --slider-tooltip-color: #ffffff;
+      --slider-tooltip-border-radius: 4px;
+      --slider-tooltip-padding: 4px 8px;
+      --slider-tooltip-font-size: 12px;
+      --slider-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      --slider-tooltip-z-index: 1000;
+      
+      /* Helper Text */
+      --slider-helper-font-size: 12px;
+      --slider-helper-color: #6b7280;
+      --slider-helper-margin-top: 6px;
+      
+      /* Error Messages */
+      --slider-error-message-color: #dc2626;
+      --slider-error-message-font-size: 12px;
+      --slider-error-message-margin-top: 6px;
+      
+      /* Size Variants */
+      --slider-small-track-height: 6px;
+      --slider-small-thumb-size: 16px;
+      --slider-small-fill-height: 6px;
+      --slider-small-padding: 12px;
+      
+      --slider-large-track-height: 12px;
+      --slider-large-thumb-size: 24px;
+      --slider-large-fill-height: 12px;
+      --slider-large-padding: 20px;
+      
+      /* Compact Variant */
+      --slider-compact-padding: 12px;
+      --slider-compact-gap: 8px;
+      
+      /* Mobile Responsive */
+      --slider-mobile-thumb-size: 22px;
+      --slider-mobile-track-height: 10px;
+      --slider-mobile-padding: 16px;
+    }
 
 ## Use Cases
+
 - Parameter adjustment in scientific simulations
 - Range selection for data filtering
 - Volume/intensity controls
@@ -132,6 +346,14 @@ Extensive customization through CSS variables:
       control: {type: 'select'},
       options: ['default', 'error'],
       description: 'Visual state of the slider',
+    },
+    formatValue: {
+      control: false,
+      description: 'Custom function to format displayed values',
+    },
+    onValueChange: {
+      control: false,
+      description: 'Callback function fired when value changes',
     },
   },
 };
