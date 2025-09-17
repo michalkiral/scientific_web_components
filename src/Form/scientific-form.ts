@@ -1,122 +1,466 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {ifDefined} from 'lit/directives/if-defined.js';
 import '../Button/scientific-button';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  messageStyles,
+  loadingSpinnerStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
+import {classNames} from '../shared/utils/dom-utils.js';
 
 @customElement('scientific-form')
 export class ScientificForm extends LitElement {
-  static override styles = css`
-    .form-container {
-      border: var(--form-border, 1px solid #ddd);
-      padding: var(--form-padding, 16px);
-      background-color: var(--form-bg-color, #f9f9f9);
-      border-radius: var(--form-border-radius, 8px);
-      max-width: var(--form-max-width, 600px);
-      margin: var(--form-margin, 20px auto);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    messageStyles,
+    loadingSpinnerStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
+      }
 
-    .form-header {
-      font-size: var(--form-header-font-size, 24px);
-      font-weight: bold;
-    }
+      .form-container {
+        max-width: var(--form-max-width, 600px);
+        width: var(--form-width, 100%);
+        min-height: var(--form-min-height, auto);
+      }
 
-    .form-section {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+      .form-container.loading {
+        position: relative;
+      }
 
-    .form-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
+      .form-header {
+        border-bottom: var(--form-header-border, 1px solid #f3f4f6);
+      }
 
-    scientific-button {
-      min-width: var(--button-min-width, 100px);
-    }
-  `;
+      .form-title {
+        font-size: var(--form-title-font-size, var(--scientific-text-2xl));
+      }
+
+      .form-subtitle {
+        font-size: var(--form-subtitle-font-size, var(--scientific-text-base));
+      }
+
+      .form-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--form-content-gap, var(--scientific-spacing-lg));
+        flex: 1;
+      }
+
+      .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--form-section-gap, var(--scientific-spacing-md));
+      }
+
+      .form-section-title {
+        font-size: var(
+          --form-section-title-font-size,
+          var(--scientific-text-lg)
+        );
+        font-weight: var(--form-section-title-font-weight, 500);
+        color: var(--form-section-title-color, #374151);
+        margin: 0 0 var(--scientific-spacing-sm) 0;
+        padding-bottom: var(
+          --form-section-title-padding-bottom,
+          var(--scientific-spacing-xs)
+        );
+        border-bottom: var(--form-section-title-border, 1px solid #f3f4f6);
+      }
+
+      .form-error {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+      }
+
+      .form-success {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+      }
+
+      .form-footer {
+        display: flex;
+        justify-content: var(--form-footer-justify, flex-end);
+        align-items: center;
+        gap: var(--form-footer-gap, var(--scientific-spacing-md));
+        padding-top: var(
+          --form-footer-padding-top,
+          var(--scientific-spacing-lg)
+        );
+        border-top: var(--form-footer-border, 1px solid #f3f4f6);
+        flex-wrap: wrap;
+      }
+
+      .form-footer.full-width {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .form-footer.full-width scientific-button {
+        width: 100%;
+        display: block;
+      }
+
+      .form-footer.center {
+        justify-content: center;
+      }
+
+      .form-footer.start {
+        justify-content: flex-start;
+      }
+
+      .form-footer.space-between {
+        justify-content: space-between;
+      }
+
+      .form-progress {
+        width: 100%;
+        height: var(--form-progress-height, var(--scientific-spacing-xs));
+        background-color: var(--form-progress-bg-color, #f3f4f6);
+        border-radius: var(
+          --form-progress-border-radius,
+          var(--scientific-border-radius)
+        );
+        overflow: hidden;
+        margin-bottom: var(--scientific-spacing-sm);
+      }
+
+      .form-progress-bar {
+        height: 100%;
+        background-color: var(
+          --form-progress-color,
+          var(--scientific-primary-color)
+        );
+        transition: width var(--scientific-transition-slow);
+        border-radius: var(
+          --form-progress-border-radius,
+          var(--scientific-border-radius)
+        );
+      }
+
+      @media (max-width: 768px) {
+        .form-footer {
+          flex-direction: column-reverse;
+          align-items: stretch;
+        }
+
+        .form-footer scientific-button {
+          width: 100%;
+        }
+      }
+
+      .form-container.compact {
+        min-height: var(--form-compact-min-height, auto);
+      }
+
+      .form-container.compact .form-content {
+        gap: var(--form-compact-content-gap, var(--scientific-spacing-md));
+      }
+
+      .form-container.compact .form-footer {
+        padding-top: var(
+          --form-compact-footer-padding-top,
+          var(--scientific-spacing-sm)
+        );
+      }
+    `,
+  ];
 
   @property({type: String})
-  formBgColor = '#f9f9f9';
+  override title = '';
+
   @property({type: String})
-  formPadding = '16px';
+  subtitle = '';
+
   @property({type: String})
-  formBorder = '1px solid #ddd';
+  variant: 'default' | 'compact' | 'elevated' = 'default';
+
+  @property({type: String})
+  submitLabel = 'Submit';
+
+  @property({type: String})
+  cancelLabel = 'Cancel';
+
+  @property({type: String})
+  loadingLabel = 'Processing...';
+
+  @property({type: String})
+  submitVariant:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'danger'
+    | 'success' = 'primary';
+
+  @property({type: String})
+  cancelVariant:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'danger'
+    | 'success' = 'outline';
 
   @property({type: Boolean})
   isLoading = false;
 
-  @property({type: String})
-  formTitle = 'Scientific Form';
-  @property({type: String})
-  submitLabel = 'Submit';
-  @property({type: String})
-  loadingLabel = 'Submitting...';
-  @property({type: String})
-  cancelLabel = 'Cancel';
+  @property({type: Boolean})
+  disabled = false;
 
-  @property({ attribute: false })
-  onSubmit?: () => Promise<void>;
-  @property({ attribute: false })
+  @property({type: Boolean})
+  showCancel = true;
+
+  @property({type: Boolean})
+  showProgress = false;
+
+  @property({type: Number})
+  progress = 0;
+
+  @property({type: String})
+  errorMessage = '';
+
+  @property({type: String})
+  successMessage = '';
+
+  @property({type: String})
+  footerLayout: 'end' | 'start' | 'center' | 'space-between' | 'full-width' =
+    'end';
+
+  @property({type: Boolean})
+  autoFocus = false;
+
+  @property({type: String})
+  method: 'get' | 'post' = 'post';
+
+  @property({type: String})
+  action = '';
+
+  @property({type: String})
+  enctype:
+    | 'application/x-www-form-urlencoded'
+    | 'multipart/form-data'
+    | 'text/plain' = 'application/x-www-form-urlencoded';
+
+  @property({type: Boolean})
+  noValidate = false;
+
+  @property({attribute: false})
+  onSubmit?: (formData: FormData) => Promise<void>;
+
+  @property({attribute: false})
   onCancel?: () => void;
 
-  private async _handleSubmit() {
-    if (this.isLoading || !this.onSubmit) return;
-    
-    this.dispatchEvent(new CustomEvent('scientific-form-submit-start'));
+  @property({attribute: false})
+  onReset?: () => void;
+
+  private async _handleSubmit(e?: Event) {
+    e?.preventDefault();
+
+    if (this.isLoading || this.disabled) return;
+
+    const form = this.shadowRoot?.querySelector('form') as HTMLFormElement;
+    if (!form) return;
+
+    if (!this.noValidate && !form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const formData = new FormData(form);
+
+    dispatchCustomEvent(this, 'form-submit-start', {
+      formData,
+      originalEvent: e,
+    });
+
     this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
     try {
-      await this.onSubmit();
-      this.dispatchEvent(new CustomEvent('scientific-form-submit-success'));
+      if (this.onSubmit) {
+        await this.onSubmit(formData);
+      } else if (this.action) {
+        form.submit();
+        return;
+      }
+
+      this.successMessage = 'Form submitted successfully!';
+      dispatchCustomEvent(this, 'form-submit-success', {
+        formData,
+      });
     } catch (error) {
-      this.dispatchEvent(new CustomEvent('scientific-form-submit-error', { detail: error }));
+      this.errorMessage =
+        error instanceof Error ? error.message : 'An error occurred';
+      dispatchCustomEvent(this, 'form-submit-error', {
+        error,
+        formData,
+      });
     } finally {
       this.isLoading = false;
     }
   }
 
   private _handleCancel() {
-    this.dispatchEvent(new CustomEvent('scientific-form-cancel'));
+    if (this.isLoading) return;
+
+    dispatchCustomEvent(this, 'form-cancel', {
+      timestamp: new Date().toISOString(),
+    });
     this.onCancel?.();
+  }
+
+  private _handleReset() {
+    if (this.isLoading) return;
+
+    const form = this.shadowRoot?.querySelector('form') as HTMLFormElement;
+    form?.reset();
+
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.progress = 0;
+
+    dispatchCustomEvent(this, 'form-reset', {
+      timestamp: new Date().toISOString(),
+    });
+    this.onReset?.();
+  }
+
+  private _getFormClasses() {
+    return classNames(
+      'scientific-container',
+      'form-container',
+      this.variant !== 'default' && this.variant,
+      this.disabled && 'disabled',
+      this.isLoading && 'loading'
+    );
+  }
+
+  private _getFooterClasses() {
+    return classNames(
+      'form-footer',
+      this.footerLayout !== 'end' && this.footerLayout
+    );
+  }
+
+  override firstUpdated() {
+    if (this.autoFocus) {
+      const firstInput = this.querySelector(
+        'input, select, textarea'
+      ) as HTMLElement;
+      firstInput?.focus();
+    }
   }
 
   override render() {
     return html`
-      <div 
-        class="form-container" 
-        style="
-          background-color: ${this.formBgColor}; 
-          padding: ${this.formPadding}; 
-          border: ${this.formBorder};
-        "
+      <form
+        class="${this._getFormClasses()}"
+        method="${this.method}"
+        action="${ifDefined(this.action || undefined)}"
+        enctype="${this.enctype}"
+        ?novalidate="${this.noValidate}"
+        @submit="${this._handleSubmit}"
+        @reset="${this._handleReset}"
         role="form"
+        aria-busy="${this.isLoading}"
       >
-        <slot name="header">
-          <div class="form-header">${this.formTitle}</div>
-        </slot>
+        ${this.isLoading
+          ? html`
+              <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+              </div>
+            `
+          : ''}
+        ${this.title || this.subtitle
+          ? html`
+              <div class="scientific-header form-header">
+                <slot name="header">
+                  ${this.title
+                    ? html`<h2 class="scientific-title form-title">
+                        ${this.title}
+                      </h2>`
+                    : ''}
+                  ${this.subtitle
+                    ? html`<p class="scientific-subtitle form-subtitle">
+                        ${this.subtitle}
+                      </p>`
+                    : ''}
+                </slot>
+              </div>
+            `
+          : ''}
+        ${this.showProgress
+          ? html`
+              <div class="form-progress">
+                <div
+                  class="form-progress-bar"
+                  style="width: ${this.progress}%"
+                  role="progressbar"
+                  aria-valuenow="${this.progress}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                ></div>
+              </div>
+            `
+          : ''}
+        ${this.errorMessage
+          ? html`
+              <div class="scientific-error form-error" role="alert">
+                <span>${this.errorMessage}</span>
+              </div>
+            `
+          : ''}
+        ${this.successMessage
+          ? html`
+              <div class="scientific-success form-success" role="status">
+                <span>${this.successMessage}</span>
+              </div>
+            `
+          : ''}
 
-        <div class="form-section">
-          <slot name="form-fields"></slot>
+        <div class="form-content">
+          <slot></slot>
         </div>
 
-        <div class="form-footer">
-          <slot name="actions">
-            <scientific-button 
-              .label="${this.cancelLabel}" 
-              @click="${() => this._handleCancel()}"
-            ></scientific-button>
+        <div class="${this._getFooterClasses()}">
+          <slot name="footer">
+            ${this.showCancel
+              ? html`
+                  <scientific-button
+                    .label="${this.cancelLabel}"
+                    .variant="${this.cancelVariant}"
+                    .disabled="${this.isLoading}"
+                    .fullWidth="${this.footerLayout === 'full-width'}"
+                    type="button"
+                    @click="${this._handleCancel}"
+                  ></scientific-button>
+                `
+              : ''}
             <scientific-button
-              .label="${this.isLoading ? this.loadingLabel : this.submitLabel}" 
-              @click="${() => this._handleSubmit()}"
-              ?loading="${this.isLoading}"
+              .label="${this.isLoading ? this.loadingLabel : this.submitLabel}"
+              .variant="${this.submitVariant}"
+              .loading="${this.isLoading}"
+              .disabled="${this.disabled}"
+              .fullWidth="${this.footerLayout === 'full-width'}"
+              type="submit"
             ></scientific-button>
           </slot>
         </div>
-      </div>
+      </form>
     `;
   }
 }

@@ -1,36 +1,73 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {ifDefined} from 'lit/directives/if-defined.js';
+import {
+  sharedVariables,
+  buttonStyles,
+  loadingSpinnerStyles,
+  responsiveStyles,
+  classNames,
+} from '../shared/index.js';
 
 @customElement('scientific-button')
 export class ScientificButton extends LitElement {
-  static override styles = css`
-    button {
-      transition: .5s ease-in-out;
-      font-size: var(--button-font-size, 16px);
-      padding: var(--button-padding, 8px 16px);
-      background-color: var(--button-bg-color, #007bff);
-      color: var(--button-color, white);
-      width: var(--button-width, 300px);
-      opacity: var(--button-opacity, 75%);
-      cursor: pointer;
-      border: var(--button-border, none);
-      border-radius: var(--button-border-radius, 8px);
-    }
+  static override styles = [
+    sharedVariables,
+    buttonStyles,
+    loadingSpinnerStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: inline-block;
+        font-family: var(--scientific-font-family);
+      }
 
-    button:hover {
-      transition: .25s ease-in-out;
-      background-color: var(--button-hover-bg-color, #034994);
-      opacity: var(--button-hover-opacity, 100%);
-    }
+      :host([fullwidth]) {
+        display: block;
+        width: 100%;
+      }
 
-    button[disabled] {
-      background-color: var(--button-disabled-bg-color, #cccccc);
-      cursor: not-allowed;
-    }
-  `;
+      :host([fullwidth]) button {
+        width: 100%;
+      }
+
+      .scientific-button .loading-spinner {
+        --loading-spinner-size: 18px;
+      }
+
+      .scientific-button.primary .loading-spinner {
+        border-color: rgba(255, 255, 255, 0.3);
+        border-top-color: #ffffff;
+      }
+
+      .scientific-button.outline .loading-spinner,
+      .scientific-button.ghost .loading-spinner {
+        border-color: rgba(0, 123, 255, 0.3);
+        border-top-color: #007bff;
+      }
+
+      @media (max-width: 768px) {
+        .scientific-button {
+          font-size: var(
+            --button-mobile-font-size,
+            var(--scientific-text-base)
+          );
+          min-height: var(--button-mobile-min-height, 44px);
+        }
+
+        .scientific-button.small {
+          min-height: var(--button-small-mobile-min-height, 32px);
+        }
+
+        .scientific-button.large {
+          min-height: var(--button-large-mobile-min-height, 52px);
+        }
+      }
+    `,
+  ];
 
   @property({attribute: false})
-  action: (() => void) | undefined;
+  action: (() => Promise<void>) | (() => void) | undefined;
 
   @property({type: Boolean})
   loading = false;
@@ -39,28 +76,187 @@ export class ScientificButton extends LitElement {
   label = 'Click Me';
 
   @property({type: String})
-  loadingLabel = "Processing...";
+  loadingLabel = 'Processing...';
 
-  private async _onClick() {
-    if (!this.action || this.loading) return;
-    
-    this.dispatchEvent(new CustomEvent('custom-button-action-start'));
+  @property({type: Boolean})
+  showSpinner = true;
+
+  @property({type: String})
+  variant:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'danger'
+    | 'success' = 'primary';
+
+  @property({type: String})
+  size: 'small' | 'medium' | 'large' = 'medium';
+
+  @property({type: Boolean})
+  disabled = false;
+
+  @property({type: Boolean, reflect: true})
+  fullWidth = false;
+
+  @property({type: String})
+  iconLeft = '';
+
+  @property({type: String})
+  iconRight = '';
+
+  @property({type: String})
+  type: 'button' | 'submit' | 'reset' = 'button';
+
+  @property({type: String})
+  href = '';
+
+  @property({type: String})
+  target = '';
+
+  @property({type: Boolean})
+  autoFocus = false;
+
+  @property({type: String})
+  form = '';
+
+  @property({type: String})
+  name = '';
+
+  @property({type: String})
+  value = '';
+
+  private async _onClick(e: Event) {
+    if (this.disabled || this.loading) {
+      e.preventDefault();
+      return;
+    }
+
+    if (this.href) {
+      return;
+    }
+
+    if (this.type === 'submit' || this.type === 'reset') {
+      if (!this.action) {
+        return;
+      }
+    }
+
+    if (!this.action) {
+      return;
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('button-click-start', {
+        detail: {originalEvent: e},
+      })
+    );
+
     this.loading = true;
-  
+
     try {
       await this.action();
-      this.dispatchEvent(new CustomEvent('custom-button-action-complete'));
+
+      this.dispatchEvent(new CustomEvent('button-click-complete'));
+
+      this.dispatchEvent(new CustomEvent('success'));
     } catch (error) {
-      this.dispatchEvent(new CustomEvent('custom-button-action-error', { detail: error }));
+      this.dispatchEvent(
+        new CustomEvent('button-click-error', {
+          detail: {error},
+        })
+      );
+      this.dispatchEvent(
+        new CustomEvent('error', {
+          detail: {error},
+        })
+      );
     } finally {
       this.loading = false;
     }
   }
 
-  override render() {
+  private _getButtonClasses() {
+    return classNames({
+      'scientific-button': true,
+      [this.variant]: this.variant !== 'primary',
+      [this.size]: this.size !== 'medium',
+      loading: this.loading && this.showSpinner,
+      'loading-text-only': this.loading && !this.showSpinner,
+      'full-width': this.fullWidth,
+    });
+  }
+
+  private _renderIcon(iconName: string, position: 'left' | 'right') {
+    if (!iconName) {
+      return '';
+    }
+
+    // Can extend this to support different icon systems
+    // For now, it supports simple text icons or Unicode symbols
+    return html`<span class="button-icon button-icon-${position}"
+      >${iconName}</span
+    >`;
+  }
+
+  private _renderContent() {
+    const label = this.loading ? this.loadingLabel : this.label;
+
     return html`
-      <button @click=${this._onClick}>
-        ${this.loading ? this.loadingLabel : this.label}
+      ${this.loading && this.showSpinner
+        ? html`<div class="loading-spinner"></div>`
+        : ''}
+      ${this._renderIcon(this.iconLeft, 'left')}
+      <span class="button-text">${label}</span>
+      ${this._renderIcon(this.iconRight, 'right')}
+    `;
+  }
+
+  override firstUpdated() {
+    if (this.autoFocus) {
+      this.focus();
+    }
+  }
+
+  override focus() {
+    const button = this.shadowRoot?.querySelector('button, a');
+    (button as HTMLElement)?.focus();
+  }
+
+  override render() {
+    if (this.href) {
+      return html`
+        <a
+          href="${this.disabled || this.loading ? '#' : this.href}"
+          target="${this.target || '_self'}"
+          class="${this._getButtonClasses()}"
+          role="button"
+          tabindex="${this.disabled || this.loading ? '-1' : '0'}"
+          @click="${(e: Event) => {
+            if (this.disabled || this.loading) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}"
+        >
+          ${this._renderContent()}
+        </a>
+      `;
+    }
+
+    return html`
+      <button
+        type="${this.type}"
+        class="${this._getButtonClasses()}"
+        ?disabled="${this.disabled || this.loading}"
+        form="${ifDefined(this.form || undefined)}"
+        name="${ifDefined(this.name || undefined)}"
+        value="${ifDefined(this.value || undefined)}"
+        @click="${this._onClick}"
+        aria-label="${this.loading ? this.loadingLabel : this.label}"
+        aria-busy="${this.loading}"
+      >
+        ${this._renderContent()}
       </button>
     `;
   }

@@ -1,260 +1,694 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import {LitElement, html, css} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
+import {
+  sharedVariables,
+  containerStyles,
+  headerStyles,
+  messageStyles,
+  responsiveStyles,
+} from '../shared/styles/common-styles.js';
+import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
+import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
+
+export interface SliderMark {
+  value: number;
+  label?: string;
+}
 
 @customElement('scientific-slider')
 export class ScientificSlider extends LitElement {
-  static override styles = css`
-    :host {
-      --slider-container-width: 100%;
-      --slider-container-max-width: 600px;
+  static override styles = [
+    sharedVariables,
+    containerStyles,
+    headerStyles,
+    messageStyles,
+    responsiveStyles,
+    css`
+      :host {
+        display: block;
+        font-family: var(--scientific-font-family);
+        width: var(--slider-width, 100%);
+        max-width: var(--slider-max-width, 100%);
+      }
 
-      --slider-label-font-size: 14px;
-      --slider-label-font-weight: bold;
+      .slider-container.disabled {
+        background-color: var(--slider-disabled-bg-color, #f9fafb);
+      }
 
-      --slider-track-color: #ddd;
-      --slider-track-border-radius: 4px;
+      .slider-label.required::after {
+        content: ' *';
+        color: var(--scientific-danger-color);
+      }
 
-      --slider-fill-color: #4c8eaf;
-      --slider-fill-border-radius: 4px;
+      .slider-value-display {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+        background-color: var(--slider-value-bg-color, #f3f4f6);
+        border: var(--scientific-border);
+        border-radius: var(--scientific-border-radius);
+        font-size: var(--scientific-text-sm);
+        font-weight: 600;
+        color: var(--scientific-text-primary);
+        min-width: var(--slider-value-min-width, 60px);
+        justify-content: center;
+      }
 
-      --slider-thumb-color: #d0342c;
-      --slider-thumb-width: 20px;
-      --slider-thumb-height: 20px;
-      --slider-thumb-border-radius: 50%;
+      .slider-track-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: var(--scientific-spacing-md) 0;
+        margin: var(--scientific-spacing-sm) 0;
+      }
 
-      --tooltip-background: #fff;
-      --tooltip-color: #333;
-      --tooltip-font-size: 14px;
+      .slider-track {
+        position: relative;
+        width: 100%;
+        height: var(--slider-track-height, 8px);
+        background-color: var(
+          --slider-track-color,
+          var(--scientific-border-color)
+        );
+        border-radius: var(--scientific-border-radius-sm);
+        overflow: hidden;
+        cursor: pointer;
+        transition: var(--scientific-transition);
+      }
 
-      --ticks-font-size: 10px;
-      --ticks-color: #666;
-    }
+      .slider-track:hover {
+        background-color: var(
+          --slider-track-hover-color,
+          var(--scientific-border-hover)
+        );
+      }
 
-    .slider-container {
-      width: var(--slider-container-width);
-      max-width: var(--slider-container-max-width);
-      margin: auto;
-      position: relative;
-    }
+      .slider-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--slider-fill-color, var(--scientific-primary-color));
+        border-radius: var(--scientific-border-radius-sm);
+        transition: var(--scientific-transition-fast);
+        z-index: 1;
+      }
 
-    .label {
-      font-size: var(--slider-label-font-size);
-      font-weight: var(--slider-label-font-weight);
-      margin-bottom: 8px;
-    }
+      .slider-thumb {
+        position: absolute;
+        top: 50%;
+        width: var(--slider-thumb-size, 20px);
+        height: var(--slider-thumb-size, 20px);
+        background-color: var(
+          --slider-thumb-color,
+          var(--scientific-primary-color)
+        );
+        border: var(--slider-thumb-border, 3px solid #ffffff);
+        border-radius: 50%;
+        box-shadow: var(--scientific-shadow);
+        cursor: grab;
+        transform: translate(-50%, -50%);
+        transition: var(--scientific-transition-fast);
+        z-index: 3;
+        user-select: none;
+      }
 
-    .range-container {
-      display: flex;
-      align-items: center;
-      position: relative;
-      width: 100%;
-    }
+      .slider-thumb:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: var(--scientific-shadow-lg);
+      }
 
-    .slider-track {
-      width: 100%;
-      height: 8px;
-      background: var(--slider-track-color);
-      border-radius: var(--slider-track-border-radius);
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1;
-    }
+      .slider-thumb:active,
+      .slider-thumb.dragging {
+        cursor: grabbing;
+        transform: translate(-50%, -50%) scale(1.15);
+        box-shadow: var(--scientific-shadow-xl);
+      }
 
-    .slider-fill {
-      height: 100%;
-      background: var(--slider-fill-color);
-      border-radius: var(--slider-fill-border-radius);
-      z-index: 0;
-    }
+      .slider-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        outline: none;
+      }
 
-    .range-input {
-      width: 100%;
-      height: 8px;
-      background: transparent;
-      outline: none;
-      border-radius: 4px;
-      margin: 0 16px;
-      opacity: 0;
-    }
+      .slider-tooltip {
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        padding: var(--scientific-spacing-xs) var(--scientific-spacing-sm);
+        background-color: var(
+          --slider-tooltip-bg-color,
+          var(--scientific-text-primary)
+        );
+        color: var(--slider-tooltip-color, #ffffff);
+        font-size: var(--scientific-text-xs);
+        font-weight: 500;
+        border-radius: var(--scientific-border-radius);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--scientific-transition-fast);
+        z-index: 4;
+      }
 
-    .custom-thumb {
-      width: var(--slider-thumb-width);
-      height: var(--slider-thumb-height);
-      background-color: var(--slider-thumb-color);
-      border-radius: var(--slider-thumb-border-radius);
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
-      z-index: 2;
-    }
+      .slider-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: var(
+          --slider-tooltip-bg-color,
+          var(--scientific-text-primary)
+        );
+      }
 
-    .value-display {
-      position: absolute;
-      top: -30px;
-      font-size: var(--tooltip-font-size);
-      font-weight: bold;
-      color: var(--tooltip-color);
-      background-color: var(--tooltip-background);
-      padding: 2px 6px;
-      border-radius: 4px;
-      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
+      .slider-thumb:hover .slider-tooltip,
+      .slider-thumb.dragging .slider-tooltip,
+      .show-tooltip .slider-tooltip {
+        opacity: 1;
+      }
 
-    .range-container:hover .value-display {
-      opacity: 1;
-    }
+      .slider-marks {
+        position: relative;
+        margin-top: var(--scientific-spacing-sm);
+        height: var(--slider-marks-height, 20px);
+      }
 
-    .ticks {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 4px;
-      font-size: var(--ticks-font-size);
-      color: var(--ticks-color);
-    }
-  `;
+      .slider-mark {
+        position: absolute;
+        top: 0;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
 
-  @property({ type: Number })
+      .slider-mark-tick {
+        width: var(--slider-mark-tick-width, 2px);
+        height: var(--slider-mark-tick-height, 8px);
+        background-color: var(
+          --slider-mark-tick-color,
+          var(--scientific-text-muted)
+        );
+        border-radius: 1px;
+      }
+
+      .slider-mark-label {
+        font-size: var(--scientific-text-xs);
+        font-weight: 500;
+        color: var(--slider-mark-label-color, var(--scientific-text-muted));
+        white-space: nowrap;
+        user-select: none;
+      }
+
+      .slider-range-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: var(--scientific-spacing-xs);
+        font-size: var(--scientific-text-xs);
+        color: var(--scientific-text-muted);
+        font-weight: 500;
+      }
+
+      .slider-container.error .slider-track {
+        background-color: var(--slider-error-track-color, #fecaca);
+      }
+
+      .slider-container.error .slider-fill {
+        background: var(
+          --slider-error-fill-color,
+          var(--scientific-danger-color)
+        );
+      }
+
+      .slider-container.error .slider-thumb {
+        background-color: var(
+          --slider-error-thumb-color,
+          var(--scientific-danger-color)
+        );
+        border-color: var(--slider-error-thumb-border-color, #fecaca);
+      }
+
+      /* Size variants */
+      .slider-container.small {
+        padding: var(--scientific-spacing-md);
+        gap: var(--scientific-spacing-sm);
+      }
+
+      .slider-container.small .slider-track {
+        height: var(--slider-small-track-height, 6px);
+      }
+
+      .slider-container.small .slider-thumb {
+        width: var(--slider-small-thumb-size, 16px);
+        height: var(--slider-small-thumb-size, 16px);
+      }
+
+      .slider-container.large {
+        padding: var(--scientific-spacing-3xl);
+        gap: var(--scientific-spacing-xl);
+      }
+
+      .slider-container.large .slider-track {
+        height: var(--slider-large-track-height, 12px);
+      }
+
+      .slider-container.large .slider-thumb {
+        width: var(--slider-large-thumb-size, 24px);
+        height: var(--slider-large-thumb-size, 24px);
+      }
+
+      @media (max-width: 768px) {
+        .slider-thumb {
+          width: var(--slider-mobile-thumb-size, 24px);
+          height: var(--slider-mobile-thumb-size, 24px);
+        }
+
+        .slider-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--scientific-spacing-sm);
+        }
+
+        .slider-value-display {
+          align-self: flex-end;
+        }
+      }
+    `,
+  ];
+
+  @property({type: String})
+  label = '';
+
+  @property({type: String})
+  description = '';
+
+  @property({type: Number})
   min = 0;
-  @property({ type: Number })
-  max = 100;
-  @property({ type: Number })
-  step = 1;
-  @property({ type: Number })
-  tickCount = 2;
-  @property({ type: String })
-  tooltipPosition = 'top';
-  @property({ type: String })
-  valueLabel = "Value";
 
-  @property({ type: Number })
+  @property({type: Number})
+  max = 100;
+
+  @property({type: Number})
+  step = 1;
+
+  @property({type: Number})
   value = 0;
 
+  @property({type: Boolean})
+  disabled = false;
+
+  @property({type: Boolean})
+  required = false;
+
+  @property({type: String})
+  variant: 'default' | 'compact' = 'default';
+
+  @property({type: String})
+  size: 'small' | 'medium' | 'large' = 'medium';
+
+  @property({type: Boolean})
+  showTooltip = true;
+
+  @property({type: Boolean})
+  showValue = true;
+
+  @property({type: Boolean})
+  showRangeLabels = true;
+
+  @property({type: Array})
+  marks: SliderMark[] = [];
+
+  @property({type: String})
+  unit = '';
+
+  @property({type: String})
+  helperText = '';
+
+  @property({type: String})
+  errorMessage = '';
+
+  @property({type: String})
+  state: 'default' | 'error' = 'default';
+
+  @property({attribute: false})
+  formatValue?: (value: number) => string;
+
+  @property({attribute: false})
+  onValueChange?: (value: number) => void;
+
   @state()
-  private ticks: number[] = [];
+  private isDragging = false;
+
+  @state()
+  private showTooltipState = false;
 
   override connectedCallback() {
     super.connectedCallback();
-
-    if (this.value < this.min) {
-      this.value = this.min;
-    } else if (this.value > this.max) {
-      this.value = this.max;
-    }
-
-    this.calculateTicks();
+    this._clampValue();
   }
 
-  private calculateTicks() {
-    const tickStep = (this.max - this.min) / (this.tickCount - 1);
-    this.ticks = Array.from({ length: this.tickCount }, (_, i) =>
-      Math.round(this.min + i * tickStep)
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      this._clampValue();
+    }
+  }
+
+  private _clampValue() {
+    const clampedValue = clamp(this.value, this.min, this.max);
+    if (clampedValue !== this.value) {
+      this.value = clampedValue;
+    }
+  }
+
+  private _getPercentage(): number {
+    if (this.max === this.min) return 0;
+    return ((this.value - this.min) / (this.max - this.min)) * 100;
+  }
+
+  private _getValueFromPercentage(percentage: number): number {
+    const rawValue = this.min + (percentage / 100) * (this.max - this.min);
+    return Math.round(rawValue / this.step) * this.step;
+  }
+
+  private _formatDisplayValue(value: number): string {
+    if (this.formatValue) {
+      return this.formatValue(value);
+    }
+    return formatValue(value, {unit: this.unit});
+  }
+
+  private _handleInput(event: Event) {
+    if (this.disabled) return;
+
+    const target = event.target as HTMLInputElement;
+    const newValue = Number(target.value);
+
+    if (newValue !== this.value) {
+      this.value = newValue;
+      this._dispatchChange();
+    }
+  }
+
+  private _handleTrackClick(event: MouseEvent) {
+    if (this.disabled) return;
+
+    const track = this.shadowRoot?.querySelector(
+      '.slider-track'
+    ) as HTMLElement;
+    if (!track) return;
+
+    const rect = track.getBoundingClientRect();
+    const percentage = ((event.clientX - rect.left) / rect.width) * 100;
+    const newValue = this._getValueFromPercentage(
+      Math.max(0, Math.min(100, percentage))
+    );
+
+    if (newValue !== this.value) {
+      this.value = newValue;
+      this._dispatchChange();
+    }
+  }
+
+  private _handleThumbMouseDown(event: MouseEvent) {
+    if (this.disabled) return;
+
+    event.preventDefault();
+    this.isDragging = true;
+    this.showTooltipState = true;
+
+    const track = this.shadowRoot?.querySelector(
+      '.slider-track'
+    ) as HTMLElement;
+    if (!track) return;
+
+    const rect = track.getBoundingClientRect();
+    const startX = event.clientX;
+    const startPercentage = this._getPercentage();
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaX = e.clientX - startX;
+      const deltaPercentage = (deltaX / rect.width) * 100;
+      const newPercentage = startPercentage + deltaPercentage;
+      const newValue = this._getValueFromPercentage(
+        Math.max(0, Math.min(100, newPercentage))
+      );
+
+      if (newValue !== this.value) {
+        this.value = newValue;
+        this._dispatchChange();
+      }
+    };
+
+    const handleMouseUp = () => {
+      this.isDragging = false;
+      this.showTooltipState = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }
+
+  private _handleKeyDown(event: KeyboardEvent) {
+    if (this.disabled) return;
+
+    let newValue = this.value;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        event.preventDefault();
+        newValue = Math.max(this.min, this.value - this.step);
+        break;
+      case 'ArrowRight':
+      case 'ArrowUp':
+        event.preventDefault();
+        newValue = Math.min(this.max, this.value + this.step);
+        break;
+      case 'Home':
+        event.preventDefault();
+        newValue = this.min;
+        break;
+      case 'End':
+        event.preventDefault();
+        newValue = this.max;
+        break;
+      case 'PageDown':
+        event.preventDefault();
+        newValue = Math.max(this.min, this.value - this.step * 10);
+        break;
+      case 'PageUp':
+        event.preventDefault();
+        newValue = Math.min(this.max, this.value + this.step * 10);
+        break;
+    }
+
+    if (newValue !== this.value) {
+      this.value = newValue;
+      this._dispatchChange();
+    }
+  }
+
+  private _dispatchChange() {
+    this.onValueChange?.(this.value);
+
+    dispatchMultipleEvents(this, [
+      {
+        name: 'value-changed',
+        detail: {value: this.value},
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
+        detail: {value: this.value},
+        options: {bubbles: true, composed: true},
+      },
+    ]);
+  }
+
+  private _getContainerClasses(): string {
+    return classNames(
+      'slider-container',
+      'scientific-container',
+      this.variant !== 'default' && this.variant,
+      this.size !== 'medium' && this.size,
+      this.disabled && 'disabled',
+      this.state !== 'default' && this.state
     );
   }
 
-  private _onInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.value = Number(target.value);
-    this.dispatchEvent(new CustomEvent('value-changed', { detail: this.value }));
-  }
-
-  private _onThumbDrag(event: MouseEvent) {
-    const initialX = event.clientX;
-
-    const sliderContainer = this.shadowRoot?.querySelector('.slider-container');
-    const thumb = this.shadowRoot?.querySelector('.custom-thumb');
-
-    if (!sliderContainer || !thumb) return;
-
-    const sliderRect = sliderContainer.getBoundingClientRect();
-    const startLeft = parseFloat(getComputedStyle(thumb).left);
-
-    const mouseMoveHandler = (e: MouseEvent) => {
-      const deltaX = e.clientX - initialX;
-      let newLeft = startLeft + deltaX;
-
-      newLeft = Math.max(0, Math.min(newLeft, sliderRect.width));
-
-      const newPercentage = (newLeft / sliderRect.width) * 100;
-      this.value = Math.round(this.min + (newPercentage / 100) * (this.max - this.min));
-
-      this.dispatchEvent(new CustomEvent('value-changed', { detail: this.value }));
-    };
-
-    const mouseUpHandler = () => {
-      document.removeEventListener('mousemove', mouseMoveHandler);
-      document.removeEventListener('mouseup', mouseUpHandler);
-    };
-
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
-  }
-
-  private _onTrackClick(event: MouseEvent) {
-    const sliderRect = this.shadowRoot?.querySelector('.slider-container')?.getBoundingClientRect();
-
-    if (!sliderRect) return;
-
-    const clickX = event.clientX - sliderRect.left;
-    const newPercentage = (clickX / sliderRect.width) * 100;
-    this.value = Math.round(this.min + (newPercentage / 100) * (this.max - this.min));
-
-    this.dispatchEvent(new CustomEvent('value-changed', { detail: this.value }));
+  private _getThumbClasses(): string {
+    return classNames(
+      'slider-thumb',
+      this.isDragging && 'dragging',
+      this.showTooltip &&
+        (this.showTooltipState || this.isDragging) &&
+        'show-tooltip'
+    );
   }
 
   override render() {
-    const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
-    const tooltipStyle = this.tooltipPosition === 'top'
-      ? 'top: -30px;'
-      : 'bottom: -30px;';
-  
-    const tickPositions = this.ticks.map(tick => (tick - this.min) / (this.max - this.min) * 100);
-  
+    const percentage = this._getPercentage();
+    const displayValue = this._formatDisplayValue(this.value);
+
     return html`
-      <div class="slider-container">
-        <div class="label">${this.valueLabel}</div>
-        <div class="range-container">
-          <div
-            class="slider-track"
-            @click="${this._onTrackClick}"
-          >
-            <div class="slider-fill" style="width: ${percentage}%"></div>
-          </div>
-  
-          <div
-            class="custom-thumb"
-            style="left: calc(${percentage}% - 10px);"
-            @mousedown="${(e: MouseEvent) => this._onThumbDrag(e)}"
-          ></div>
-  
-          <input
-            type="range"
-            min="${this.min}"
-            max="${this.max}"
-            step="${this.step}"
-            .value="${String(this.value)}"
-            @input="${this._onInput}"
-            class="range-input"
-          />
-  
-          <div class="value-display" style="left: calc(${percentage}%); ${tooltipStyle}">
-            ${this.value}
-          </div>
-        </div>
-  
-        <div class="ticks">
-          ${this.ticks.map((tick, index) => {
-            const tickPosition = tickPositions[index];
-            return html`<span style="left: ${tickPosition}%">${tick}</span>`;
-          })}
-        </div>
+      <div class="${this._getContainerClasses()}">
+        ${this._renderHeader()} ${this._renderSlider(percentage, displayValue)}
+        ${this._renderMarks()} ${this._renderRangeLabels()}
+        ${this._renderMessages()}
       </div>
     `;
-  }  
+  }
+
+  private _renderHeader() {
+    if (!this.label && !this.description && !this.showValue) {
+      return '';
+    }
+
+    return html`
+      <div class="slider-header scientific-header">
+        <div class="slider-label-section scientific-header-content">
+          ${this.label
+            ? html`
+                <h3
+                  class="slider-label scientific-title ${this.required
+                    ? 'required'
+                    : ''}"
+                >
+                  ${this.label}
+                </h3>
+              `
+            : ''}
+          ${this.description
+            ? html`
+                <p class="slider-description scientific-subtitle">
+                  ${this.description}
+                </p>
+              `
+            : ''}
+        </div>
+        ${this.showValue
+          ? html`
+              <div class="slider-value-display">
+                ${this._formatDisplayValue(this.value)}
+              </div>
+            `
+          : ''}
+      </div>
+    `;
+  }
+
+  private _renderSlider(percentage: number, displayValue: string) {
+    return html`
+      <div class="slider-track-container">
+        <div class="slider-track" @click="${this._handleTrackClick}">
+          <div class="slider-fill" style="width: ${percentage}%"></div>
+        </div>
+
+        <div
+          class="${this._getThumbClasses()}"
+          style="left: ${percentage}%"
+          @mousedown="${this._handleThumbMouseDown}"
+          tabindex="${this.disabled ? -1 : 0}"
+          role="slider"
+          aria-valuemin="${this.min}"
+          aria-valuemax="${this.max}"
+          aria-valuenow="${this.value}"
+          aria-valuetext="${displayValue}"
+          aria-label="${this.label || 'Slider'}"
+          aria-disabled="${this.disabled}"
+          @keydown="${this._handleKeyDown}"
+        >
+          ${this.showTooltip
+            ? html` <div class="slider-tooltip">${displayValue}</div> `
+            : ''}
+        </div>
+
+        <input
+          type="range"
+          class="slider-input"
+          min="${this.min}"
+          max="${this.max}"
+          step="${this.step}"
+          .value="${String(this.value)}"
+          .disabled="${this.disabled}"
+          @input="${this._handleInput}"
+          tabindex="-1"
+          aria-hidden="true"
+        />
+      </div>
+    `;
+  }
+
+  private _renderMarks() {
+    if (!this.marks.length) {
+      return '';
+    }
+
+    return html`
+      <div class="slider-marks">
+        ${this.marks.map((mark) => {
+          const markPercentage =
+            ((mark.value - this.min) / (this.max - this.min)) * 100;
+          return html`
+            <div class="slider-mark" style="left: ${markPercentage}%">
+              <div class="slider-mark-tick"></div>
+              ${mark.label
+                ? html` <div class="slider-mark-label">${mark.label}</div> `
+                : ''}
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  }
+
+  private _renderRangeLabels() {
+    if (!this.showRangeLabels) {
+      return '';
+    }
+
+    return html`
+      <div class="slider-range-labels">
+        <span>${this._formatDisplayValue(this.min)}</span>
+        <span>${this._formatDisplayValue(this.max)}</span>
+      </div>
+    `;
+  }
+
+  private _renderMessages() {
+    return html`
+      ${this.helperText
+        ? html`<div class="slider-helper scientific-helper">
+            ${this.helperText}
+          </div>`
+        : ''}
+      ${this.state === 'error' && this.errorMessage
+        ? html`<div class="slider-error scientific-error">
+            ⚠️ ${this.errorMessage}
+          </div>`
+        : ''}
+    `;
+  }
 }
 
 declare global {
