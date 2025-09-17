@@ -29,7 +29,6 @@ export class ScientificForm extends LitElement {
       }
 
       .form-container {
-        /* Extends .scientific-container with form-specific customizations */
         max-width: var(--form-max-width, 600px);
         width: var(--form-width, 100%);
         min-height: var(--form-min-height, auto);
@@ -40,17 +39,14 @@ export class ScientificForm extends LitElement {
       }
 
       .form-header {
-        /* Extends .scientific-header with form-specific styling */
         border-bottom: var(--form-header-border, 1px solid #f3f4f6);
       }
 
       .form-title {
-        /* Extends .scientific-title with form-specific sizing */
         font-size: var(--form-title-font-size, var(--scientific-text-2xl));
       }
 
       .form-subtitle {
-        /* Extends .scientific-subtitle with form-specific sizing */
         font-size: var(--form-subtitle-font-size, var(--scientific-text-base));
       }
 
@@ -83,14 +79,12 @@ export class ScientificForm extends LitElement {
       }
 
       .form-error {
-        /* Extends .scientific-error with form-specific styling */
         display: flex;
         align-items: center;
         gap: var(--scientific-spacing-sm);
       }
 
       .form-success {
-        /* Extends .scientific-success with form-specific styling */
         display: flex;
         align-items: center;
         gap: var(--scientific-spacing-sm);
@@ -280,7 +274,6 @@ export class ScientificForm extends LitElement {
     const form = this.shadowRoot?.querySelector('form') as HTMLFormElement;
     if (!form) return;
 
-    // Validate form if not noValidate
     if (!this.noValidate && !form.checkValidity()) {
       form.reportValidity();
       return;
@@ -301,7 +294,6 @@ export class ScientificForm extends LitElement {
       if (this.onSubmit) {
         await this.onSubmit(formData);
       } else if (this.action) {
-        // Native form submission
         form.submit();
         return;
       }
@@ -366,7 +358,6 @@ export class ScientificForm extends LitElement {
 
   override firstUpdated() {
     if (this.autoFocus) {
-      // Focus first form input
       const firstInput = this.querySelector(
         'input, select, textarea'
       ) as HTMLElement;
@@ -429,7 +420,6 @@ export class ScientificForm extends LitElement {
         ${this.errorMessage
           ? html`
               <div class="scientific-error form-error" role="alert">
-                <span>⚠️</span>
                 <span>${this.errorMessage}</span>
               </div>
             `
@@ -437,7 +427,6 @@ export class ScientificForm extends LitElement {
         ${this.successMessage
           ? html`
               <div class="scientific-success form-success" role="status">
-                <span>✅</span>
                 <span>${this.successMessage}</span>
               </div>
             `

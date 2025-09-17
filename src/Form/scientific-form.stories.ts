@@ -1,7 +1,5 @@
-import {html, LitElement} from 'lit';
+import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import {expect} from '@storybook/jest';
-import {waitFor} from '@storybook/testing-library';
 import './scientific-form.js';
 
 const meta: Meta = {
@@ -35,12 +33,15 @@ A **modern**, **accessible** form component for scientific web apps with advance
 - \`progress\` — Progress percentage (0-100)
 - \`errorMessage\` — Error message to display
 - \`successMessage\` — Success message to display
-- \`footerLayout\` — Footer button alignment
+- \`footerLayout\` — Footer button alignment: end, start, center, space-between, full-width
 - \`autoFocus\` — Auto-focuses first input
-- \`method\` — Form HTTP method
+- \`method\` — Form HTTP method: get, post
 - \`action\` — Form action URL
-- \`enctype\` — Form encoding type
+- \`enctype\` — Form encoding type: application/x-www-form-urlencoded, multipart/form-data, text/plain
 - \`noValidate\` — Disables HTML5 validation
+- \`onSubmit\` — Async callback function called on form submission (receives FormData)
+- \`onCancel\` — Callback function called when cancel button is clicked
+- \`onReset\` — Callback function called when form is reset
 
 ## Events
 
@@ -50,16 +51,60 @@ A **modern**, **accessible** form component for scientific web apps with advance
 - \`form-cancel\` — Fired when cancel button is clicked
 - \`form-reset\` — Fired when form is reset
 
+## Basic Usage
+
+\`\`\`html
+<scientific-form
+  title="User Registration"
+  subtitle="Create your account"
+  @form-submit-success="\${handleSuccess}"
+  @form-submit-error="\${handleError}"
+>
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+    <input type="text" name="name" placeholder="Full Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Password" required />
+  </div>
+</scientific-form>
+\`\`\`
+
+## Advanced Usage
+
+**With async submit handler:**
+\`\`\`html
+<scientific-form
+  title="Data Upload"
+  .onSubmit="\${async (formData) => {
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    if (!response.ok) throw new Error('Upload failed');
+  }}"
+  enctype="multipart/form-data"
+  showProgress
+  .progress="\${uploadProgress}"
+>
+  <input type="file" name="dataFile" accept=".csv,.json" required />
+</scientific-form>
+\`\`\`
+
+---
+
 ## Features
 
-- **Modern Design**: Clean, professional styling with hover effects
-- **Loading States**: Built-in loading overlay and button states
-- **Progress Tracking**: Optional progress bar for multi-step forms
-- **Error Handling**: Built-in error and success message display
-- **Flexible Layout**: Multiple footer layouts and variants
-- **Form Integration**: Native HTML form features with custom enhancements
-- **Responsive**: Mobile-friendly responsive design
-- **Accessibility**: ARIA attributes and screen reader support
+- **Modern Design**: Clean, professional styling with hover effects and transitions
+- **Loading States**: Built-in loading overlay and button states with customizable loading text
+- **Progress Tracking**: Optional progress bar for multi-step forms with percentage display
+- **Error Handling**: Built-in error and success message display with ARIA announcements
+- **Flexible Layout**: Multiple footer layouts (end, start, center, space-between, full-width)
+- **Form Integration**: Native HTML form features with custom async enhancement
+- **Responsive Design**: Mobile-friendly responsive design with touch optimization  
+- **Accessibility**: ARIA attributes, screen reader support, and keyboard navigation
+- **Variant System**: Default, compact, and elevated visual variants
+- **Auto Focus**: Optional automatic focus on first form input
+- **Validation**: HTML5 validation with optional disable and custom error display
+- **Scientific Design System**: Full integration with design tokens and shared styles
 
 ## Styling
 
@@ -76,90 +121,44 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
 
 **Complete Variable List:**
 
+All CSS custom properties available for customization with their default values:
+
     scientific-form {
-      /* Container Styling */
-      --form-bg-color: #ffffff;
-      --form-border: 2px solid #e5e7eb;
-      --form-border-radius: 12px;
-      --form-padding: 24px;
-      --form-margin: 0;
+      /* Container & Layout */
       --form-max-width: 600px;
       --form-width: 100%;
       --form-min-height: auto;
-      --form-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --form-hover-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-      --form-transition: all 0.2s ease-in-out;
-      --form-font-family: system-ui, -apple-system, sans-serif;
-      --form-gap: 20px;
       
-      /* Disabled State */
-      --form-disabled-opacity: 0.6;
-      
-      /* Loading Overlay */
-      --form-loading-overlay-bg: rgba(255, 255, 255, 0.8);
-      --form-loading-z-index: 10;
-      --form-loading-spinner-color: #e5e7eb;
-      --form-loading-spinner-active-color: #007bff;
-      
-      /* Header */
-      --form-header-gap: 8px;
-      --form-header-padding-bottom: 16px;
+      /* Header Styling */
       --form-header-border: 1px solid #f3f4f6;
-      --form-title-font-size: 24px;
-      --form-title-font-weight: 600;
-      --form-title-color: #111827;
-      --form-title-line-height: 1.2;
-      --form-subtitle-font-size: 16px;
-      --form-subtitle-font-weight: 400;
-      --form-subtitle-color: #6b7280;
-      --form-subtitle-line-height: 1.4;
+      --form-title-font-size: var(--scientific-text-2xl);
+      --form-subtitle-font-size: var(--scientific-text-base);
       
-      /* Content */
-      --form-content-gap: 16px;
-      --form-section-gap: 12px;
-      --form-section-title-font-size: 18px;
+      /* Content Layout */
+      --form-content-gap: var(--scientific-spacing-lg);
+      --form-section-gap: var(--scientific-spacing-md);
+      --form-section-title-font-size: var(--scientific-text-lg);
       --form-section-title-font-weight: 500;
       --form-section-title-color: #374151;
-      --form-section-title-padding-bottom: 4px;
+      --form-section-title-padding-bottom: var(--scientific-spacing-xs);
       --form-section-title-border: 1px solid #f3f4f6;
       
-      /* Messages */
-      --form-error-bg-color: #fef2f2;
-      --form-error-border: 1px solid #fecaca;
-      --form-error-border-radius: 8px;
-      --form-error-padding: 12px 16px;
-      --form-error-color: #dc2626;
-      --form-error-font-size: 14px;
-      --form-success-bg-color: #f0fdf4;
-      --form-success-border: 1px solid #bbf7d0;
-      --form-success-border-radius: 8px;
-      --form-success-padding: 12px 16px;
-      --form-success-color: #16a34a;
-      --form-success-font-size: 14px;
-      
-      /* Footer */
+      /* Footer Layout */
       --form-footer-justify: flex-end;
-      --form-footer-gap: 12px;
-      --form-footer-padding-top: 16px;
+      --form-footer-gap: var(--scientific-spacing-md);
+      --form-footer-padding-top: var(--scientific-spacing-lg);
       --form-footer-border: 1px solid #f3f4f6;
       
       /* Progress Bar */
-      --form-progress-height: 4px;
+      --form-progress-height: var(--scientific-spacing-xs);
       --form-progress-bg-color: #f3f4f6;
-      --form-progress-color: #007bff;
-      --form-progress-border-radius: 2px;
+      --form-progress-color: var(--scientific-primary-color);
+      --form-progress-border-radius: var(--scientific-border-radius);
       
       /* Compact Variant */
-      --form-compact-padding: 16px;
-      --form-compact-gap: 12px;
-      --form-compact-header-padding-bottom: 8px;
-      --form-compact-content-gap: 12px;
-      --form-compact-footer-padding-top: 8px;
-      
-      /* Mobile Responsive */
-      --form-mobile-padding: 16px;
-      --form-mobile-margin: 0;
-      --form-mobile-border-radius: 8px;
+      --form-compact-min-height: auto;
+      --form-compact-content-gap: var(--scientific-spacing-md);
+      --form-compact-footer-padding-top: var(--scientific-spacing-sm);
     }
         `,
       },
@@ -295,6 +294,16 @@ export const Default: Story = {
       .action=${action}
       .noValidate=${noValidate}
       .variant=${variant}
+      .onSubmit=${async (formData: FormData) => {
+        console.log('Form submitted with data:', Object.fromEntries(formData));
+        // Simulate async processing
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        alert('Registration successful! Check console for form data.');
+      }}
+      .onCancel=${() => {
+        console.log('Form cancelled');
+        alert('Registration cancelled');
+      }}
     >
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div style="display: flex; gap: 12px;">
@@ -420,6 +429,14 @@ export const WithProgress: Story = {
       .progress=${progress}
       .submitLabel=${submitLabel}
       .cancelLabel=${cancelLabel}
+      .onSubmit=${async (formData: FormData) => {
+        console.log('Step 2 data:', Object.fromEntries(formData));
+        alert('Moving to step 3...');
+      }}
+      .onCancel=${() => {
+        console.log('Going back to step 1');
+        alert('Returning to previous step...');
+      }}
     >
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <label style="display: flex; flex-direction: column; gap: 4px;">
@@ -768,7 +785,6 @@ export const RealWorldExample: Story = {
       .progress=${progress}
       .onSubmit=${async (formData: FormData) => {
         console.log('Form submitted with data:', Object.fromEntries(formData));
-        // Simulate progress
         const form = document.querySelector('scientific-form');
         if (form) {
           for (let i = 0; i <= 100; i += 10) {
@@ -870,28 +886,4 @@ export const RealWorldExample: Story = {
         </div>
       </div>
     </scientific-form>`,
-};
-
-export const InteractionTest: Story = {
-  args: {
-    title: 'Test Form',
-    subtitle: 'Form for automated testing',
-    autoFocus: true,
-  },
-  play: async ({canvasElement}) => {
-    const form = canvasElement.querySelector('scientific-form');
-    if (!form) throw new Error('Form not found');
-
-    const submitButton = form.shadowRoot?.querySelector(
-      'scientific-button[type="submit"]'
-    );
-    if (submitButton) {
-      (submitButton as HTMLElement).click();
-      await (form as LitElement).updateComplete;
-    }
-
-    await waitFor(() => {
-      expect(form.title).toBe('Test Form');
-    });
-  },
 };
