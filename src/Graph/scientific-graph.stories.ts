@@ -25,6 +25,7 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
 - \`subtitle\` — Graph subtitle/description text
 - \`variant\` — Graph style: default, compact
 - \`type\` — Chart type: line, bar, pie, doughnut, scatter, area, radar
+- \`isAreaChart\` — Internal flag for area chart rendering (automatically set when type is 'area')
 - \`labels\` — Array of labels for data points
 - \`datasets\` — Array of dataset objects with data, styling, and configuration
 - \`showStatistics\` — Shows/hides statistical calculations
@@ -53,16 +54,63 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
 - \`graph-exported\` — Fired when chart is exported
 - \`graph-refreshed\` — Fired when chart is refreshed
 
+## Basic Usage
+
+\`\`\`html
+<scientific-graph
+  title="Sample Scientific Data"
+  subtitle="Basic line chart with default settings"
+  type="line"
+  .labels="\${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}"
+  .datasets="\${[{
+    label: 'Sample Data',
+    data: [12, 19, 3, 5, 2, 3],
+    borderColor: '#007bff',
+    backgroundColor: 'rgba(0, 123, 255, 0.1)'
+  }]}"
+  showStatistics
+  showLegend
+  showToolbar
+></scientific-graph>
+\`\`\`
+
+**Advanced Usage with Export:**
+\`\`\`html
+<scientific-graph
+  title="Temperature Data"
+  type="line"
+  .labels="\${monthLabels}"
+  .datasets="\${temperatureDatasets}"
+  showExportButtons
+  .exportFormats="\${['png', 'pdf']}"
+  xAxisTitle="Month"
+  yAxisTitle="Temperature (°C)"
+  @graph-exported="\${handleExport}"
+></scientific-graph>
+\`\`\`
+
 ## Features
 
 - **Multiple Chart Types**: Line, bar, pie, doughnut, scatter, area, radar
 - **Interactive Toolbar**: Chart type selector and export options
 - **Statistical Analysis**: Automatic calculation and display of key statistics
-- **Export Capabilities**: PNG, JPG export with automatic filename generation
+- **Export Capabilities**: PNG, JPG, PDF export with automatic filename generation
 - **Loading States**: Built-in loading overlay and error handling
 - **Responsive Design**: Adapts to container size changes
+- **Interactive Charts**: Click handlers and zoom/pan functionality
+- **Form Integration**: Chart data updates and real-time rendering
 - **Customizable**: Extensive CSS variable system for styling
-- **Accessibility**: ARIA attributes and keyboard navigation support
+- **Accessibility**: ARIA attributes, keyboard navigation, and screen reader support
+
+## Accessibility Features
+
+- **ARIA Labels**: Descriptive labels for chart components and controls
+- **Keyboard Navigation**: Full keyboard support for toolbar controls and interactions
+- **Screen Reader Support**: Chart data accessible through ARIA descriptions
+- **Focus Management**: Proper focus handling for interactive elements
+- **Color Contrast**: Meets WCAG guidelines with customizable color schemes
+- **Loading States**: Accessible loading indicators with aria-busy attributes
+- **Error Handling**: Screen reader accessible error messages
 
 ## Dataset Configuration
 
@@ -202,10 +250,23 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       options: ['line', 'bar', 'pie', 'doughnut', 'scatter', 'area', 'radar'],
       description: 'The type of chart to display',
     },
+    isAreaChart: {
+      control: 'boolean',
+      description:
+        'Internal flag for area chart rendering (automatically managed)',
+    },
     variant: {
       control: {type: 'select'},
       options: ['default', 'compact'],
       description: 'The variant of the graph container',
+    },
+    labels: {
+      control: 'object',
+      description: 'Array of labels for data points',
+    },
+    datasets: {
+      control: 'object',
+      description: 'Array of dataset objects with data and styling',
     },
     showStatistics: {
       control: 'boolean',
@@ -244,6 +305,18 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       control: 'boolean',
       description: 'Whether the chart should be responsive',
     },
+    maintainAspectRatio: {
+      control: 'boolean',
+      description: 'Whether to maintain chart aspect ratio',
+    },
+    enableZoom: {
+      control: 'boolean',
+      description: 'Whether to enable chart zoom functionality',
+    },
+    enablePan: {
+      control: 'boolean',
+      description: 'Whether to enable chart pan functionality',
+    },
     isLoading: {
       control: 'boolean',
       description: 'Whether to show loading state',
@@ -259,6 +332,18 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     yAxisTitle: {
       control: {type: 'text'},
       description: 'Title for the Y-axis',
+    },
+    customOptions: {
+      control: 'object',
+      description: 'Custom Chart.js options object',
+    },
+    onDataClick: {
+      control: false,
+      description: 'Click handler for chart data points',
+    },
+    onExport: {
+      control: false,
+      description: 'Custom export handler function',
     },
   },
 };
