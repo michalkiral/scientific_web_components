@@ -12,9 +12,74 @@ const meta: Meta<ScientificInput> = {
     docs: {
       description: {
         component: `
-A highly customizable autocomplete input component with advanced features:
+# Scientific Input
+
+A **highly customizable**, **accessible** autocomplete input component for scientific web apps with advanced features.
+
+---
+
+## Props
+
+- \`label\` — Label text displayed above the input
+- \`placeholder\` — Placeholder text shown when input is empty  
+- \`value\` — Current value of the input
+- \`options\` — Array of available options for autocomplete
+- \`disabled\` — Whether the input is disabled
+- \`required\` — Whether the input is required (shows asterisk)
+- \`clearable\` — Whether to show a clear button when input has value
+- \`size\` — Input size: small, medium, large
+- \`state\` — Visual state: default, error, success
+- \`helperText\` — Helper text displayed below the input
+- \`errorMessage\` — Error message displayed when state is error
+- \`successMessage\` — Success message displayed when state is success
+- \`icon\` — Icon displayed on the right side (emoji or text)
+- \`allowCustomValues\` — Whether users can add custom values not in options
+- \`minLength\` — Minimum length of input value
+- \`maxLength\` — Maximum length of input value (-1 for unlimited)
+- \`noOptionsText\` — Text shown when no options match the search
+- \`autoComplete\` — Whether to enable autocomplete functionality
+- \`autoFocus\` — Whether to focus the input on mount
+
+## Events
+
+- \`input\` — Fired when the input value changes
+- \`change\` — Fired when the input value changes
+- \`option-selected\` — Fired when an option is selected from dropdown
+- \`custom-value-selected\` — Fired when a custom value is added
+- \`clear\` — Fired when the input is cleared
+- \`focus\` — Fired when the input gains focus
+- \`blur\` — Fired when the input loses focus
+
+## Basic Usage
+
+\`\`\`html
+<scientific-input
+  label="Search Countries"
+  placeholder="Type to search countries..."
+  .options="\${[
+    {label: 'United States', value: 'us'},
+    {label: 'United Kingdom', value: 'uk'},
+    {label: 'Canada', value: 'ca'}
+  ]}"
+  clearable
+  @option-selected="\${handleSelection}"
+></scientific-input>
+\`\`\`
+
+**Advanced Usage with Custom Values:**
+\`\`\`html
+<scientific-input
+  label="Tags"
+  placeholder="Type to add a tag..."
+  allowCustomValues
+  .options="\${existingTags}"
+  @custom-value-selected="\${handleCustomValue}"
+  @option-selected="\${handleTagSelection}"
+></scientific-input>
+\`\`\`
 
 ## Features
+
 - **Autocomplete functionality** with customizable options
 - **Multiple size variants** (small, medium, large)
 - **State management** (default, error, success) with visual feedback
@@ -22,30 +87,144 @@ A highly customizable autocomplete input component with advanced features:
 - **Custom value support** allowing users to add new options
 - **Grouped options** for better organization
 - **Keyboard navigation** with arrow keys and Enter/Escape support
-- **Accessible** with proper ARIA attributes
+- **Tab autocompletion** for quick selection
+- **Length validation** with min/max length constraints
+- **Form integration** with proper form submission support
 - **Responsive design** that works on all devices
 - **Highly customizable** with CSS custom properties
 
-## CSS Custom Properties
-The component supports extensive customization through CSS custom properties:
-- \`--input-width\`: Component width
-- \`--input-border\`: Border style
-- \`--input-border-radius\`: Border radius
-- \`--input-bg-color\`: Background color
-- \`--input-padding\`: Internal padding
-- \`--input-font-size\`: Text size
-- \`--input-focus-border-color\`: Focus border color
-- \`--input-focus-shadow\`: Focus shadow effect
-- And many more...
+## Accessibility Features
 
-## Events
-- \`input\`: Fired when the input value changes
-- \`change\`: Fired when the input value changes
-- \`option-selected\`: Fired when an option is selected from dropdown
-- \`custom-value-selected\`: Fired when a custom value is added
-- \`clear\`: Fired when the input is cleared
-- \`focus\`: Fired when the input gains focus
-- \`blur\`: Fired when the input loses focus
+- **ARIA Labels**: Comprehensive labeling for screen readers
+- **Keyboard Navigation**: Full keyboard support with arrow keys, Enter, Escape, Tab
+- **Screen Reader Support**: Proper announcements for option selection and changes
+- **Focus Management**: Logical focus flow and visible focus indicators
+- **Role Attributes**: Correct ARIA roles for combobox functionality
+- **Live Regions**: Dynamic content updates announced to screen readers
+- **Error Handling**: Accessible error messages and validation states
+- **Required Field Indicators**: Clear visual and programmatic required field marking
+
+## Styling
+
+Use CSS variables to customize appearance. Here are the most commonly used variables:
+
+**Basic Styling:**
+    scientific-input {
+      --input-width: 100%;
+      --input-border: 2px solid #e5e7eb;
+      --input-border-radius: 8px;
+      --input-bg-color: #ffffff;
+      --input-padding: 12px 16px;
+      --input-font-size: 16px;
+      --input-focus-border-color: #007bff;
+      --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+**Complete Variable List:**
+
+    scientific-input {
+      /* Container & Layout */
+      --input-width: 100%;
+      --input-min-width: auto;
+      --input-max-width: none;
+      --input-height: auto;
+      --input-min-height: 48px;
+      
+      /* Input Field Styling */
+      --input-padding: 12px 16px;
+      --input-border: 2px solid #e5e7eb;
+      --input-border-radius: 8px;
+      --input-bg-color: #ffffff;
+      --input-color: #374151;
+      --input-font-size: 16px;
+      --input-font-weight: 400;
+      --input-line-height: 1.5;
+      --input-transition: all 0.2s ease-in-out;
+      
+      /* Label Styling */
+      --input-label-font-size: 14px;
+      --input-label-font-weight: 500;
+      --input-label-color: #374151;
+      --input-label-margin-bottom: 6px;
+      
+      /* Focus States */
+      --input-focus-border-color: #007bff;
+      --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      --input-focus-bg-color: #ffffff;
+      
+      /* Hover States */
+      --input-hover-border-color: #d1d5db;
+      
+      /* Disabled States */
+      --input-disabled-bg-color: #f9fafb;
+      --input-disabled-border-color: #e5e7eb;
+      --input-disabled-color: #9ca3af;
+      
+      /* Error States */
+      --input-error-border-color: #ef4444;
+      --input-error-focus-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      --input-error-color: #dc2626;
+      
+      /* Success States */
+      --input-success-border-color: #10b981;
+      --input-success-focus-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      --input-success-color: #059669;
+      
+      /* Placeholder */
+      --input-placeholder-color: #9ca3af;
+      
+      /* Icon */
+      --input-icon-color: #6b7280;
+      --input-icon-size: 18px;
+      
+      /* Clear Button */
+      --input-clear-color: #6b7280;
+      --input-clear-hover-color: #374151;
+      
+      /* Dropdown */
+      --input-dropdown-bg-color: #ffffff;
+      --input-dropdown-border: 1px solid #e5e7eb;
+      --input-dropdown-border-radius: 8px;
+      --input-dropdown-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --input-dropdown-max-height: 200px;
+      --input-dropdown-z-index: 1000;
+      
+      /* Options */
+      --input-option-padding: 12px 16px;
+      --input-option-color: #374151;
+      --input-option-hover-bg-color: #f9fafb;
+      --input-option-selected-bg-color: #eff6ff;
+      --input-option-selected-color: #2563eb;
+      --input-option-highlighted-bg-color: #f3f4f6;
+      --input-option-disabled-color: #9ca3af;
+      --input-option-disabled-bg-color: transparent;
+      
+      /* Group Headers */
+      --input-group-header-color: #6b7280;
+      --input-group-header-font-weight: 600;
+      --input-group-header-padding: 8px 16px;
+      --input-group-header-bg-color: #f9fafb;
+      
+      /* Helper Text */
+      --input-helper-font-size: 14px;
+      --input-helper-color: #6b7280;
+      --input-helper-margin-top: 6px;
+      
+      /* Size Variants */
+      --input-small-font-size: 14px;
+      --input-small-padding: 8px 12px;
+      --input-small-min-height: 36px;
+      
+      --input-large-font-size: 18px;
+      --input-large-padding: 16px 20px;
+      --input-large-min-height: 56px;
+      
+      /* Mobile Responsive */
+      --input-mobile-font-size: 16px;
+      --input-mobile-min-height: 44px;
+      --input-small-mobile-min-height: 32px;
+      --input-large-mobile-min-height: 52px;
+    }
         `,
       },
     },
@@ -78,6 +257,11 @@ The component supports extensive customization through CSS custom properties:
     clearable: {
       control: 'boolean',
       description: 'Whether to show a clear button when input has value',
+    },
+    size: {
+      control: {type: 'select'},
+      options: ['small', 'medium', 'large'],
+      description: 'Size of the input field',
     },
     state: {
       control: {type: 'select'},
@@ -246,6 +430,50 @@ export const States: Story = {
           {label: 'Apple', value: 'apple'},
           {label: 'Banana', value: 'banana'},
           {label: 'Cherry', value: 'cherry'},
+        ]}
+      ></scientific-input>
+    </div>
+  `,
+};
+
+export const Sizes: Story = {
+  render: () => html`
+    <div
+      style="display: flex; flex-direction: column; gap: 24px; width: 400px;"
+    >
+      <h3 style="margin: 0;">Small Size</h3>
+      <scientific-input
+        label="Small Input"
+        placeholder="Small size input..."
+        size="small"
+        .options=${[
+          {label: 'Option 1', value: '1'},
+          {label: 'Option 2', value: '2'},
+          {label: 'Option 3', value: '3'},
+        ]}
+      ></scientific-input>
+
+      <h3 style="margin: 0;">Medium Size (Default)</h3>
+      <scientific-input
+        label="Medium Input"
+        placeholder="Medium size input..."
+        size="medium"
+        .options=${[
+          {label: 'Option 1', value: '1'},
+          {label: 'Option 2', value: '2'},
+          {label: 'Option 3', value: '3'},
+        ]}
+      ></scientific-input>
+
+      <h3 style="margin: 0;">Large Size</h3>
+      <scientific-input
+        label="Large Input"
+        placeholder="Large size input..."
+        size="large"
+        .options=${[
+          {label: 'Option 1', value: '1'},
+          {label: 'Option 2', value: '2'},
+          {label: 'Option 3', value: '3'},
         ]}
       ></scientific-input>
     </div>
