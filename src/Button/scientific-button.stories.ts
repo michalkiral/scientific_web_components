@@ -247,6 +247,15 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Button theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     label: {control: 'text', description: 'Button label'},
     loading: {control: 'boolean', description: 'Loading state'},
     loadingLabel: {control: 'text', description: 'Label when loading'},
@@ -293,6 +302,7 @@ type Story = StoryObj;
 export const Default: Story = {
   args: {
     label: 'Click Me',
+    theme: 'default',
     variant: 'primary',
     size: 'medium',
     loading: false,
@@ -312,6 +322,7 @@ export const Default: Story = {
   },
   render: ({
     label,
+    theme,
     variant,
     size,
     loading,
@@ -331,6 +342,7 @@ export const Default: Story = {
   }) =>
     html`<scientific-button
       .label=${label}
+      .theme=${theme}
       .variant=${variant}
       .size=${size}
       .loading=${loading}
@@ -743,4 +755,270 @@ export const StyleCustomization: Story = {
       </div>
     </div>
   `,
+};
+
+export const DarkTheme: Story = {
+  args: {
+    label: 'Dark Theme Button',
+    theme: 'dark',
+    variant: 'primary',
+  },
+  render: ({label, theme, variant}) =>
+    html`<scientific-button
+      .label=${label}
+      .theme=${theme}
+      .variant=${variant}
+    ></scientific-button>`,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Button with dark theme applied, featuring dark backgrounds and light text optimized for low-light usage.',
+      },
+    },
+  },
+};
+
+export const ScientificTheme: Story = {
+  args: {
+    label: 'Scientific Theme Button',
+    theme: 'scientific',
+    variant: 'primary',
+  },
+  render: ({label, theme, variant}) =>
+    html`<scientific-button
+      .label=${label}
+      .theme=${theme}
+      .variant=${variant}
+    ></scientific-button>`,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Button with scientific theme featuring professional typography, enhanced shadows, and research-focused styling.',
+      },
+    },
+  },
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 48px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="default"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="default"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="default"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="default"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="default"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="default"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="dark"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="dark"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="dark"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="dark"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="dark"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="dark"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="scientific"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="scientific"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="scientific"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="scientific"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="scientific"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="scientific"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches for all button variants.',
+      },
+    },
+  },
+};
+
+export const ThemeVariantGrid: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Loading States Across Themes
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <scientific-button
+            label="Loading Default"
+            theme="default"
+            variant="primary"
+            loading
+          ></scientific-button>
+          <scientific-button
+            label="Loading Dark"
+            theme="dark"
+            variant="primary"
+            loading
+          ></scientific-button>
+          <scientific-button
+            label="Loading Scientific"
+            theme="scientific"
+            variant="primary"
+            loading
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Disabled States Across Themes
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <scientific-button
+            label="Disabled Default"
+            theme="default"
+            variant="primary"
+            disabled
+          ></scientific-button>
+          <scientific-button
+            label="Disabled Dark"
+            theme="dark"
+            variant="primary"
+            disabled
+          ></scientific-button>
+          <scientific-button
+            label="Disabled Scientific"
+            theme="scientific"
+            variant="primary"
+            disabled
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Size Variations with Scientific Theme
+        </h3>
+        <div
+          style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;"
+        >
+          <scientific-button
+            label="Small Scientific"
+            theme="scientific"
+            variant="primary"
+            size="small"
+          ></scientific-button>
+          <scientific-button
+            label="Medium Scientific"
+            theme="scientific"
+            variant="primary"
+            size="medium"
+          ></scientific-button>
+          <scientific-button
+            label="Large Scientific"
+            theme="scientific"
+            variant="primary"
+            size="large"
+          ></scientific-button>
+        </div>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Grid view showcasing various button states and sizes across different themes, demonstrating theme consistency and visual hierarchy.',
+      },
+    },
+  },
 };

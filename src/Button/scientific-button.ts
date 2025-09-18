@@ -7,12 +7,17 @@ import {
   loadingSpinnerStyles,
   responsiveStyles,
   classNames,
+  themeStyles,
+  type ScientificTheme,
 } from '../shared/index.js';
+
+export type ButtonTheme = ScientificTheme;
 
 @customElement('scientific-button')
 export class ScientificButton extends LitElement {
   static override styles = [
     sharedVariables,
+    themeStyles,
     buttonStyles,
     loadingSpinnerStyles,
     responsiveStyles,
@@ -65,6 +70,9 @@ export class ScientificButton extends LitElement {
       }
     `,
   ];
+
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
 
   @property({attribute: false})
   action: (() => Promise<void>) | (() => void) | undefined;

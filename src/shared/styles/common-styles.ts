@@ -603,6 +603,179 @@ export const themeStyles = css`
   :host([theme='scientific']) .clear-button:hover {
     color: var(--scientific-danger-color);
   }
+
+  /* Button specific styles */
+  :host([theme='dark']) .scientific-button {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+    box-shadow: var(--scientific-shadow-sm);
+  }
+
+  :host([theme='dark']) .scientific-button:hover {
+    background-color: var(--scientific-bg-tertiary);
+    border-color: var(--scientific-border-hover);
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='dark']) .scientific-button:focus {
+    border-color: var(--scientific-primary-color);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+
+  :host([theme='dark']) .scientific-button.secondary {
+    background-color: var(--scientific-bg-tertiary);
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .scientific-button.secondary:hover {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-hover);
+  }
+
+  :host([theme='dark']) .scientific-button.outline {
+    background-color: transparent;
+    color: var(--scientific-primary-color);
+    border-color: var(--scientific-primary-color);
+  }
+
+  :host([theme='dark']) .scientific-button.outline:hover {
+    background-color: var(--scientific-primary-color);
+    color: #ffffff;
+  }
+
+  :host([theme='dark']) .scientific-button.ghost {
+    background-color: transparent;
+    color: var(--scientific-primary-color);
+    border-color: transparent;
+  }
+
+  :host([theme='dark']) .scientific-button.ghost:hover {
+    background-color: rgba(96, 165, 250, 0.1);
+    border-color: transparent;
+  }
+
+  :host([theme='dark']) .scientific-button.danger {
+    background-color: var(--scientific-danger-color);
+    color: #ffffff;
+    border-color: var(--scientific-danger-color);
+  }
+
+  :host([theme='dark']) .scientific-button.danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+  }
+
+  :host([theme='dark']) .scientific-button.success {
+    background-color: var(--scientific-success-color);
+    color: #ffffff;
+    border-color: var(--scientific-success-color);
+  }
+
+  :host([theme='dark']) .scientific-button.success:hover {
+    background-color: #059669;
+    border-color: #059669;
+  }
+
+  :host([theme='dark']) .scientific-button:disabled {
+    background-color: var(--scientific-bg-tertiary);
+    color: var(--scientific-text-muted);
+    border-color: var(--scientific-border-color);
+    box-shadow: none;
+  }
+
+  :host([theme='scientific']) .scientific-button {
+    background-color: var(--scientific-primary-color);
+    color: #ffffff;
+    border: var(--scientific-border);
+    box-shadow: var(--scientific-shadow);
+    font-weight: var(--scientific-font-weight-medium);
+  }
+
+  :host([theme='scientific']) .scientific-button:hover {
+    background-color: var(--scientific-primary-hover);
+    border-color: var(--scientific-primary-hover);
+    box-shadow: var(--scientific-shadow-lg);
+    transform: translateY(-1px);
+  }
+
+  :host([theme='scientific']) .scientific-button:focus {
+    border-color: var(--scientific-primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .scientific-button:active {
+    transform: translateY(0);
+    box-shadow: var(--scientific-shadow-sm);
+  }
+
+  :host([theme='scientific']) .scientific-button.secondary {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-secondary);
+    border: var(--scientific-border);
+  }
+
+  :host([theme='scientific']) .scientific-button.secondary:hover {
+    background-color: var(--scientific-bg-tertiary);
+    border-color: var(--scientific-border-hover);
+    color: var(--scientific-text-primary);
+  }
+
+  :host([theme='scientific']) .scientific-button.outline {
+    background-color: transparent;
+    color: var(--scientific-primary-color);
+    border: 2px solid var(--scientific-primary-color);
+  }
+
+  :host([theme='scientific']) .scientific-button.outline:hover {
+    background-color: var(--scientific-primary-color);
+    color: #ffffff;
+    border-color: var(--scientific-primary-color);
+  }
+
+  :host([theme='scientific']) .scientific-button.ghost {
+    background-color: transparent;
+    color: var(--scientific-primary-color);
+    border: 2px solid transparent;
+    box-shadow: none;
+  }
+
+  :host([theme='scientific']) .scientific-button.ghost:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: transparent;
+    box-shadow: var(--scientific-shadow-sm);
+  }
+
+  :host([theme='scientific']) .scientific-button.danger {
+    background-color: var(--scientific-danger-color);
+    color: #ffffff;
+    border: 2px solid var(--scientific-danger-color);
+  }
+
+  :host([theme='scientific']) .scientific-button.danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+  }
+
+  :host([theme='scientific']) .scientific-button.success {
+    background-color: var(--scientific-success-color);
+    color: #ffffff;
+    border: 2px solid var(--scientific-success-color);
+  }
+
+  :host([theme='scientific']) .scientific-button.success:hover {
+    background-color: #059669;
+    border-color: #059669;
+  }
+
+  :host([theme='scientific']) .scientific-button:disabled {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-muted);
+    border-color: var(--scientific-border-color);
+    box-shadow: none;
+    transform: none;
+  }
 `;
 
 export const loadingSpinnerStyles = css`
