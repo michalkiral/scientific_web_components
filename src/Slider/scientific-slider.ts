@@ -9,6 +9,7 @@ import {
   themeStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {sliderThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
 
@@ -24,6 +25,7 @@ export class ScientificSlider extends LitElement {
   static override styles = [
     sharedVariables,
     themeStyles,
+    sliderThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,

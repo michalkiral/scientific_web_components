@@ -8,19 +8,38 @@ import {
   responsiveStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {
+  dropdownContainerStyles,
+  clearButtonStyles,
+} from '../shared/styles/dropdown-styles.js';
+import {dropdownThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
+import {
+  handleDropdownKeyboard,
+  filterOptions,
+  createClickOutsideHandler,
+  type DropdownOption,
+  type DropdownKeyboardHandler,
+} from '../shared/utils/dropdown-utils.js';
+import {renderDropdownOptions} from '../shared/utils/dropdown-render.js';
 
 export type DropdownTheme = ScientificTheme;
 
 @customElement('scientific-dropdown')
-export class ScientificDropdown extends LitElement {
+export class ScientificDropdown
+  extends LitElement
+  implements DropdownKeyboardHandler
+{
   static override styles = [
     sharedVariables,
     themeStyles,
+    dropdownThemeStyles,
     inputStyles,
     messageStyles,
     responsiveStyles,
+    dropdownContainerStyles,
+    clearButtonStyles,
     css`
       :host {
         display: block;
@@ -108,121 +127,9 @@ export class ScientificDropdown extends LitElement {
         color: var(--dropdown-placeholder-color, #9ca3af);
       }
 
-      .options-container {
-        position: absolute;
-        top: calc(100% - 1px);
-        left: 0;
-        width: 100%;
-        box-sizing: border-box;
-        border: 1px solid var(--dropdown-border-color, #d1d5db);
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        border-bottom-left-radius: var(--scientific-border-radius);
-        border-bottom-right-radius: var(--scientific-border-radius);
-        background-color: var(--dropdown-options-bg-color, #ffffff);
-        box-shadow: var(--scientific-shadow-lg);
-        z-index: 1000;
-        max-height: 200px;
-        overflow: hidden;
-        animation: slideDown 0.15s ease-out;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .options-list {
-        overflow-y: auto;
-        flex: 1;
-        max-height: inherit;
-      }
-
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .option {
-        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
-        cursor: pointer;
-        transition: background-color var(--scientific-transition-fast);
-        border-bottom: 1px solid #f3f4f6;
-        color: var(--dropdown-option-color, #374151);
-        font-size: var(--scientific-text-sm);
-      }
-
-      .option:last-child {
-        border-bottom: none;
-      }
-
-      .option:hover {
-        background-color: var(--dropdown-option-hover-bg-color, #f9fafb);
-      }
-
-      .option.selected {
-        background-color: var(--dropdown-option-selected-bg-color, #eff6ff);
-        color: var(
-          --dropdown-option-selected-color,
-          var(--scientific-primary-color)
-        );
-        font-weight: 500;
-      }
-
-      .option.focused {
-        background-color: var(--dropdown-option-focused-bg-color, #f3f4f6);
-      }
-
-      .search-input {
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid #e5e7eb;
-        background-color: #f9fafb;
-        font-size: var(--scientific-text-sm);
-        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
-        box-sizing: border-box;
-        outline: none;
-        font-family: inherit;
-        color: #374151;
-      }
-
-      .search-input:focus {
-        background-color: #ffffff;
-      }
-
-      .no-options {
-        padding: var(--scientific-spacing-md);
-        text-align: center;
-        color: #9ca3af;
-        font-style: italic;
-        font-size: var(--scientific-text-sm);
-      }
-
-      .clear-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0 var(--scientific-spacing-xs);
-        color: #6b7280;
-        font-size: 14px;
-        line-height: 1;
-        transition: color var(--scientific-transition);
-      }
-
-      .clear-button:hover {
-        color: var(--scientific-danger-color);
-      }
-
       @media (max-width: 768px) {
         .dropdown-select {
           min-height: 44px;
-        }
-
-        .options-container {
-          max-height: 150px;
         }
       }
     `,
@@ -235,7 +142,7 @@ export class ScientificDropdown extends LitElement {
   theme: ScientificTheme = 'default';
 
   @property({type: Array})
-  options: {label: string; value: string}[] = [
+  options: DropdownOption[] = [
     {label: 'Option 1', value: '1'},
     {label: 'Option 2', value: '2'},
   ];
@@ -270,22 +177,25 @@ export class ScientificDropdown extends LitElement {
   @property({type: Number})
   focusedOptionIndex = -1;
 
+  // Implement DropdownKeyboardHandler interface
+  get focusedIndex(): number {
+    return this.focusedOptionIndex;
+  }
+
+  set focusedIndex(value: number) {
+    this.focusedOptionIndex = value;
+  }
+
+  get filteredOptions(): DropdownOption[] {
+    return this.getFilteredOptions();
+  }
+
   private toggleDropdown() {
     if (this.disabled) return;
-    this.isOpen = !this.isOpen;
-    this.focusedOptionIndex = -1;
     if (this.isOpen) {
-      this.searchTerm = '';
-      setTimeout(() => {
-        if (this.searchable) {
-          const searchInput = this.shadowRoot?.querySelector(
-            '.search-input'
-          ) as HTMLInputElement;
-          searchInput?.focus();
-        }
-        // Ensure options container matches dropdown width
-        this.syncOptionsWidth();
-      }, 0);
+      this.closeDropdown();
+    } else {
+      this.openDropdown();
     }
   }
 
@@ -304,22 +214,44 @@ export class ScientificDropdown extends LitElement {
     }
   }
 
-  private selectOption(value: string, label: string) {
-    this.selectedValue = value;
+  selectOption(option: DropdownOption) {
+    this.selectedValue = option.value;
     this.isOpen = false;
     this.focusedOptionIndex = -1;
 
     dispatchCustomEvent(this, 'option-selected', {
-      value,
-      label,
+      value: option.value,
+      label: option.label,
       timestamp: Date.now(),
     });
 
     dispatchCustomEvent(this, 'change', {
-      value,
-      label,
+      value: option.value,
+      label: option.label,
       timestamp: Date.now(),
     });
+  }
+
+  closeDropdown() {
+    this.isOpen = false;
+    this.focusedOptionIndex = -1;
+  }
+
+  openDropdown() {
+    if (this.disabled) return;
+    this.isOpen = true;
+    this.focusedOptionIndex = -1;
+    this.searchTerm = '';
+    setTimeout(() => {
+      if (this.searchable) {
+        const searchInput = this.shadowRoot?.querySelector(
+          '.search-input'
+        ) as HTMLInputElement;
+        searchInput?.focus();
+      }
+      // Ensure options container matches dropdown width
+      this.syncOptionsWidth();
+    }, 0);
   }
 
   private clearSelection() {
@@ -345,60 +277,14 @@ export class ScientificDropdown extends LitElement {
   private handleKeyDown(e: KeyboardEvent) {
     if (this.disabled) return;
 
-    const filteredOptions = this.getFilteredOptions();
-
-    switch (e.key) {
-      case 'Enter':
-        e.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-        } else if (
-          this.focusedOptionIndex >= 0 &&
-          filteredOptions[this.focusedOptionIndex]
-        ) {
-          const option = filteredOptions[this.focusedOptionIndex];
-          this.selectOption(option.value, option.label);
-        }
-        break;
-
-      case 'Escape':
-        this.isOpen = false;
-        this.focusedOptionIndex = -1;
-        break;
-
-      case 'ArrowDown':
-        e.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-        } else {
-          this.focusedOptionIndex = Math.min(
-            this.focusedOptionIndex + 1,
-            filteredOptions.length - 1
-          );
-        }
-        break;
-
-      case 'ArrowUp':
-        e.preventDefault();
-        if (this.isOpen) {
-          this.focusedOptionIndex = Math.max(this.focusedOptionIndex - 1, -1);
-        }
-        break;
-
-      case 'Tab':
-        this.isOpen = false;
-        this.focusedOptionIndex = -1;
-        break;
-    }
+    handleDropdownKeyboard.call(this, e, {
+      openOnNavigation: true,
+      allowCustomValues: false,
+    });
   }
 
-  private getFilteredOptions() {
-    if (!this.searchable || !this.searchTerm) {
-      return this.options;
-    }
-    return this.options.filter((option) =>
-      option.label.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  private getFilteredOptions(): DropdownOption[] {
+    return filterOptions(this.options, this.searchable ? this.searchTerm : '');
   }
 
   private getSelectedLabel() {
@@ -408,15 +294,9 @@ export class ScientificDropdown extends LitElement {
     return selectedOption?.label || '';
   }
 
-  private handleClickOutside = (e: Event) => {
-    const path = e.composedPath();
-    const clickedInsideDropdown = path.includes(this);
-
-    if (!clickedInsideDropdown) {
-      this.isOpen = false;
-      this.focusedOptionIndex = -1;
-    }
-  };
+  private handleClickOutside = createClickOutsideHandler(this, () => {
+    this.closeDropdown();
+  });
 
   override connectedCallback() {
     super.connectedCallback();
@@ -429,7 +309,6 @@ export class ScientificDropdown extends LitElement {
   }
 
   override render() {
-    const filteredOptions = this.getFilteredOptions();
     const selectedLabel = this.getSelectedLabel();
 
     return html`
@@ -486,46 +365,18 @@ export class ScientificDropdown extends LitElement {
           </div>
         </div>
 
-        ${this.isOpen
-          ? html`
-              <div class="options-container" role="listbox">
-                ${this.searchable
-                  ? html`
-                      <input
-                        class="search-input"
-                        type="text"
-                        placeholder="${this.searchPlaceholder}"
-                        .value="${this.searchTerm}"
-                        @input="${this.handleSearch}"
-                        @click="${(e: Event) => e.stopPropagation()}"
-                      />
-                    `
-                  : ''}
-                <div class="options-list">
-                  ${filteredOptions.length > 0
-                    ? filteredOptions.map(
-                        (option, index) => html`
-                          <div
-                            class="${classNames({
-                              option: true,
-                              selected: option.value === this.selectedValue,
-                              focused: index === this.focusedOptionIndex,
-                            })}"
-                            @click="${() =>
-                              this.selectOption(option.value, option.label)}"
-                            role="option"
-                            aria-selected="${option.value ===
-                            this.selectedValue}"
-                          >
-                            ${option.label}
-                          </div>
-                        `
-                      )
-                    : html`<div class="no-options">${this.noOptionsText}</div>`}
-                </div>
-              </div>
-            `
-          : ''}
+        ${renderDropdownOptions({
+          isOpen: this.isOpen,
+          filteredOptions: this.filteredOptions,
+          focusedIndex: this.focusedIndex,
+          selectedValue: this.selectedValue,
+          searchable: this.searchable,
+          searchPlaceholder: this.searchPlaceholder,
+          searchTerm: this.searchTerm,
+          noOptionsText: this.noOptionsText,
+          onOptionClick: (option) => this.selectOption(option),
+          onSearchInput: this.handleSearch.bind(this),
+        })}
       </div>
     `;
   }

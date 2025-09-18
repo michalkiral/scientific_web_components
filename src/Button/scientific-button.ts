@@ -10,6 +10,7 @@ import {
   themeStyles,
   type ScientificTheme,
 } from '../shared/index.js';
+import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
 
 export type ButtonTheme = ScientificTheme;
 
@@ -18,6 +19,7 @@ export class ScientificButton extends LitElement {
   static override styles = [
     sharedVariables,
     themeStyles,
+    buttonThemeStyles,
     buttonStyles,
     loadingSpinnerStyles,
     responsiveStyles,

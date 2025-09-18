@@ -18,6 +18,7 @@ import {
   responsiveStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {networkThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
@@ -86,6 +87,7 @@ export class ScientificNetwork
   static override styles = [
     sharedVariables,
     themeStyles,
+    networkThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,

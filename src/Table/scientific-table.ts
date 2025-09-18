@@ -12,6 +12,7 @@ import {
   themeStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {tableThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {parseCSVStream} from '../shared/utils/csv-utils.js';
 
@@ -49,6 +50,7 @@ export class ScientificTable extends LitElement {
   static override styles = [
     sharedVariables,
     themeStyles,
+    tableThemeStyles,
     containerStyles,
     headerStyles,
     loadingSpinnerStyles,
