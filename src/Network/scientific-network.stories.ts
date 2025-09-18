@@ -305,6 +305,8 @@ All CSS custom properties available for customization:
       --network-width: 100%;
       --network-height: 400px;
       --network-min-height: 300px;
+      --network-container-min-height: 400px;
+      --network-canvas-min-height: 350px;
       --network-bg-color: #ffffff;
       --network-border: 1px solid #e5e7eb;
       --network-border-radius: 8px;
@@ -517,6 +519,21 @@ export const DarkTheme: Story = {
     enablePan: true,
     showTooltips: true,
   },
+  render: (args) => html`
+    <scientific-network
+      title=${args.title}
+      subtitle=${args.subtitle}
+      .data=${args.data}
+      layout=${args.layout}
+      theme=${args.theme}
+      ?showToolbar=${args.showToolbar}
+      ?showInfo=${args.showInfo}
+      ?showMetrics=${args.showMetrics}
+      ?enableZoom=${args.enableZoom}
+      ?enablePan=${args.enablePan}
+      ?showTooltips=${args.showTooltips}
+    ></scientific-network>
+  `,
 };
 
 export const MinimalInterface: Story = {
@@ -687,10 +704,23 @@ export const WithEventHandlers: Story = {
 };
 
 export const ThemeComparison: Story = {
+  parameters: {
+    layout: 'padded',
+    viewport: {
+      disable: true,
+    },
+    docs: {
+      canvas: {
+        sourceState: 'shown',
+      },
+    },
+  },
   render: () => html`
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      <div>
-        <h3>Default Theme</h3>
+    <div
+      style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; row-gap: 210px; width: 100%; padding: 20px;"
+    >
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px;">Default Theme</h3>
         <scientific-network
           title="Default Theme"
           .data=${sampleNetworkData}
@@ -698,11 +728,17 @@ export const ThemeComparison: Story = {
           theme="default"
           showToolbar
           showInfo
-          style="height: 300px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 300px; 
+            --network-canvas-min-height: 250px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Scientific Theme</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px;">Scientific Theme</h3>
         <scientific-network
           title="Scientific Theme"
           .data=${sampleNetworkData}
@@ -710,11 +746,17 @@ export const ThemeComparison: Story = {
           theme="scientific"
           showToolbar
           showInfo
-          style="height: 300px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 300px; 
+            --network-canvas-min-height: 250px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Dark Theme</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px;">Dark Theme</h3>
         <scientific-network
           title="Dark Theme"
           .data=${sampleNetworkData}
@@ -722,11 +764,17 @@ export const ThemeComparison: Story = {
           theme="dark"
           showToolbar
           showInfo
-          style="height: 300px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 300px; 
+            --network-canvas-min-height: 250px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Minimal Theme</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px;">Minimal Theme</h3>
         <scientific-network
           title="Minimal Theme"
           .data=${sampleNetworkData}
@@ -734,7 +782,13 @@ export const ThemeComparison: Story = {
           theme="minimal"
           showToolbar
           showInfo
-          style="height: 300px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 300px; 
+            --network-canvas-min-height: 250px;
+          "
         ></scientific-network>
       </div>
     </div>
@@ -742,72 +796,125 @@ export const ThemeComparison: Story = {
 };
 
 export const LayoutComparison: Story = {
+  parameters: {
+    layout: 'padded',
+    viewport: {
+      disable: true,
+    },
+    docs: {
+      canvas: {
+        sourceState: 'shown',
+      },
+    },
+  },
   render: () => html`
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
-      <div>
-        <h3>Force Layout (Cose)</h3>
+    <div
+      style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; row-gap: 250px; width: 100%; padding: 20px;"
+    >
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">
+          Force Layout (Cose)
+        </h3>
         <scientific-network
           title="Force Layout"
           .data=${sampleNetworkData}
           layout="cose"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Circle Layout</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">Circle Layout</h3>
         <scientific-network
           title="Circle Layout"
           .data=${sampleNetworkData}
           layout="circle"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Grid Layout</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">Grid Layout</h3>
         <scientific-network
           title="Grid Layout"
           .data=${sampleNetworkData}
           layout="grid"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Concentric Layout</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">Concentric Layout</h3>
         <scientific-network
           title="Concentric Layout"
           .data=${sampleNetworkData}
           layout="concentric"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Breadthfirst Layout</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">
+          Breadthfirst Layout
+        </h3>
         <scientific-network
           title="Hierarchical Layout"
           .data=${sampleNetworkData}
           layout="breadthfirst"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
-      <div>
-        <h3>Random Layout</h3>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 14px;">Random Layout</h3>
         <scientific-network
           title="Random Layout"
           .data=${sampleNetworkData}
           layout="random"
           theme="default"
           showInfo
-          style="height: 250px;"
+          .layoutOptions=${{fit: false, animate: false}}
+          style="
+            height: 300px; 
+            width: 100%;
+            --network-container-min-height: 280px; 
+            --network-canvas-min-height: 230px;
+          "
         ></scientific-network>
       </div>
     </div>

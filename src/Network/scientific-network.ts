@@ -101,7 +101,7 @@ export class ScientificNetwork
         position: relative;
         width: 100%;
         height: 100%;
-        min-height: 400px;
+        min-height: var(--network-container-min-height, 400px);
         border: var(--scientific-border);
         border-radius: var(--scientific-border-radius-lg);
         background: var(--container-bg-color, #ffffff);
@@ -112,34 +112,48 @@ export class ScientificNetwork
         position: relative;
         width: 100%;
         height: 100%;
-        min-height: 350px;
+        min-height: var(--network-canvas-min-height, 350px);
       }
 
-      .network-toolbar {
-        position: absolute;
-        top: var(--scientific-spacing-md);
-        right: var(--scientific-spacing-md);
+      .scientific-header {
         display: flex;
         flex-direction: column;
         gap: var(--scientific-spacing-sm);
-        background: rgba(255, 255, 255, 0.95);
+        margin-bottom: var(--scientific-spacing-md);
+      }
+
+      .header-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--scientific-spacing-xs);
+      }
+
+      .network-toolbar {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: var(--scientific-spacing-sm);
+        background: var(--container-bg-color, #ffffff);
         border: var(--scientific-border);
         border-radius: var(--scientific-border-radius);
-        padding: var(--scientific-spacing-md);
         box-shadow: var(--scientific-shadow);
-        z-index: 10;
-        backdrop-filter: blur(8px);
+        gap: var(--scientific-spacing-lg);
       }
 
       .toolbar-section {
         display: flex;
         gap: var(--scientific-spacing-xs);
+        align-items: center;
+        flex-wrap: wrap;
       }
 
       .toolbar-divider {
-        height: 1px;
-        background: var(--scientific-border-color);
-        margin: var(--scientific-spacing-xs) 0;
+        width: 1px;
+        height: 24px;
+        background: var(--border-color, #e0e0e0);
+        margin: 0 var(--scientific-spacing-xs);
       }
 
       .network-toolbar scientific-dropdown {
@@ -148,6 +162,50 @@ export class ScientificNetwork
         --dropdown-font-size: var(--scientific-text-sm);
         --dropdown-padding: var(--scientific-spacing-sm)
           var(--scientific-spacing-md);
+      }
+
+      @media (max-width: 768px) {
+        .scientific-header {
+          gap: var(--scientific-spacing-xs);
+        }
+
+        .network-toolbar {
+          flex-direction: column;
+          gap: var(--scientific-spacing-sm);
+          align-items: stretch;
+        }
+
+        .toolbar-section {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .toolbar-divider {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .network-toolbar {
+          padding: var(--scientific-spacing-xs);
+          gap: var(--scientific-spacing-xs);
+        }
+
+        .toolbar-section {
+          flex-direction: column;
+          gap: var(--scientific-spacing-xs);
+          width: 100%;
+        }
+
+        .toolbar-section scientific-button,
+        .toolbar-section scientific-dropdown {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .network-toolbar scientific-dropdown {
+          --dropdown-width: 100%;
+        }
       }
 
       .network-info {
@@ -195,23 +253,45 @@ export class ScientificNetwork
         backdrop-filter: blur(4px);
       }
 
-      /* Button and component overrides */
       .network-toolbar scientific-button {
         --button-padding: var(--scientific-spacing-sm);
         --button-min-height: 32px;
         --button-font-size: var(--scientific-text-sm);
       }
 
-      /* Theme variations */
       :host([theme='dark']) {
         --container-bg-color: #1f2937;
         --scientific-border: 1px solid #374151;
+        --border-color: #4b5563;
+        --scientific-border-color: #4b5563;
+        color: #d1d5db;
+      }
+
+      :host([theme='dark']) .scientific-header {
+        color: #d1d5db;
+      }
+
+      :host([theme='dark']) .scientific-title {
+        color: #f9fafb;
+      }
+
+      :host([theme='dark']) .scientific-subtitle {
+        color: #d1d5db;
       }
 
       :host([theme='dark']) .network-toolbar,
       :host([theme='dark']) .network-info {
         background: rgba(31, 41, 55, 0.95);
         color: #d1d5db;
+        border-color: #4b5563;
+      }
+
+      :host([theme='dark']) .info-row {
+        color: #d1d5db;
+      }
+
+      :host([theme='dark']) .info-row span:first-child {
+        color: #9ca3af;
       }
 
       :host([theme='dark']) .network-toolbar scientific-dropdown {
@@ -221,6 +301,13 @@ export class ScientificNetwork
         --dropdown-options-bg-color: #374151;
         --dropdown-option-color: #d1d5db;
         --dropdown-option-hover-bg-color: #4b5563;
+      }
+
+      :host([theme='dark']) .network-toolbar scientific-button {
+        --button-bg-color: #374151;
+        --button-color: #d1d5db;
+        --button-border: 1px solid #4b5563;
+        --button-hover-bg-color: #4b5563;
       }
 
       :host([theme='scientific']) {
@@ -292,6 +379,7 @@ export class ScientificNetwork
 
   private cy: Core | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private resizeTimeout: number | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -307,10 +395,13 @@ export class ScientificNetwork
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = null;
+    }
   }
 
   override firstUpdated() {
-    // Use timeout to ensure DOM is fully rendered
     setTimeout(() => {
       this._initializeCytoscape();
     }, 100);
@@ -330,10 +421,17 @@ export class ScientificNetwork
 
   private _setupResizeObserver() {
     this.resizeObserver = new ResizeObserver(() => {
-      if (this.cy) {
-        this.cy.resize();
-        this.cy.fit();
+      // Clear existing timeout to debounce
+      if (this.resizeTimeout) {
+        clearTimeout(this.resizeTimeout);
       }
+
+      // Debounce resize operations to prevent circular loops
+      this.resizeTimeout = window.setTimeout(() => {
+        if (this.cy) {
+          this.cy.resize();
+        }
+      }, 100);
     });
   }
 
@@ -373,11 +471,12 @@ export class ScientificNetwork
         this.cy!.layout(this._getLayoutOptions()).run();
         this._setupEventListeners();
         this._calculateMetrics();
-      });
 
-      if (this.resizeObserver) {
-        this.resizeObserver.observe(this);
-      }
+        // Only start observing for resize after Cytoscape is fully ready
+        if (this.resizeObserver) {
+          this.resizeObserver.observe(this);
+        }
+      });
     } catch (error) {
       console.error('Failed to initialize Cytoscape:', error);
       this.errorMessage = 'Failed to initialize network visualization';
@@ -501,7 +600,7 @@ export class ScientificNetwork
       animate: true,
       animationDuration: 500,
       fit: true,
-      padding: 50,
+      padding: 30,
       ...this.layoutOptions,
     };
 
@@ -849,7 +948,7 @@ export class ScientificNetwork
   override render() {
     return html`
       <div class="${this._getContainerClasses()}">
-        ${this.title || this.subtitle ? this._renderHeader() : nothing}
+        ${this._renderHeader()}
         ${this.errorMessage ? this._renderError() : nothing}
         ${this._renderNetwork()}
         ${this.tooltip.visible ? this._renderTooltip() : nothing}
@@ -868,12 +967,15 @@ export class ScientificNetwork
   private _renderHeader() {
     return html`
       <div class="scientific-header">
-        ${this.title
-          ? html`<h2 class="scientific-title">${this.title}</h2>`
-          : nothing}
-        ${this.subtitle
-          ? html`<p class="scientific-subtitle">${this.subtitle}</p>`
-          : nothing}
+        <div class="header-content">
+          ${this.title
+            ? html`<h2 class="scientific-title">${this.title}</h2>`
+            : nothing}
+          ${this.subtitle
+            ? html`<p class="scientific-subtitle">${this.subtitle}</p>`
+            : nothing}
+        </div>
+        ${this.showToolbar ? this._renderToolbar() : nothing}
       </div>
     `;
   }
@@ -891,7 +993,6 @@ export class ScientificNetwork
       <div class="network-container">
         ${this.isLoading ? this._renderLoading() : nothing}
         <div class="network-canvas"></div>
-        ${this.showToolbar ? this._renderToolbar() : nothing}
         ${this.showInfo ? this._renderInfo() : nothing}
       </div>
     `;
@@ -960,28 +1061,28 @@ export class ScientificNetwork
           <scientific-button
             variant="outline"
             size="small"
-            label="📷"
+            label="PNG"
             @click="${() => this._handleExport('png')}"
             title="Export PNG"
           ></scientific-button>
           <scientific-button
             variant="outline"
             size="small"
-            label="�️"
+            label="JPG"
             @click="${() => this._handleExport('jpg')}"
             title="Export JPG"
           ></scientific-button>
           <scientific-button
             variant="outline"
             size="small"
-            label="📄"
+            label="PDF"
             @click="${() => this._handleExport('pdf')}"
             title="Export PDF"
           ></scientific-button>
           <scientific-button
             variant="outline"
             size="small"
-            label="�💾"
+            label="JSON"
             @click="${() => this._handleExport('json')}"
             title="Export JSON"
           ></scientific-button>
