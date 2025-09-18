@@ -625,3 +625,218 @@ export const buttonThemeStyles = css`
     transform: none;
   }
 `;
+
+export const inputThemeStyles = css`
+  /* Input specific theme styles */
+  :host([theme='dark']) .input-container {
+    background-color: var(--scientific-bg-primary);
+  }
+
+  :host([theme='dark']) .input-label {
+    color: var(--scientific-text-secondary);
+  }
+
+  :host([theme='dark']) .input-field {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .input-field:hover {
+    border-color: var(--scientific-border-hover);
+  }
+
+  :host([theme='dark']) .input-field:focus {
+    border-color: var(--scientific-primary-color);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+
+  :host([theme='dark']) .input-field::placeholder {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .input-field.error {
+    border-color: var(--scientific-danger-color);
+    background-color: rgba(239, 68, 68, 0.05);
+  }
+
+  :host([theme='dark']) .input-field.success {
+    border-color: var(--scientific-success-color);
+    background-color: rgba(34, 197, 94, 0.05);
+  }
+
+  :host([theme='dark']) .autocomplete-hint {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .options-container {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-color);
+    box-shadow: var(--scientific-shadow-lg);
+  }
+
+  :host([theme='dark']) .option {
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .option:hover {
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .option.selected {
+    background-color: rgba(96, 165, 250, 0.1);
+    color: var(--scientific-primary-color);
+  }
+
+  :host([theme='dark']) .option.focused {
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .option.disabled {
+    color: var(--scientific-text-muted);
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .group-header {
+    background-color: var(--scientific-bg-tertiary);
+    color: var(--scientific-text-muted);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .no-options {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .clear-button {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .clear-button:hover {
+    color: var(--scientific-danger-color);
+  }
+
+  :host([theme='dark']) .input-icon {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .scientific-message {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .scientific-message--error {
+    color: var(--scientific-danger-color);
+  }
+
+  :host([theme='dark']) .scientific-message--success {
+    color: var(--scientific-success-color);
+  }
+
+  :host([theme='scientific']) .input-container {
+    background-color: var(--scientific-bg-primary);
+  }
+
+  :host([theme='scientific']) .input-label {
+    color: var(--scientific-text-secondary);
+    font-weight: var(--scientific-font-weight-medium);
+  }
+
+  :host([theme='scientific']) .input-field {
+    background-color: var(--scientific-bg-primary);
+    color: var(--scientific-text-secondary);
+    border: var(--scientific-border);
+    box-shadow: var(--scientific-shadow-sm);
+  }
+
+  :host([theme='scientific']) .input-field:hover {
+    border-color: var(--scientific-border-hover);
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .input-field:focus {
+    border-color: var(--scientific-primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .input-field::placeholder {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .input-field.error {
+    border-color: var(--scientific-danger-color);
+    background-color: rgba(239, 68, 68, 0.02);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  :host([theme='scientific']) .input-field.success {
+    border-color: var(--scientific-success-color);
+    background-color: rgba(34, 197, 94, 0.02);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  }
+
+  :host([theme='scientific']) .autocomplete-hint {
+    color: var(--scientific-text-tertiary);
+    font-style: italic;
+  }
+
+  :host([theme='scientific']) .options-container {
+    background-color: var(--scientific-bg-primary);
+    border: var(--scientific-border);
+    box-shadow: var(--scientific-shadow-lg);
+  }
+
+  :host([theme='scientific']) .option {
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='scientific']) .option:hover {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='scientific']) .option.selected {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--scientific-primary-color);
+    font-weight: var(--scientific-font-weight-medium);
+  }
+
+  :host([theme='scientific']) .option.focused {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='scientific']) .option.disabled {
+    color: var(--scientific-text-muted);
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='scientific']) .group-header {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-tertiary);
+    border-color: var(--scientific-border-color);
+    font-weight: var(--scientific-font-weight-semibold);
+  }
+
+  :host([theme='scientific']) .clear-button {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .clear-button:hover {
+    color: var(--scientific-danger-color);
+  }
+
+  :host([theme='scientific']) .input-icon {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .scientific-message {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .scientific-message--error {
+    color: var(--scientific-danger-color);
+  }
+
+  :host([theme='scientific']) .scientific-message--success {
+    color: var(--scientific-success-color);
+  }
+`;

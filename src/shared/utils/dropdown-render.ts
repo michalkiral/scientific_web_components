@@ -44,7 +44,7 @@ export function renderDropdownOptions(
   if (filteredOptions.length === 0) {
     if (allowCustomValues && inputValue.trim() && onCustomValueClick) {
       return html`
-        <div class="dropdown-container" role="listbox">
+        <div class="options-container" role="listbox">
           <div class="options-list">
             <div
               class="${classNames({
@@ -63,7 +63,7 @@ export function renderDropdownOptions(
     }
 
     return html`
-      <div class="dropdown-container" role="listbox">
+      <div class="options-container" role="listbox">
         <div class="options-list">
           <div class="no-options">${noOptionsText}</div>
         </div>
@@ -74,7 +74,7 @@ export function renderDropdownOptions(
   const groupedOptions = groupOptions(filteredOptions);
 
   return html`
-    <div class="dropdown-container" role="listbox">
+    <div class="options-container" role="listbox">
       ${searchable && onSearchInput
         ? html`
             <input

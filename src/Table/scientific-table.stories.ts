@@ -1060,53 +1060,6 @@ export const Accessibility: Story = {
   },
 };
 
-// Theme-specific stories
-export const DarkTheme: Story = {
-  args: {
-    title: 'Dark Theme Scientific Table',
-    description:
-      'Scientific table with dark theme for low-light environments and modern interfaces.',
-    columns: sampleColumns.slice(0, 5),
-    data: sampleData.slice(0, 8),
-    theme: 'dark',
-    sortable: true,
-    pagination: true,
-    pageSize: 5,
-    showSearch: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Table with dark theme applied, featuring dark backgrounds and light text optimized for low-light usage.',
-      },
-    },
-  },
-};
-
-export const ScientificTheme: Story = {
-  args: {
-    title: 'Scientific Theme Data Table',
-    description:
-      'Professional scientific table with enhanced typography and spacing for research applications.',
-    columns: sampleColumns.slice(0, 5),
-    data: sampleData.slice(0, 8),
-    theme: 'scientific',
-    sortable: true,
-    pagination: true,
-    pageSize: 5,
-    showSearch: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Table with scientific theme featuring professional typography, enhanced shadows, and research-focused styling.',
-      },
-    },
-  },
-};
-
 export const ThemeComparison: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 32px;">

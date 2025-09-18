@@ -12,9 +12,9 @@ suite('ScientificInput', () => {
     const el = await fixture<ScientificInput>(
       html`<scientific-input></scientific-input>`
     );
-    const container = el.shadowRoot!.querySelector('.scientific-container');
+    const container = el.shadowRoot!.querySelector('.input-container');
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     assert.isNotNull(container);
@@ -37,9 +37,9 @@ suite('ScientificInput', () => {
       ></scientific-input>
     `);
 
-    const label = el.shadowRoot!.querySelector('.scientific-header');
+    const label = el.shadowRoot!.querySelector('.input-label');
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     assert.isNotNull(label);
@@ -54,7 +54,7 @@ suite('ScientificInput', () => {
       const el = await fixture<ScientificInput>(html`
         <scientific-input .size=${size}></scientific-input>
       `);
-      const input = el.shadowRoot!.querySelector('.scientific-input')!;
+      const input = el.shadowRoot!.querySelector('.input-field')!;
 
       if (size !== 'medium') {
         assert.include(
@@ -79,7 +79,7 @@ suite('ScientificInput', () => {
       const el = await fixture<ScientificInput>(html`
         <scientific-input .state=${state}></scientific-input>
       `);
-      const input = el.shadowRoot!.querySelector('.scientific-input')!;
+      const input = el.shadowRoot!.querySelector('.input-field')!;
 
       if (state !== 'default') {
         assert.include(
@@ -103,7 +103,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
     assert.isTrue(input.disabled);
     assert.isTrue(el.disabled);
@@ -114,7 +114,7 @@ suite('ScientificInput', () => {
       <scientific-input label="Required Field" required></scientific-input>
     `);
 
-    const label = el.shadowRoot!.querySelector('.scientific-header');
+    const label = el.shadowRoot!.querySelector('.input-label');
     assert.include(label!.className, 'required');
     assert.isTrue(el.required);
   });
@@ -135,7 +135,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.value = 'test input';
@@ -170,7 +170,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -202,7 +202,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.value = 'ap';
@@ -232,7 +232,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -259,7 +259,7 @@ suite('ScientificInput', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
     await el.updateComplete;
 
-    const dropdown = el.shadowRoot!.querySelector('.dropdown-container');
+    const dropdown = el.shadowRoot!.querySelector('.options-container');
     assert.isNull(dropdown, 'Dropdown should be closed after Escape');
   });
 
@@ -283,7 +283,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -347,7 +347,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.value = 'custom value';
@@ -426,7 +426,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -463,7 +463,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -488,7 +488,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -513,7 +513,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -537,7 +537,7 @@ suite('ScientificInput', () => {
     await el.updateComplete;
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
     assert.isTrue(el.autoFocus);
     assert.isNotNull(input);
@@ -555,7 +555,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
@@ -584,7 +584,7 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
     assert.equal(input.maxLength, 5);
   });
@@ -597,20 +597,20 @@ suite('ScientificInput', () => {
     `);
 
     const input = el.shadowRoot!.querySelector(
-      '.scientific-input'
+      '.input-field'
     ) as HTMLInputElement;
 
     input.focus();
     input.dispatchEvent(new Event('focus'));
     await el.updateComplete;
 
-    let dropdown = el.shadowRoot!.querySelector('.dropdown-container');
+    let dropdown = el.shadowRoot!.querySelector('.options-container');
     assert.isNotNull(dropdown, 'Dropdown should be open');
 
     document.dispatchEvent(new Event('click'));
     await el.updateComplete;
 
-    dropdown = el.shadowRoot!.querySelector('.dropdown-container');
+    dropdown = el.shadowRoot!.querySelector('.options-container');
     assert.isNull(dropdown, 'Dropdown should be closed after clicking outside');
   });
 });

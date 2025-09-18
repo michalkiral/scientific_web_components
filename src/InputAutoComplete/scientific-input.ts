@@ -2,18 +2,19 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {
   sharedVariables,
-  containerStyles,
-  headerStyles,
   inputStyles,
   messageStyles,
   responsiveStyles,
   themeStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {dropdownContainerStyles} from '../shared/styles/dropdown-styles.js';
 import {
-  dropdownContainerStyles,
-  clearButtonStyles,
-} from '../shared/styles/dropdown-styles.js';
+  inputContainerStyles,
+  autocompleteStyles,
+  inputClearButtonStyles,
+} from '../shared/styles/input-styles.js';
+import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
@@ -35,109 +36,20 @@ export class ScientificInput
 {
   static override styles = [
     sharedVariables,
-    containerStyles,
-    headerStyles,
+    themeStyles,
+    inputThemeStyles,
     inputStyles,
     messageStyles,
     responsiveStyles,
-    themeStyles,
+    inputContainerStyles,
+    autocompleteStyles,
     dropdownContainerStyles,
-    clearButtonStyles,
+    inputClearButtonStyles,
     css`
       :host {
         display: block;
         width: var(--input-width, 100%);
         font-family: var(--scientific-font-family);
-      }
-
-      .scientific-container {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        gap: var(--scientific-spacing-sm);
-        width: 100%;
-      }
-
-      .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        z-index: 1;
-      }
-
-      .autocomplete-hint {
-        position: absolute;
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        border: none;
-        border-radius: var(--scientific-border-radius);
-        background: transparent;
-        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
-        font-size: var(--scientific-text-base);
-        font-family: inherit;
-        pointer-events: none;
-        z-index: 1;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-
-      .clear-button {
-        position: absolute;
-        right: var(--scientific-spacing-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--input-clear-size, 20px);
-        height: var(--input-clear-size, 20px);
-        background: transparent;
-        border: none;
-        border-radius: var(--scientific-border-radius-sm);
-        cursor: pointer;
-        color: var(--scientific-text-muted);
-        transition: var(--scientific-transition-fast);
-        padding: 0;
-        font-size: var(--scientific-text-xs);
-        font-weight: 500;
-      }
-
-      .clear-button:hover {
-        background-color: var(--scientific-bg-muted);
-        color: var(--scientific-text-secondary);
-        transform: scale(1.1);
-      }
-
-      .clear-button:active {
-        transform: scale(0.95);
-      }
-
-      .input-field {
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        font-size: var(--input-font-size, var(--scientific-text-base));
-        min-height: var(--input-min-height, 44px);
-      }
-
-      .autocomplete-hint {
-        position: absolute;
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        left: 2px;
-        border: none;
-        border-radius: var(--scientific-border-radius);
-        background: transparent;
-        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
-        font-size: var(--input-font-size, var(--scientific-text-base));
-        font-family: inherit;
-        pointer-events: none;
-        z-index: 1;
-        white-space: nowrap;
-        overflow: hidden;
       }
     `,
   ];
@@ -453,30 +365,18 @@ export class ScientificInput
     const hasIcon = this.icon && !showClear;
 
     return html`
-      <div class="scientific-container">
+      <div class="input-container">
         ${this.label
-          ? html`
-              <label
-                class="${classNames(
-                  'scientific-header',
-                  this.required && 'required'
-                )}"
-              >
-                ${this.label}
-              </label>
-            `
+          ? html`<label
+              class="${classNames('input-label', this.required && 'required')}"
+              >${this.label}</label
+            >`
           : ''}
 
         <div class="input-wrapper">
           ${this.autocompleteHint
             ? html`
-                <div
-                  class="autocomplete-hint ${this.size !== 'medium'
-                    ? this.size
-                    : ''}"
-                >
-                  ${this.autocompleteHint}
-                </div>
+                <div class="autocomplete-hint">${this.autocompleteHint}</div>
               `
             : ''}
 
@@ -499,6 +399,7 @@ export class ScientificInput
             aria-haspopup="listbox"
             aria-autocomplete="list"
           />
+
           ${this.renderDropdown()}
           ${showClear
             ? html`

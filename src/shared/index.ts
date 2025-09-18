@@ -1,5 +1,6 @@
 export * from './styles/common-styles.js';
 export * from './styles/dropdown-styles.js';
+export * from './styles/input-styles.js';
 export * from './styles/component-theme-styles.js';
 
 export * from './utils/event-utils.js';

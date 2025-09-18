@@ -504,37 +504,6 @@ export const LargeNetwork: Story = {
   },
 };
 
-export const DarkTheme: Story = {
-  args: {
-    title: 'Network Analysis',
-    subtitle: 'Dark theme visualization',
-    data: sampleNetworkData,
-    layout: 'circle',
-    theme: 'dark',
-    showToolbar: true,
-    showInfo: true,
-    showMetrics: false,
-    enableZoom: true,
-    enablePan: true,
-    showTooltips: true,
-  },
-  render: (args) => html`
-    <scientific-network
-      title=${args.title}
-      subtitle=${args.subtitle}
-      .data=${args.data}
-      layout=${args.layout}
-      theme=${args.theme}
-      ?showToolbar=${args.showToolbar}
-      ?showInfo=${args.showInfo}
-      ?showMetrics=${args.showMetrics}
-      ?enableZoom=${args.enableZoom}
-      ?enablePan=${args.enablePan}
-      ?showTooltips=${args.showTooltips}
-    ></scientific-network>
-  `,
-};
-
 export const CircularLayout: Story = {
   args: {
     title: 'Circular Layout',

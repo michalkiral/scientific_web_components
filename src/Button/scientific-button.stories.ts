@@ -441,22 +441,6 @@ export const IconExamples: Story = {
   `,
 };
 
-export const Loading: Story = {
-  args: {
-    label: 'Processing',
-    loading: true,
-    loadingLabel: 'Please wait...',
-    variant: 'primary',
-  },
-  render: ({label, loading, loadingLabel, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .loading=${loading}
-      .loadingLabel=${loadingLabel}
-      .variant=${variant}
-    ></scientific-button>`,
-};
-
 export const LoadingStates: Story = {
   render: () => html`
     <div
@@ -589,92 +573,6 @@ export const AsLinks: Story = {
   `,
 };
 
-export const FormButtons: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 16px; max-width: 400px;"
-    >
-      <h4 style="margin: 0;">Basic Form Integration</h4>
-      <form
-        id="demo-form"
-        style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #ddd; border-radius: 8px;"
-        @submit=${(e: Event) => {
-          e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
-          console.log(
-            'Form submitted with data:',
-            Object.fromEntries(formData)
-          );
-          alert('Form submitted! Check console for data.');
-        }}
-        @reset=${() => {
-          console.log('Form reset');
-          alert('Form reset!');
-        }}
-      >
-        <label>
-          Name:
-          <input
-            type="text"
-            name="username"
-            required
-            style="margin-left: 8px; padding: 4px;"
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            required
-            style="margin-left: 8px; padding: 4px;"
-          />
-        </label>
-
-        <div
-          style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;"
-        >
-          <scientific-button
-            label="Submit Form"
-            type="submit"
-            name="action"
-            value="submit"
-            variant="success"
-          ></scientific-button>
-          <scientific-button
-            label="Reset Form"
-            type="reset"
-            variant="secondary"
-          ></scientific-button>
-          <scientific-button
-            label="Cancel"
-            type="button"
-            variant="outline"
-          ></scientific-button>
-        </div>
-      </form>
-
-      <h4 style="margin: 16px 0 0 0;">External Form Association</h4>
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <scientific-button
-          label="Submit External Form"
-          type="submit"
-          form="demo-form"
-          name="external_action"
-          value="external_submit"
-          variant="primary"
-        ></scientific-button>
-        <scientific-button
-          label="Reset External Form"
-          type="reset"
-          form="demo-form"
-          variant="danger"
-        ></scientific-button>
-      </div>
-    </div>
-  `,
-};
-
 export const WithActions: Story = {
   args: {
     label: 'Async Action',
@@ -689,25 +587,6 @@ export const WithActions: Story = {
       @button-click-complete=${() => console.log('Action completed')}
       @button-click-error=${(e: CustomEvent) =>
         console.error('Action failed:', e.detail)}
-    ></scientific-button>`,
-};
-
-export const CustomStyles: Story = {
-  args: {
-    label: 'Custom Styled',
-    variant: 'primary',
-  },
-  render: ({label, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .variant=${variant}
-      style="
-        --button-bg-color: linear-gradient(45deg, #e91e63, #f06292);
-        --button-border-radius: 25px;
-        --button-padding: 16px 32px;
-        --button-shadow: 0 8px 24px rgba(233, 30, 99, 0.3);
-        --button-hover-transform: translateY(-2px) scale(1.02);
-      "
     ></scientific-button>`,
 };
 
@@ -755,50 +634,6 @@ export const StyleCustomization: Story = {
       </div>
     </div>
   `,
-};
-
-export const DarkTheme: Story = {
-  args: {
-    label: 'Dark Theme Button',
-    theme: 'dark',
-    variant: 'primary',
-  },
-  render: ({label, theme, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .theme=${theme}
-      .variant=${variant}
-    ></scientific-button>`,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Button with dark theme applied, featuring dark backgrounds and light text optimized for low-light usage.',
-      },
-    },
-  },
-};
-
-export const ScientificTheme: Story = {
-  args: {
-    label: 'Scientific Theme Button',
-    theme: 'scientific',
-    variant: 'primary',
-  },
-  render: ({label, theme, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .theme=${theme}
-      .variant=${variant}
-    ></scientific-button>`,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Button with scientific theme featuring professional typography, enhanced shadows, and research-focused styling.',
-      },
-    },
-  },
 };
 
 export const ThemeComparison: Story = {
