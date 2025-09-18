@@ -161,7 +161,7 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`data\` — Network data object with nodes and edges arrays
 - \`directed\` — Whether the network is directed (shows arrows on edges)
 - \`layout\` — Layout algorithm: cose, circle, concentric, grid, breadthfirst, random
-- \`theme\` — Visual theme: default, dark, scientific, minimal
+- \`theme\` — Visual theme: default, dark, scientific
 - \`interactive\` — Enables/disables user interaction
 - \`showToolbar\` — Shows/hides toolbar with controls
 - \`showInfo\` — Shows/hides info panel with network metrics
@@ -349,7 +349,6 @@ The component supports multiple themes through CSS custom properties:
 - **Default Theme**: Clean, professional appearance
 - **Dark Theme**: Dark background with light text
 - **Scientific Theme**: Enhanced contrast and borders
-- **Minimal Theme**: Reduced borders and simplified styling
 `,
       },
     },
@@ -385,7 +384,7 @@ The component supports multiple themes through CSS custom properties:
     },
     theme: {
       control: 'select',
-      options: ['default', 'dark', 'scientific', 'minimal'],
+      options: ['default', 'dark', 'scientific'],
       description: 'Visual theme for the network',
     },
     interactive: {
@@ -534,21 +533,6 @@ export const DarkTheme: Story = {
       ?showTooltips=${args.showTooltips}
     ></scientific-network>
   `,
-};
-
-export const MinimalInterface: Story = {
-  args: {
-    title: 'Minimal Network',
-    data: sampleNetworkData,
-    layout: 'concentric',
-    theme: 'minimal',
-    showToolbar: false,
-    showInfo: false,
-    showMetrics: false,
-    enableZoom: true,
-    enablePan: true,
-    showTooltips: false,
-  },
 };
 
 export const CircularLayout: Story = {
@@ -762,24 +746,6 @@ export const ThemeComparison: Story = {
           .data=${sampleNetworkData}
           layout="circle"
           theme="dark"
-          showToolbar
-          showInfo
-          .layoutOptions=${{fit: false, animate: false}}
-          style="
-            height: 300px; 
-            width: 100%;
-            --network-container-min-height: 300px; 
-            --network-canvas-min-height: 250px;
-          "
-        ></scientific-network>
-      </div>
-      <div style="min-width: 0;">
-        <h3 style="margin: 0 0 15px 0; font-size: 16px;">Minimal Theme</h3>
-        <scientific-network
-          title="Minimal Theme"
-          .data=${sampleNetworkData}
-          layout="circle"
-          theme="minimal"
           showToolbar
           showInfo
           .layoutOptions=${{fit: false, animate: false}}

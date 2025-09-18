@@ -1,5 +1,7 @@
 import {css} from 'lit';
 
+export type ScientificTheme = 'default' | 'dark' | 'scientific';
+
 export const sharedVariables = css`
   :host {
     --scientific-font-family: system-ui, -apple-system, BlinkMacSystemFont,
@@ -165,31 +167,6 @@ export const themeStyles = css`
     color: var(--scientific-text-tertiary);
   }
 
-  :host([theme='minimal']) {
-    --scientific-border: none;
-    --scientific-shadow: none;
-    --scientific-shadow-lg: none;
-    --scientific-shadow-sm: none;
-    --scientific-shadow-xl: none;
-
-    --container-bg-color: #ffffff;
-    --scientific-bg-primary: #ffffff;
-    --scientific-bg-secondary: #fafafa;
-    --border-color: transparent;
-    --scientific-border-color: transparent;
-  }
-
-  :host([theme='minimal']) .scientific-container,
-  :host([theme='minimal']) .scientific-button,
-  :host([theme='minimal']) .scientific-input {
-    border: none;
-    box-shadow: none;
-  }
-
-  :host([theme='minimal']) .scientific-header {
-    border: none;
-  }
-
   /* Network specific styles */
   :host([theme='dark']) .network-toolbar,
   :host([theme='dark']) .network-info {
@@ -227,10 +204,62 @@ export const themeStyles = css`
     background: var(--scientific-bg-primary, rgba(248, 250, 252, 0.98));
   }
 
-  :host([theme='minimal']) .network-toolbar,
-  :host([theme='minimal']) .network-info {
-    background: var(--scientific-bg-primary, rgba(255, 255, 255, 0.9));
-    border: none;
+  /* Slider specific styles */
+  :host([theme='dark']) .slider-value-display {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-primary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .slider-track {
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .slider-mark-tick {
+    background-color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .slider-mark-label {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .slider-range-labels {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .slider-tooltip {
+    background-color: var(--scientific-bg-tertiary);
+    color: var(--scientific-text-primary);
+  }
+
+  :host([theme='dark']) .slider-tooltip::after {
+    border-top-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='scientific']) .slider-value-display {
+    background-color: var(--scientific-bg-secondary);
+    border: var(--scientific-border);
+  }
+
+  :host([theme='scientific']) .slider-tooltip {
+    background-color: var(--scientific-text-primary);
+    color: #ffffff;
+    box-shadow: var(--scientific-shadow-lg);
+  }
+
+  :host([theme='scientific']) .slider-tooltip::after {
+    border-top-color: var(--scientific-text-primary);
+  }
+
+  :host([theme='default']) .slider-tooltip,
+  :host(:not([theme])) .slider-tooltip {
+    background-color: #374151;
+    color: #ffffff;
+  }
+
+  :host([theme='default']) .slider-tooltip::after,
+  :host(:not([theme])) .slider-tooltip::after {
+    border-top-color: #374151;
   }
 `;
 

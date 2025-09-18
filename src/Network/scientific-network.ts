@@ -16,6 +16,7 @@ import {
   messageStyles,
   loadingSpinnerStyles,
   responsiveStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
@@ -75,7 +76,7 @@ export type NetworkLayout =
   | 'spread'
   | 'fcose';
 
-export type NetworkTheme = 'default' | 'dark' | 'scientific' | 'minimal';
+export type NetworkTheme = ScientificTheme;
 
 @customElement('scientific-network')
 export class ScientificNetwork

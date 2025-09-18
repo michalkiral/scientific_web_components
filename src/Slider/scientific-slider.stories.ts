@@ -22,6 +22,7 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 
 - \`label\` — Label text displayed above the slider
 - \`description\` — Description text displayed below the label
+- \`theme\` — Theme variant: default, dark, scientific
 - \`min\` — Minimum value of the slider range
 - \`max\` — Maximum value of the slider range
 - \`step\` — Step increment for value changes
@@ -280,6 +281,11 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       control: 'text',
       description: 'Description text displayed below the label',
     },
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Theme variant for the slider component',
+    },
     min: {
       control: 'number',
       description: 'Minimum value of the slider range',
@@ -365,6 +371,7 @@ export const Default: Story = {
   args: {
     label: 'Volume Control',
     description: 'Adjust the volume level',
+    theme: 'default',
     min: 0,
     max: 100,
     step: 1,
@@ -914,6 +921,193 @@ export const ResponsiveDemo: Story = {
   parameters: {
     viewport: {
       defaultViewport: 'responsive',
+    },
+  },
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <style>
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 1rem;
+        max-width: 1200px;
+      }
+      .theme-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+      .theme-card.dark {
+        background: #1f2937;
+        border-color: #374151;
+      }
+      .theme-card.scientific {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+      }
+      .theme-title {
+        margin: 0 0 1rem 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+      }
+      .theme-card.dark .theme-title {
+        color: #f9fafb;
+      }
+    </style>
+    <div class="theme-grid">
+      <div class="theme-card">
+        <h3 class="theme-title">Default Theme</h3>
+        <scientific-slider
+          theme="default"
+          label="Temperature"
+          description="Ambient temperature reading"
+          min="0"
+          max="100"
+          step="1"
+          value="23"
+          unit="°C"
+          showValue
+          showTooltip
+          .marks=${[
+            {value: 0, label: 'Min'},
+            {value: 25, label: 'Room'},
+            {value: 50, label: 'Warm'},
+            {value: 75, label: 'Hot'},
+            {value: 100, label: 'Max'},
+          ]}
+          helperText="Standard theme with default colors"
+        ></scientific-slider>
+      </div>
+
+      <div class="theme-card dark">
+        <h3 class="theme-title">Dark Theme</h3>
+        <scientific-slider
+          theme="dark"
+          label="Temperature"
+          description="Ambient temperature reading"
+          min="0"
+          max="100"
+          step="1"
+          value="23"
+          unit="°C"
+          showValue
+          showTooltip
+          .marks=${[
+            {value: 0, label: 'Min'},
+            {value: 25, label: 'Room'},
+            {value: 50, label: 'Warm'},
+            {value: 75, label: 'Hot'},
+            {value: 100, label: 'Max'},
+          ]}
+          helperText="Dark theme optimized for low-light environments"
+        ></scientific-slider>
+      </div>
+
+      <div class="theme-card scientific">
+        <h3 class="theme-title">Scientific Theme</h3>
+        <scientific-slider
+          theme="scientific"
+          label="Temperature"
+          description="Ambient temperature reading"
+          min="0"
+          max="100"
+          step="1"
+          value="23"
+          unit="°C"
+          showValue
+          showTooltip
+          .marks=${[
+            {value: 0, label: 'Min'},
+            {value: 25, label: 'Room'},
+            {value: 50, label: 'Warm'},
+            {value: 75, label: 'Hot'},
+            {value: 100, label: 'Max'},
+          ]}
+          helperText="Enhanced theme with professional styling and better contrast"
+        ></scientific-slider>
+      </div>
+    </div>
+  `,
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story:
+          'Compare all available themes side by side to see the visual differences.',
+      },
+    },
+  },
+};
+
+export const DarkTheme: Story = {
+  render: () => html`
+    <div style="background: #1f2937; padding: 2rem; border-radius: 8px;">
+      <scientific-slider
+        theme="dark"
+        label="Temperature Control"
+        description="Adjust the temperature setting"
+        min="15"
+        max="30"
+        step="0.5"
+        value="21.5"
+        unit="°C"
+        showValue
+        showTooltip
+        .marks=${[
+          {value: 15, label: 'Cold'},
+          {value: 22.5, label: 'Comfort'},
+          {value: 30, label: 'Hot'},
+        ]}
+        helperText="Optimized for dark environments"
+      ></scientific-slider>
+    </div>
+  `,
+  parameters: {
+    backgrounds: {default: 'dark'},
+    docs: {
+      description: {
+        story:
+          'Dark theme variant optimized for low-light environments with proper contrast.',
+      },
+    },
+  },
+};
+
+export const ScientificTheme: Story = {
+  render: () => html`
+    <div
+      style="background: #f8fafc; padding: 2rem; border-radius: 8px; border: 2px solid #e2e8f0;"
+    >
+      <scientific-slider
+        theme="scientific"
+        label="Measurement Precision"
+        description="High-precision scientific measurement"
+        min="0"
+        max="1000"
+        step="10"
+        value="250"
+        unit="μm"
+        showValue
+        showTooltip
+        .marks=${[
+          {value: 0, label: 'Min'},
+          {value: 250, label: 'Standard'},
+          {value: 500, label: 'High'},
+          {value: 1000, label: 'Max'},
+        ]}
+        helperText="Enhanced borders and professional styling for scientific applications"
+      ></scientific-slider>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Scientific theme with enhanced borders and professional styling for research applications.',
+      },
     },
   },
 };
