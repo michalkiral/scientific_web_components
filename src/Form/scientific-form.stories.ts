@@ -165,6 +165,15 @@ All CSS custom properties available for customization with their default values:
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Form theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     title: {control: 'text', description: 'Form title'},
     subtitle: {control: 'text', description: 'Form subtitle'},
     variant: {
@@ -232,6 +241,7 @@ export const Default: Story = {
   args: {
     title: 'User Registration',
     subtitle: 'Please fill out the form below to create your account',
+    theme: 'default',
     submitLabel: 'Create Account',
     cancelLabel: 'Cancel',
     loadingLabel: 'Creating account...',
@@ -254,6 +264,7 @@ export const Default: Story = {
   render: ({
     title,
     subtitle,
+    theme,
     submitLabel,
     cancelLabel,
     loadingLabel,
@@ -276,6 +287,7 @@ export const Default: Story = {
     html`<scientific-form
       .title=${title}
       .subtitle=${subtitle}
+      .theme=${theme}
       .submitLabel=${submitLabel}
       .cancelLabel=${cancelLabel}
       .loadingLabel=${loadingLabel}
@@ -886,4 +898,105 @@ export const RealWorldExample: Story = {
         </div>
       </div>
     </scientific-form>`,
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 48px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <scientific-form
+          title="Default Theme Form"
+          subtitle="Standard theme with clean, modern styling"
+          theme="default"
+          submitLabel="Submit"
+          cancelLabel="Cancel"
+          showCancel
+        >
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name..."
+              style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email..."
+              style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;"
+            />
+          </div>
+        </scientific-form>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <scientific-form
+          title="Dark Theme Form"
+          subtitle="Dark theme optimized for low-light environments"
+          theme="dark"
+          submitLabel="Submit"
+          cancelLabel="Cancel"
+          showCancel
+        >
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name..."
+              style="padding: 12px; border: 2px solid #374151; border-radius: 8px; font-size: 16px; background: #1f2937; color: #f9fafb;"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email..."
+              style="padding: 12px; border: 2px solid #374151; border-radius: 8px; font-size: 16px; background: #1f2937; color: #f9fafb;"
+            />
+          </div>
+        </scientific-form>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <scientific-form
+          title="Scientific Theme Form"
+          subtitle="Professional theme for scientific applications"
+          theme="scientific"
+          submitLabel="Submit"
+          cancelLabel="Cancel"
+          showCancel
+        >
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name..."
+              style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email..."
+              style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;"
+            />
+          </div>
+        </scientific-form>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches.',
+      },
+    },
+  },
 };

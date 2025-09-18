@@ -9,7 +9,10 @@ import {
   messageStyles,
   loadingSpinnerStyles,
   responsiveStyles,
+  themeStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {formThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 
@@ -17,6 +20,8 @@ import {classNames} from '../shared/utils/dom-utils.js';
 export class ScientificForm extends LitElement {
   static override styles = [
     sharedVariables,
+    themeStyles,
+    formThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,
@@ -180,6 +185,9 @@ export class ScientificForm extends LitElement {
 
   @property({type: String})
   override title = '';
+
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
 
   @property({type: String})
   subtitle = '';
