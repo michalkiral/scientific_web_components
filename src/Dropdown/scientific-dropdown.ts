@@ -2,17 +2,22 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {
   sharedVariables,
+  themeStyles,
   inputStyles,
   messageStyles,
   responsiveStyles,
-  dispatchCustomEvent,
-  classNames,
-} from '../shared/index.js';
+  type ScientificTheme,
+} from '../shared/styles/common-styles.js';
+import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
+import {classNames} from '../shared/utils/dom-utils.js';
+
+export type DropdownTheme = ScientificTheme;
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown extends LitElement {
   static override styles = [
     sharedVariables,
+    themeStyles,
     inputStyles,
     messageStyles,
     responsiveStyles,
@@ -33,79 +38,64 @@ export class ScientificDropdown extends LitElement {
       }
 
       .dropdown-label {
-        margin-bottom: var(
-          --dropdown-label-margin-bottom,
-          var(--scientific-spacing-sm)
-        );
+        margin-bottom: var(--scientific-spacing-sm);
         display: block;
-        font-size: var(--dropdown-label-font-size, var(--scientific-text-sm));
-        font-weight: var(--dropdown-label-font-weight, 500);
+        font-size: var(--scientific-text-sm);
+        font-weight: 500;
         color: var(--dropdown-label-color, #374151);
       }
 
       .dropdown-select {
         width: 100%;
-        padding: var(
-          --dropdown-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        border: var(--dropdown-border, var(--scientific-border));
-        border-radius: var(
-          --dropdown-border-radius,
-          var(--scientific-border-radius)
-        );
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+        border: 1px solid var(--dropdown-border-color, #d1d5db);
+        border-radius: var(--scientific-border-radius);
         background-color: var(--dropdown-bg-color, #ffffff);
         color: var(--dropdown-color, #374151);
-        font-size: var(--dropdown-font-size, var(--scientific-text-base));
+        font-size: var(--scientific-text-sm);
         cursor: pointer;
-        transition: var(--dropdown-transition, var(--scientific-transition));
-        box-shadow: var(--dropdown-shadow, var(--scientific-shadow-sm));
+        transition: var(--scientific-transition);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        min-height: var(--dropdown-min-height, 48px);
+        min-height: 40px;
+        outline: none;
       }
 
       .dropdown-select:hover {
-        border-color: var(
-          --dropdown-hover-border-color,
-          var(--scientific-border-hover)
-        );
-        box-shadow: var(--dropdown-hover-shadow, var(--scientific-shadow));
+        border-color: var(--dropdown-hover-border-color, #9ca3af);
       }
 
       .dropdown-select:focus {
-        outline: none;
         border-color: var(
           --dropdown-focus-border-color,
-          var(--scientific-border-focus)
+          var(--scientific-primary-color)
         );
-        box-shadow: var(
-          --dropdown-focus-shadow,
-          0 0 0 3px rgba(0, 123, 255, 0.1)
-        );
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
 
       .dropdown-select.open {
         border-color: var(
-          --dropdown-open-border-color,
-          var(--scientific-border-focus)
+          --dropdown-focus-border-color,
+          var(--scientific-primary-color)
         );
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
       }
 
       .dropdown-select.disabled {
-        background-color: var(--dropdown-disabled-bg-color, #f9fafb);
-        border-color: var(--dropdown-disabled-border-color, #e5e7eb);
-        color: var(--dropdown-disabled-color, #9ca3af);
+        background-color: #f9fafb;
+        border-color: #e5e7eb;
+        color: #9ca3af;
         cursor: not-allowed;
       }
 
       .dropdown-arrow {
         width: 0;
         height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 5px solid var(--dropdown-arrow-color, #6b7280);
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid var(--dropdown-arrow-color, #6b7280);
         transition: transform var(--scientific-transition);
         margin-left: var(--scientific-spacing-sm);
       }
@@ -120,24 +110,21 @@ export class ScientificDropdown extends LitElement {
 
       .options-container {
         position: absolute;
-        top: 100%;
+        top: calc(100% - 1px);
         left: 0;
         width: 100%;
-        min-width: var(--dropdown-options-min-width, 100%);
-        max-width: var(--dropdown-options-max-width, none);
         box-sizing: border-box;
-        border: var(--dropdown-options-border, var(--scientific-border));
-        border-top: none;
-        border-radius: var(
-          --dropdown-options-border-radius,
-          0 0 var(--scientific-border-radius) var(--scientific-border-radius)
-        );
+        border: 1px solid var(--dropdown-border-color, #d1d5db);
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: var(--scientific-border-radius);
+        border-bottom-right-radius: var(--scientific-border-radius);
         background-color: var(--dropdown-options-bg-color, #ffffff);
-        box-shadow: var(--dropdown-options-shadow, var(--scientific-shadow-lg));
-        z-index: var(--dropdown-z-index, 1000);
-        max-height: var(--dropdown-max-height, 200px);
+        box-shadow: var(--scientific-shadow-lg);
+        z-index: 1000;
+        max-height: 200px;
         overflow: hidden;
-        animation: var(--dropdown-animation, slideDown 0.15s ease-out);
+        animation: slideDown 0.15s ease-out;
         display: flex;
         flex-direction: column;
       }
@@ -151,7 +138,7 @@ export class ScientificDropdown extends LitElement {
       @keyframes slideDown {
         from {
           opacity: 0;
-          transform: translateY(-10px);
+          transform: translateY(-4px);
         }
         to {
           opacity: 1;
@@ -160,18 +147,12 @@ export class ScientificDropdown extends LitElement {
       }
 
       .option {
-        padding: var(
-          --dropdown-option-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
         cursor: pointer;
         transition: background-color var(--scientific-transition-fast);
-        border-bottom: var(--dropdown-option-border, 1px solid #f3f4f6);
+        border-bottom: 1px solid #f3f4f6;
         color: var(--dropdown-option-color, #374151);
-        font-size: var(
-          --dropdown-option-font-size,
-          var(--scientific-text-base)
-        );
+        font-size: var(--scientific-text-sm);
       }
 
       .option:last-child {
@@ -188,7 +169,7 @@ export class ScientificDropdown extends LitElement {
           --dropdown-option-selected-color,
           var(--scientific-primary-color)
         );
-        font-weight: var(--dropdown-option-selected-font-weight, 500);
+        font-weight: 500;
       }
 
       .option.focused {
@@ -198,33 +179,26 @@ export class ScientificDropdown extends LitElement {
       .search-input {
         width: 100%;
         border: none;
-        border-bottom: var(--dropdown-search-border, 1px solid #e5e7eb);
-        background-color: var(--dropdown-search-bg-color, #f9fafb);
-        font-size: var(--dropdown-search-font-size, var(--scientific-text-sm));
-        border-radius: 0;
-        padding: var(
-          --dropdown-search-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
+        border-bottom: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+        font-size: var(--scientific-text-sm);
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
         box-sizing: border-box;
         outline: none;
         font-family: inherit;
-        color: var(--dropdown-search-color, #374151);
+        color: #374151;
       }
 
       .search-input:focus {
-        background-color: var(--dropdown-search-focus-bg-color, #ffffff);
-        box-shadow: none;
+        background-color: #ffffff;
       }
 
       .no-options {
-        padding: var(
-          --dropdown-no-options-padding,
-          var(--scientific-spacing-lg)
-        );
+        padding: var(--scientific-spacing-md);
         text-align: center;
-        color: var(--dropdown-no-options-color, #9ca3af);
+        color: #9ca3af;
         font-style: italic;
+        font-size: var(--scientific-text-sm);
       }
 
       .clear-button {
@@ -233,7 +207,7 @@ export class ScientificDropdown extends LitElement {
         cursor: pointer;
         padding: 0 var(--scientific-spacing-xs);
         color: #6b7280;
-        font-size: var(--scientific-text-lg);
+        font-size: 14px;
         line-height: 1;
         transition: color var(--scientific-transition);
       }
@@ -244,22 +218,11 @@ export class ScientificDropdown extends LitElement {
 
       @media (max-width: 768px) {
         .dropdown-select {
-          font-size: var(
-            --dropdown-mobile-font-size,
-            var(--scientific-text-base)
-          );
-          min-height: var(--dropdown-mobile-min-height, 44px);
+          min-height: 44px;
         }
 
         .options-container {
-          max-height: var(--dropdown-mobile-max-height, 150px);
-        }
-
-        .option {
-          padding: var(
-            --dropdown-mobile-option-padding,
-            var(--scientific-spacing-sm) var(--scientific-spacing-md)
-          );
+          max-height: 150px;
         }
       }
     `,
@@ -267,6 +230,9 @@ export class ScientificDropdown extends LitElement {
 
   @property({type: String})
   label = 'Select an option';
+
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
 
   @property({type: Array})
   options: {label: string; value: string}[] = [
