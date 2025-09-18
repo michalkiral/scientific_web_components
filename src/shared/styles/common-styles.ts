@@ -261,6 +261,205 @@ export const themeStyles = css`
   :host(:not([theme])) .slider-tooltip::after {
     border-top-color: #374151;
   }
+
+  /* Table specific styles */
+  :host([theme='dark']) .table-container {
+    background-color: var(--scientific-bg-primary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .table-header {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .table-title {
+    color: var(--scientific-text-primary);
+  }
+
+  :host([theme='dark']) .table-description {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .table {
+    background-color: var(--scientific-bg-primary);
+  }
+
+  :host([theme='dark']) .table-head {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='dark']) .table-header-cell {
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .table-header-cell.sortable:hover {
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .table-row {
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .table-row:hover {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='dark']) .table-row.selected {
+    background-color: rgba(96, 165, 250, 0.1);
+    border-color: var(--scientific-primary-color);
+  }
+
+  :host([theme='dark']) .table-cell {
+    color: var(--scientific-text-secondary);
+  }
+
+  :host([theme='dark']) .table-footer {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .table-info {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .pagination-button {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .pagination-button:hover:not(:disabled) {
+    background-color: var(--scientific-bg-tertiary);
+    border-color: var(--scientific-border-hover);
+  }
+
+  :host([theme='dark']) .pagination-button.active {
+    background-color: var(--scientific-primary-color);
+    color: #ffffff;
+    border-color: var(--scientific-primary-color);
+  }
+
+  :host([theme='dark']) .page-size-selector {
+    background-color: var(--scientific-bg-secondary);
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .empty-state {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .empty-title {
+    color: var(--scientific-text-secondary);
+  }
+
+  :host([theme='dark']) .empty-description {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .sort-indicator {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='dark']) .sort-indicator.active {
+    color: var(--scientific-primary-color);
+  }
+
+  :host([theme='scientific']) .table-container {
+    background-color: var(--scientific-bg-primary);
+    border: var(--scientific-border);
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .table-header {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='scientific']) .table-title {
+    color: var(--scientific-text-primary);
+    font-weight: var(--scientific-font-weight-semibold);
+  }
+
+  :host([theme='scientific']) .table-description {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .table-head {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='scientific']) .table-header-cell {
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+    font-weight: var(--scientific-font-weight-semibold);
+  }
+
+  :host([theme='scientific']) .table-header-cell.sortable:hover {
+    background-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='scientific']) .table-row {
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='scientific']) .table-row:hover {
+    background-color: var(--scientific-bg-secondary);
+  }
+
+  :host([theme='scientific']) .table-row.selected {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: var(--scientific-primary-color);
+  }
+
+  :host([theme='scientific']) .table-cell {
+    color: var(--scientific-text-secondary);
+  }
+
+  :host([theme='scientific']) .table-footer {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='scientific']) .table-info {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='scientific']) .pagination-button {
+    background-color: var(--scientific-bg-primary);
+    color: var(--scientific-text-secondary);
+    border: var(--scientific-border);
+    box-shadow: var(--scientific-shadow-sm);
+  }
+
+  :host([theme='scientific']) .pagination-button:hover:not(:disabled) {
+    background-color: var(--scientific-bg-secondary);
+    border-color: var(--scientific-border-hover);
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .pagination-button.active {
+    background-color: var(--scientific-primary-color);
+    color: #ffffff;
+    border-color: var(--scientific-primary-color);
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .page-size-selector {
+    background-color: var(--scientific-bg-primary);
+    color: var(--scientific-text-secondary);
+    border: var(--scientific-border);
+  }
+
+  :host([theme='scientific']) .sort-indicator {
+    color: var(--scientific-text-muted);
+  }
+
+  :host([theme='scientific']) .sort-indicator.active {
+    color: var(--scientific-primary-color);
+  }
 `;
 
 export const loadingSpinnerStyles = css`

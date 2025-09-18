@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
+import {html} from 'lit';
 import './scientific-table';
 import type {ScientificTable, TableColumn, TableData} from './scientific-table';
 
@@ -511,6 +512,15 @@ The table accepts data in the \`TableData\` format:
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Table theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     title: {
       control: 'text',
       description: 'Table title displayed in header',
@@ -712,6 +722,7 @@ export const Default: Story = {
       'A comprehensive table of chemical compounds with their properties and characteristics.',
     columns: sampleColumns,
     data: sampleData,
+    theme: 'default',
     sortable: true,
     filterable: true,
     pagination: true,
@@ -1044,6 +1055,112 @@ export const Accessibility: Story = {
       description: {
         story:
           'Table optimized for accessibility with proper semantic markup, ARIA labels, and keyboard navigation support.',
+      },
+    },
+  },
+};
+
+// Theme-specific stories
+export const DarkTheme: Story = {
+  args: {
+    title: 'Dark Theme Scientific Table',
+    description:
+      'Scientific table with dark theme for low-light environments and modern interfaces.',
+    columns: sampleColumns.slice(0, 5),
+    data: sampleData.slice(0, 8),
+    theme: 'dark',
+    sortable: true,
+    pagination: true,
+    pageSize: 5,
+    showSearch: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Table with dark theme applied, featuring dark backgrounds and light text optimized for low-light usage.',
+      },
+    },
+  },
+};
+
+export const ScientificTheme: Story = {
+  args: {
+    title: 'Scientific Theme Data Table',
+    description:
+      'Professional scientific table with enhanced typography and spacing for research applications.',
+    columns: sampleColumns.slice(0, 5),
+    data: sampleData.slice(0, 8),
+    theme: 'scientific',
+    sortable: true,
+    pagination: true,
+    pageSize: 5,
+    showSearch: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Table with scientific theme featuring professional typography, enhanced shadows, and research-focused styling.',
+      },
+    },
+  },
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <scientific-table
+          title="Default Theme Table"
+          description="Standard light theme with clean styling"
+          .columns=${sampleColumns.slice(0, 4)}
+          .data=${sampleData.slice(0, 5)}
+          theme="default"
+          .pagination=${false}
+          .showSearch=${false}
+        ></scientific-table>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <scientific-table
+          title="Dark Theme Table"
+          description="Dark theme optimized for low-light environments"
+          .columns=${sampleColumns.slice(0, 4)}
+          .data=${sampleData.slice(0, 5)}
+          theme="dark"
+          .pagination=${false}
+          .showSearch=${false}
+        ></scientific-table>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <scientific-table
+          title="Scientific Theme Table"
+          description="Professional theme for research and scientific applications"
+          .columns=${sampleColumns.slice(0, 4)}
+          .data=${sampleData.slice(0, 5)}
+          theme="scientific"
+          .pagination=${false}
+          .showSearch=${false}
+        ></scientific-table>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches.',
       },
     },
   },

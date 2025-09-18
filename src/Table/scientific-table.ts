@@ -9,6 +9,8 @@ import {
   messageStyles,
   responsiveStyles,
   sharedVariables,
+  themeStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {parseCSVStream} from '../shared/utils/csv-utils.js';
@@ -40,10 +42,13 @@ export interface TableFilter {
   operator?: 'contains' | 'equals' | 'startsWith' | 'endsWith' | 'gt' | 'lt';
 }
 
+export type TableTheme = ScientificTheme;
+
 @customElement('scientific-table')
 export class ScientificTable extends LitElement {
   static override styles = [
     sharedVariables,
+    themeStyles,
     containerStyles,
     headerStyles,
     loadingSpinnerStyles,
@@ -375,6 +380,9 @@ export class ScientificTable extends LitElement {
   @property({type: String})
   description = '';
 
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
+
   @property({type: Array})
   columns: TableColumn[] = [];
 
@@ -465,18 +473,14 @@ export class ScientificTable extends LitElement {
   @state()
   private totalPages = 1;
 
-  // Debounced search handler
   private _debouncedSearch!: (term: string) => void;
 
   constructor() {
     super();
-    // Create debounced search handler for better performance
     this._debouncedSearch = debounce((...args: unknown[]) => {
       const term = args[0] as string;
       this.searchTerm = term;
       this.currentPage = 1;
-      // Don't call _processData() here as it will trigger automatically
-      // through the updated lifecycle when searchTerm changes
     }, 300);
   }
 
@@ -485,7 +489,6 @@ export class ScientificTable extends LitElement {
     if (this.csvPath) {
       this._fetchCSV();
     }
-    // _processData() will be called in updated() automatically when data changes
   }
 
   override updated(changedProperties: Map<string, unknown>) {
@@ -635,7 +638,6 @@ export class ScientificTable extends LitElement {
       this.sortDirection = 'asc';
     }
 
-    // Use shared event dispatcher
     dispatchMultipleEvents(this, [
       {
         name: 'sort',
@@ -736,7 +738,6 @@ export class ScientificTable extends LitElement {
     return classes.join(' ');
   }
 
-  // Public method for testing search functionality
   public setSearchTerm(term: string) {
     this.isProcessing = true;
     this.searchTerm = term;
