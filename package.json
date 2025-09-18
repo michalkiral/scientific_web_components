@@ -45,6 +45,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "chart.js": "^4.4.6",
+    "cytoscape": "^3.33.1",
     "jspdf": "^3.0.1",
     "lit": "^3.2.0"
   },

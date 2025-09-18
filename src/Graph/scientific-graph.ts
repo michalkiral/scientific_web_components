@@ -18,6 +18,11 @@ import {
   roundToDecimals,
 } from '../shared/utils/dom-utils.js';
 import {getDefaultColor} from '../shared/utils/color-utils.js';
+import {
+  exportComponent,
+  type ExportableComponent,
+  type ExportOptions,
+} from '../shared/utils/export-utils.js';
 
 export interface GraphDataset {
   label: string;
@@ -41,7 +46,7 @@ export interface GraphStatistics {
 }
 
 @customElement('scientific-graph')
-export class ScientificGraph extends LitElement {
+export class ScientificGraph extends LitElement implements ExportableComponent {
   static override styles = [
     sharedVariables,
     containerStyles,
@@ -575,21 +580,25 @@ export class ScientificGraph extends LitElement {
     });
   }
 
-  private _handleExport = (format: 'png' | 'jpg' | 'pdf') => {
-    return () => {
+  private _handleExport = (format: ExportOptions['format']) => {
+    return async () => {
       if (!this.chart) {
         return;
       }
 
       try {
-        if (this.onExport) {
+        if (
+          this.onExport &&
+          (format === 'png' || format === 'jpg' || format === 'pdf')
+        ) {
           this.onExport(format);
         } else {
-          if (format === 'pdf') {
-            this._exportToPDF();
-          } else {
-            this._exportToImage(format);
-          }
+          await exportComponent(this, {
+            format,
+            title: this.title,
+            subtitle: this.subtitle,
+            timestamp: true,
+          });
         }
 
         dispatchCustomEvent(this, 'graph-exported', {
@@ -602,100 +611,6 @@ export class ScientificGraph extends LitElement {
       }
     };
   };
-
-  private _exportToImage(format: 'png' | 'jpg') {
-    if (!this.chart) return;
-
-    if (format === 'jpg') {
-      const canvas = this.chart.canvas;
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-
-      if (!tempCtx) return;
-
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-
-      tempCtx.fillStyle = '#ffffff';
-      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-      tempCtx.drawImage(canvas, 0, 0);
-
-      const url = tempCanvas.toDataURL('image/jpeg', 0.95);
-      this._downloadFile(url, format);
-    } else {
-      const url = this.chart.toBase64Image('image/png', 1.0);
-      this._downloadFile(url, format);
-    }
-  }
-
-  private async _exportToPDF() {
-    if (!this.chart) return;
-
-    try {
-      const {jsPDF} = await import('jspdf');
-
-      const canvas = this.chart.canvas;
-      const imgData = canvas.toDataURL('image/png', 1.0);
-
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = imgHeight / imgWidth;
-
-      const pageWidth = 595.28;
-      const pageHeight = 841.89;
-      const margin = 40;
-
-      const maxWidth = pageWidth - margin * 2;
-      const maxHeight = pageHeight - margin * 2 - 60;
-
-      let finalWidth = maxWidth;
-      let finalHeight = finalWidth * ratio;
-
-      if (finalHeight > maxHeight) {
-        finalHeight = maxHeight;
-        finalWidth = finalHeight / ratio;
-      }
-
-      const pdf = new jsPDF('p', 'pt', 'a4');
-
-      pdf.setFontSize(16);
-      pdf.setFont('helvetica', 'bold');
-      const titleWidth = pdf.getTextWidth(this.title);
-      const titleX = (pageWidth - titleWidth) / 2;
-      pdf.text(this.title, titleX, margin + 20);
-
-      if (this.subtitle) {
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
-        const subtitleWidth = pdf.getTextWidth(this.subtitle);
-        const subtitleX = (pageWidth - subtitleWidth) / 2;
-        pdf.text(this.subtitle, subtitleX, margin + 40);
-      }
-
-      const imgX = (pageWidth - finalWidth) / 2;
-      const imgY = margin + (this.subtitle ? 60 : 40);
-
-      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
-
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'normal');
-      const timestamp = new Date().toLocaleString();
-      pdf.text(`Generated on ${timestamp}`, margin, pageHeight - 20);
-
-      const fileName = `${this.title.replace(/\s+/g, '_').toLowerCase()}.pdf`;
-      pdf.save(fileName);
-    } catch (error) {
-      console.error('PDF export error:', error);
-
-      const message = `PDF export requires jsPDF library. Please install it with: npm install jspdf`;
-      console.warn(message);
-      this.errorMessage =
-        'PDF export not available. Check console for installation instructions.';
-
-      this._exportToImage('png');
-    }
-  }
 
   getChartDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
     if (!this.chart) return null;
@@ -724,18 +639,45 @@ export class ScientificGraph extends LitElement {
     return this.chart;
   }
 
-  private _downloadFile(dataUrl: string, format: string) {
-    const link = document.createElement('a');
-    const fileName = `${this.title
-      .replace(/\s+/g, '_')
-      .toLowerCase()}.${format}`;
+  getCanvasElement(): HTMLCanvasElement | null {
+    return this.chart?.canvas || null;
+  }
 
-    link.download = fileName;
-    link.href = dataUrl;
+  getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
+    if (!this.chart) return null;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (format === 'jpg') {
+      const canvas = this.chart.canvas;
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+
+      if (!tempCtx) return null;
+
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      tempCtx.fillStyle = '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, 0);
+
+      return tempCanvas.toDataURL('image/jpeg', quality);
+    } else {
+      return this.chart.toBase64Image('image/png', quality);
+    }
+  }
+
+  getExportData(): unknown {
+    if (!this.chart) return null;
+    return {
+      title: this.title,
+      subtitle: this.subtitle,
+      labels: this.labels,
+      datasets: this.datasets,
+      chartType: this.type,
+      isAreaChart: this.isAreaChart,
+      statistics: this._calculateStatistics(),
+      timestamp: new Date().toISOString(),
+    };
   }
 
   private _handleDataRefresh = () => {
