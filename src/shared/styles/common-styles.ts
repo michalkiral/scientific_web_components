@@ -45,6 +45,195 @@ export const sharedVariables = css`
   }
 `;
 
+export const themeStyles = css`
+  :host([theme='dark']) {
+    --container-bg-color: #1f2937;
+    --scientific-bg-primary: #1f2937;
+    --scientific-bg-secondary: #374151;
+    --scientific-bg-tertiary: #4b5563;
+
+    --scientific-border: 1px solid #374151;
+    --scientific-border-color: #374151;
+    --border-color: #4b5563;
+    --scientific-border-hover: #6b7280;
+    --scientific-border-focus: #60a5fa;
+
+    --scientific-text-primary: #f9fafb;
+    --scientific-text-secondary: #d1d5db;
+    --scientific-text-tertiary: #9ca3af;
+    --scientific-text-muted: #6b7280;
+    --title-color: #f9fafb;
+    --subtitle-color: #d1d5db;
+    color: var(--scientific-text-secondary);
+
+    --scientific-primary-color: #60a5fa;
+    --scientific-primary-hover: #3b82f6;
+    --scientific-secondary-color: #374151;
+    --scientific-secondary-hover: #4b5563;
+
+    --scientific-success-color: #10b981;
+    --scientific-warning-color: #f59e0b;
+    --scientific-danger-color: #ef4444;
+    --scientific-info-color: #60a5fa;
+
+    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+      0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+
+    --loading-overlay-bg: rgba(31, 41, 55, 0.8);
+    --loading-spinner-color: #4b5563;
+    --loading-spinner-active-color: #60a5fa;
+
+    --button-bg-color: #374151;
+    --button-color: #d1d5db;
+    --button-border: 1px solid #4b5563;
+    --button-hover-bg-color: #4b5563;
+    --button-hover-border-color: #6b7280;
+    --button-focus-border-color: #60a5fa;
+
+    --error-bg-color: rgba(239, 68, 68, 0.1);
+    --error-border: 1px solid #ef4444;
+    --error-color: #fca5a5;
+  }
+
+  :host([theme='scientific']) {
+    --container-bg-color: #f8fafc;
+    --scientific-bg-primary: #f8fafc;
+    --scientific-bg-secondary: #f1f5f9;
+    --scientific-bg-tertiary: #e2e8f0;
+
+    --scientific-border: 2px solid #e2e8f0;
+    --scientific-border-color: #e2e8f0;
+    --border-color: #cbd5e1;
+    --scientific-border-hover: #94a3b8;
+    --scientific-border-focus: #3b82f6;
+
+    --scientific-text-primary: #1e293b;
+    --scientific-text-secondary: #334155;
+    --scientific-text-tertiary: #64748b;
+    --scientific-text-muted: #94a3b8;
+    --title-color: #1e293b;
+    --subtitle-color: #64748b;
+    color: var(--scientific-text-secondary);
+
+    --scientific-primary-color: #3b82f6;
+    --scientific-primary-hover: #2563eb;
+    --scientific-secondary-color: #f1f5f9;
+    --scientific-secondary-hover: #e2e8f0;
+
+    --scientific-success-color: #059669;
+    --scientific-warning-color: #d97706;
+    --scientific-danger-color: #dc2626;
+    --scientific-info-color: #0284c7;
+
+    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+    --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.08);
+
+    --scientific-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --scientific-font-weight-normal: 400;
+    --scientific-font-weight-medium: 500;
+    --scientific-font-weight-semibold: 600;
+  }
+
+  :host([theme='scientific']) .scientific-container,
+  :host([theme='scientific']) .scientific-button,
+  :host([theme='scientific']) .scientific-input {
+    border-width: 2px;
+    box-shadow: var(--scientific-shadow);
+  }
+
+  :host([theme='scientific']) .scientific-header {
+    border-bottom: var(--scientific-border);
+    padding-bottom: var(--scientific-spacing-md);
+    margin-bottom: var(--scientific-spacing-lg);
+  }
+
+  :host([theme='scientific']) .scientific-title {
+    font-weight: var(--scientific-font-weight-semibold);
+    color: var(--scientific-text-primary);
+  }
+
+  :host([theme='scientific']) .scientific-subtitle {
+    font-weight: var(--scientific-font-weight-normal);
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='minimal']) {
+    --scientific-border: none;
+    --scientific-shadow: none;
+    --scientific-shadow-lg: none;
+    --scientific-shadow-sm: none;
+    --scientific-shadow-xl: none;
+
+    --container-bg-color: #ffffff;
+    --scientific-bg-primary: #ffffff;
+    --scientific-bg-secondary: #fafafa;
+    --border-color: transparent;
+    --scientific-border-color: transparent;
+  }
+
+  :host([theme='minimal']) .scientific-container,
+  :host([theme='minimal']) .scientific-button,
+  :host([theme='minimal']) .scientific-input {
+    border: none;
+    box-shadow: none;
+  }
+
+  :host([theme='minimal']) .scientific-header {
+    border: none;
+  }
+
+  /* Network specific styles */
+  :host([theme='dark']) .network-toolbar,
+  :host([theme='dark']) .network-info {
+    background: var(--scientific-bg-secondary, rgba(31, 41, 55, 0.95));
+    color: var(--scientific-text-secondary);
+    border-color: var(--scientific-border-color);
+  }
+
+  :host([theme='dark']) .info-row {
+    color: var(--scientific-text-secondary);
+  }
+
+  :host([theme='dark']) .info-row span:first-child {
+    color: var(--scientific-text-tertiary);
+  }
+
+  :host([theme='dark']) .network-toolbar scientific-dropdown {
+    --dropdown-bg-color: var(--scientific-bg-secondary);
+    --dropdown-color: var(--scientific-text-secondary);
+    --dropdown-border: var(--scientific-border);
+    --dropdown-options-bg-color: var(--scientific-bg-secondary);
+    --dropdown-option-color: var(--scientific-text-secondary);
+    --dropdown-option-hover-bg-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='dark']) .network-toolbar scientific-button {
+    --button-bg-color: var(--scientific-bg-secondary);
+    --button-color: var(--scientific-text-secondary);
+    --button-border: var(--scientific-border);
+    --button-hover-bg-color: var(--scientific-bg-tertiary);
+  }
+
+  :host([theme='scientific']) .network-toolbar,
+  :host([theme='scientific']) .network-info {
+    background: var(--scientific-bg-primary, rgba(248, 250, 252, 0.98));
+  }
+
+  :host([theme='minimal']) .network-toolbar,
+  :host([theme='minimal']) .network-info {
+    background: var(--scientific-bg-primary, rgba(255, 255, 255, 0.9));
+    border: none;
+  }
+`;
+
 export const loadingSpinnerStyles = css`
   .loading-overlay {
     position: absolute;
@@ -68,7 +257,8 @@ export const loadingSpinnerStyles = css`
     width: var(--loading-spinner-size, 32px);
     height: var(--loading-spinner-size, 32px);
     border: 3px solid var(--loading-spinner-color, #e5e7eb);
-    border-top: 3px solid var(--loading-spinner-active-color, #007bff);
+    border-top: 3px solid
+      var(--loading-spinner-active-color, var(--scientific-primary-color));
     border-radius: 50%;
     animation: scientific-spin 1s linear infinite;
     z-index: 2;
@@ -124,7 +314,10 @@ export const headerStyles = css`
     flex-direction: column;
     gap: var(--header-gap, var(--scientific-spacing-sm));
     padding-bottom: var(--header-padding-bottom, var(--scientific-spacing-lg));
-    border-bottom: var(--header-border, 1px solid #f3f4f6);
+    border-bottom: var(
+      --header-border,
+      1px solid var(--scientific-border-color)
+    );
   }
 
   .scientific-header.required::after {
@@ -137,7 +330,7 @@ export const headerStyles = css`
   .scientific-title {
     font-size: var(--title-font-size, var(--scientific-text-2xl));
     font-weight: var(--title-font-weight, 600);
-    color: var(--title-color, #111827);
+    color: var(--title-color, var(--scientific-text-primary, #111827));
     margin: 0;
     line-height: var(--title-line-height, 1.2);
   }
@@ -145,7 +338,7 @@ export const headerStyles = css`
   .scientific-subtitle {
     font-size: var(--subtitle-font-size, var(--scientific-text-base));
     font-weight: var(--subtitle-font-weight, 400);
-    color: var(--subtitle-color, #6b7280);
+    color: var(--subtitle-color, var(--scientific-text-tertiary, #6b7280));
     margin: 0;
     line-height: var(--subtitle-line-height, 1.4);
   }

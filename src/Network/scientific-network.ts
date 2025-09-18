@@ -10,6 +10,7 @@ import cytoscape, {
 } from 'cytoscape';
 import {
   sharedVariables,
+  themeStyles,
   containerStyles,
   headerStyles,
   messageStyles,
@@ -83,6 +84,7 @@ export class ScientificNetwork
 {
   static override styles = [
     sharedVariables,
+    themeStyles,
     containerStyles,
     headerStyles,
     messageStyles,
@@ -217,7 +219,7 @@ export class ScientificNetwork
         border-radius: var(--scientific-border-radius);
         padding: var(--scientific-spacing-md);
         font-size: var(--scientific-text-sm);
-        color: #374151;
+        color: var(--scientific-text-secondary);
         box-shadow: var(--scientific-shadow);
         max-width: 250px;
         z-index: 10;
@@ -236,7 +238,7 @@ export class ScientificNetwork
       }
 
       .info-row span:first-child {
-        color: #6b7280;
+        color: var(--scientific-text-tertiary);
       }
 
       .node-tooltip {
@@ -257,77 +259,6 @@ export class ScientificNetwork
         --button-padding: var(--scientific-spacing-sm);
         --button-min-height: 32px;
         --button-font-size: var(--scientific-text-sm);
-      }
-
-      :host([theme='dark']) {
-        --container-bg-color: #1f2937;
-        --scientific-border: 1px solid #374151;
-        --border-color: #4b5563;
-        --scientific-border-color: #4b5563;
-        color: #d1d5db;
-      }
-
-      :host([theme='dark']) .scientific-header {
-        color: #d1d5db;
-      }
-
-      :host([theme='dark']) .scientific-title {
-        color: #f9fafb;
-      }
-
-      :host([theme='dark']) .scientific-subtitle {
-        color: #d1d5db;
-      }
-
-      :host([theme='dark']) .network-toolbar,
-      :host([theme='dark']) .network-info {
-        background: rgba(31, 41, 55, 0.95);
-        color: #d1d5db;
-        border-color: #4b5563;
-      }
-
-      :host([theme='dark']) .info-row {
-        color: #d1d5db;
-      }
-
-      :host([theme='dark']) .info-row span:first-child {
-        color: #9ca3af;
-      }
-
-      :host([theme='dark']) .network-toolbar scientific-dropdown {
-        --dropdown-bg-color: #374151;
-        --dropdown-color: #d1d5db;
-        --dropdown-border: 1px solid #4b5563;
-        --dropdown-options-bg-color: #374151;
-        --dropdown-option-color: #d1d5db;
-        --dropdown-option-hover-bg-color: #4b5563;
-      }
-
-      :host([theme='dark']) .network-toolbar scientific-button {
-        --button-bg-color: #374151;
-        --button-color: #d1d5db;
-        --button-border: 1px solid #4b5563;
-        --button-hover-bg-color: #4b5563;
-      }
-
-      :host([theme='scientific']) {
-        --container-bg-color: #f8fafc;
-        --scientific-border: 2px solid #e2e8f0;
-      }
-
-      :host([theme='scientific']) .network-toolbar,
-      :host([theme='scientific']) .network-info {
-        background: rgba(248, 250, 252, 0.98);
-      }
-
-      :host([theme='minimal']) {
-        --scientific-border: none;
-      }
-
-      :host([theme='minimal']) .network-toolbar,
-      :host([theme='minimal']) .network-info {
-        background: rgba(255, 255, 255, 0.9);
-        border: none;
       }
     `,
   ];
@@ -421,12 +352,10 @@ export class ScientificNetwork
 
   private _setupResizeObserver() {
     this.resizeObserver = new ResizeObserver(() => {
-      // Clear existing timeout to debounce
       if (this.resizeTimeout) {
         clearTimeout(this.resizeTimeout);
       }
 
-      // Debounce resize operations to prevent circular loops
       this.resizeTimeout = window.setTimeout(() => {
         if (this.cy) {
           this.cy.resize();
@@ -521,23 +450,44 @@ export class ScientificNetwork
     return elements;
   }
 
+  private _getThemeColors() {
+    const style = getComputedStyle(this);
+    return {
+      nodeColor:
+        style.getPropertyValue('--scientific-primary-color').trim() ||
+        '#3b82f6',
+      edgeColor:
+        style.getPropertyValue('--scientific-text-muted').trim() || '#9ca3af',
+      textColor:
+        style.getPropertyValue('--scientific-text-secondary').trim() ||
+        '#374151',
+      borderColor:
+        style.getPropertyValue('--scientific-primary-hover').trim() ||
+        '#2563eb',
+      dangerColor:
+        style.getPropertyValue('--scientific-danger-color').trim() || '#ef4444',
+      warningColor:
+        style.getPropertyValue('--scientific-warning-color').trim() ||
+        '#fbbf24',
+      bgColor:
+        style.getPropertyValue('--container-bg-color').trim() || '#ffffff',
+    };
+  }
+
   private _getCytoscapeStyles() {
-    const isDark = this.theme === 'dark';
-    const nodeColor = isDark ? '#60a5fa' : '#3b82f6';
-    const edgeColor = isDark ? '#6b7280' : '#9ca3af';
-    const textColor = isDark ? '#f3f4f6' : '#374151';
+    const colors = this._getThemeColors();
 
     return [
       {
         selector: 'node',
         style: {
-          'background-color': nodeColor,
-          'border-color': isDark ? '#1e40af' : '#2563eb',
+          'background-color': colors.nodeColor,
+          'border-color': colors.borderColor,
           'border-width': 2,
           label: 'data(label)',
           'text-valign': 'center',
           'text-halign': 'center',
-          color: textColor,
+          color: colors.textColor,
           'font-size': '12px',
           'font-family': 'Arial, sans-serif',
           width: 30,
@@ -547,8 +497,8 @@ export class ScientificNetwork
       {
         selector: 'node:selected',
         style: {
-          'background-color': '#ef4444',
-          'border-color': '#dc2626',
+          'background-color': colors.dangerColor,
+          'border-color': colors.dangerColor,
           'border-width': 3,
         },
       },
@@ -556,12 +506,12 @@ export class ScientificNetwork
         selector: 'edge',
         style: {
           width: 2,
-          'line-color': edgeColor,
-          'target-arrow-color': edgeColor,
+          'line-color': colors.edgeColor,
+          'target-arrow-color': colors.edgeColor,
           'target-arrow-shape': this.directed ? 'triangle' : 'none',
           'curve-style': 'bezier',
           'font-size': '10px',
-          color: textColor,
+          color: colors.textColor,
           'text-rotation': 'autorotate',
           'text-margin-y': -10,
         },
@@ -575,17 +525,17 @@ export class ScientificNetwork
       {
         selector: 'edge:selected',
         style: {
-          'line-color': '#ef4444',
-          'target-arrow-color': '#ef4444',
+          'line-color': colors.dangerColor,
+          'target-arrow-color': colors.dangerColor,
           width: 3,
         },
       },
       {
         selector: '.highlighted',
         style: {
-          'background-color': '#fbbf24',
-          'line-color': '#fbbf24',
-          'target-arrow-color': '#fbbf24',
+          'background-color': colors.warningColor,
+          'line-color': colors.warningColor,
+          'target-arrow-color': colors.warningColor,
           'transition-property':
             'background-color, line-color, target-arrow-color',
           'transition-duration': 0.3,
@@ -863,7 +813,8 @@ export class ScientificNetwork
     if (!this.cy) return null;
 
     try {
-      const bg = this.theme === 'dark' ? '#1f2937' : '#ffffff';
+      const colors = this._getThemeColors();
+      const bg = colors.bgColor;
 
       if (format === 'png') {
         return this.cy.png({
@@ -906,12 +857,13 @@ export class ScientificNetwork
         this.onExport &&
         (format === 'png' || format === 'svg' || format === 'json')
       ) {
+        const colors = this._getThemeColors();
         let exportData: string;
         switch (format) {
           case 'png':
             exportData = this.cy.png({
               output: 'base64uri',
-              bg: this.theme === 'dark' ? '#1f2937' : '#ffffff',
+              bg: colors.bgColor,
               full: true,
             });
             break;
@@ -926,12 +878,13 @@ export class ScientificNetwork
         }
         this.onExport(format, exportData);
       } else {
+        const colors = this._getThemeColors();
         await exportComponent(this, {
           format,
           title: this.title || 'network',
           subtitle: this.subtitle,
           timestamp: true,
-          backgroundColor: this.theme === 'dark' ? '#1f2937' : '#ffffff',
+          backgroundColor: colors.bgColor,
         });
       }
 
