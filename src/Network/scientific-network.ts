@@ -136,29 +136,51 @@ export class ScientificNetwork
       .network-toolbar {
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        padding: var(--scientific-spacing-sm);
-        background: var(--container-bg-color, #ffffff);
-        border: var(--scientific-border);
-        border-radius: var(--scientific-border-radius);
-        box-shadow: var(--scientific-shadow);
-        gap: var(--scientific-spacing-lg);
+        padding: var(--network-toolbar-padding, var(--scientific-spacing-md));
+        background: var(
+          --network-toolbar-bg,
+          var(--container-bg-color, #ffffff)
+        );
+        border: var(--network-toolbar-border, var(--scientific-border));
+        border-radius: var(
+          --network-toolbar-border-radius,
+          var(--scientific-border-radius)
+        );
+        box-shadow: var(--network-toolbar-shadow, var(--scientific-shadow));
+        gap: var(--network-toolbar-section-gap, var(--scientific-spacing-lg));
+        min-height: var(--network-toolbar-min-height, 56px);
       }
 
       .toolbar-section {
         display: flex;
-        gap: var(--scientific-spacing-xs);
+        gap: var(--network-toolbar-item-gap, var(--scientific-spacing-sm));
         align-items: center;
         flex-wrap: wrap;
       }
 
+      .toolbar-section.dropdowns {
+        gap: var(--network-dropdown-gap, 4rem);
+      }
+
+      .toolbar-section:first-child {
+        flex: 1;
+        justify-content: flex-start;
+      }
+
+      .toolbar-section:last-child {
+        flex: 1;
+        justify-content: flex-end;
+      }
+
       .toolbar-divider {
         width: 1px;
-        height: 24px;
+        height: 32px;
         background: var(--border-color, #e0e0e0);
-        margin: 0 var(--scientific-spacing-xs);
+        margin: 0 var(--scientific-spacing-sm);
+        flex-shrink: 0;
       }
 
       .network-toolbar scientific-dropdown {
@@ -169,6 +191,18 @@ export class ScientificNetwork
           var(--scientific-spacing-md);
       }
 
+      @media (max-width: 1024px) {
+        .network-toolbar {
+          justify-content: center;
+        }
+
+        .toolbar-section:first-child,
+        .toolbar-section:last-child {
+          flex: none;
+          justify-content: center;
+        }
+      }
+
       @media (max-width: 768px) {
         .scientific-header {
           gap: var(--scientific-spacing-xs);
@@ -176,13 +210,23 @@ export class ScientificNetwork
 
         .network-toolbar {
           flex-direction: column;
-          gap: var(--scientific-spacing-sm);
+          gap: var(--scientific-spacing-md);
           align-items: stretch;
+          padding: var(--scientific-spacing-md);
+          min-height: auto;
         }
 
         .toolbar-section {
           justify-content: center;
           flex-wrap: wrap;
+          width: 100%;
+          gap: var(--scientific-spacing-sm);
+        }
+
+        .toolbar-section:first-child,
+        .toolbar-section:last-child {
+          flex: none;
+          justify-content: center;
         }
 
         .toolbar-divider {
@@ -192,24 +236,38 @@ export class ScientificNetwork
 
       @media (max-width: 480px) {
         .network-toolbar {
-          padding: var(--scientific-spacing-xs);
-          gap: var(--scientific-spacing-xs);
+          padding: var(--scientific-spacing-sm);
+          gap: var(--scientific-spacing-sm);
         }
 
         .toolbar-section {
-          flex-direction: column;
+          flex-direction: row;
           gap: var(--scientific-spacing-xs);
-          width: 100%;
+          justify-content: center;
         }
 
-        .toolbar-section scientific-button,
+        .toolbar-section scientific-button {
+          flex: 1;
+          min-width: 60px;
+          max-width: 80px;
+        }
+
         .toolbar-section scientific-dropdown {
-          width: 100%;
-          min-width: 0;
+          flex: 1;
+          min-width: 120px;
+          max-width: 200px;
         }
 
         .network-toolbar scientific-dropdown {
           --dropdown-width: 100%;
+          --dropdown-font-size: var(--scientific-text-xs);
+          --dropdown-padding: var(--scientific-spacing-xs)
+            var(--scientific-spacing-sm);
+        }
+
+        .network-toolbar scientific-button {
+          --button-font-size: var(--scientific-text-xs);
+          --button-padding: var(--scientific-spacing-xs);
         }
       }
 
@@ -299,6 +357,7 @@ export class ScientificNetwork
   @state() private selectedNodes: string[] = [];
   @state() private selectedEdges: string[] = [];
   @state() private metrics: NetworkMetrics | null = null;
+  @state() private currentZoom = 100;
   @state() private tooltip: {
     visible: boolean;
     content: string;
@@ -350,6 +409,10 @@ export class ScientificNetwork
     }
     if (changedProperties.has('theme') && this.cy) {
       this._applyTheme();
+    }
+    if (changedProperties.has('directed') && this.cy) {
+      this._applyTheme();
+      this._calculateMetrics();
     }
   }
 
@@ -403,6 +466,9 @@ export class ScientificNetwork
         this.cy!.layout(this._getLayoutOptions()).run();
         this._setupEventListeners();
         this._calculateMetrics();
+
+        // Initialize zoom level
+        this.currentZoom = Math.round(this.cy!.zoom() * 100);
 
         // Only start observing for resize after Cytoscape is fully ready
         if (this.resizeObserver) {
@@ -633,6 +699,7 @@ export class ScientificNetwork
     }
 
     this.cy.on('zoom', () => {
+      this.currentZoom = Math.round(this.cy!.zoom() * 100);
       this.dispatchEvent(
         new CustomEvent('network-zoom', {
           detail: {zoomLevel: this.cy!.zoom()},
@@ -788,22 +855,42 @@ export class ScientificNetwork
   private _handleZoomIn() {
     if (this.cy && this.enableZoom) {
       this.cy.zoom(this.cy.zoom() * 1.2);
+      this.currentZoom = Math.round(this.cy.zoom() * 100);
     }
   }
 
   private _handleZoomOut() {
     if (this.cy && this.enableZoom) {
       this.cy.zoom(this.cy.zoom() / 1.2);
+      this.currentZoom = Math.round(this.cy.zoom() * 100);
     }
   }
 
   private _handleZoomFit() {
-    this.cy?.fit();
+    if (this.cy) {
+      this.cy.fit();
+      this.currentZoom = Math.round(this.cy.zoom() * 100);
+    }
   }
 
   private _handleLayoutChange(event: CustomEvent) {
     const {value} = event.detail;
     this.layout = value as NetworkLayout;
+  }
+
+  private _handleDirectedChange(event: CustomEvent) {
+    const {value} = event.detail;
+    this.directed = value === 'true';
+
+    if (this.cy) {
+      this._applyTheme();
+    }
+
+    this._calculateMetrics();
+
+    dispatchCustomEvent(this, 'network-direction-changed', {
+      directed: this.directed,
+    });
   }
 
   getCanvasElement(): HTMLCanvasElement | null {
@@ -966,36 +1053,8 @@ export class ScientificNetwork
   private _renderToolbar() {
     return html`
       <div class="network-toolbar">
-        ${this.enableZoom
-          ? html`
-              <div class="toolbar-section">
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="+"
-                  @click="${this._handleZoomIn}"
-                  title="Zoom In"
-                ></scientific-button>
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="−"
-                  @click="${this._handleZoomOut}"
-                  title="Zoom Out"
-                ></scientific-button>
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="⌂"
-                  @click="${this._handleZoomFit}"
-                  title="Fit to Screen"
-                ></scientific-button>
-              </div>
-              <div class="toolbar-divider"></div>
-            `
-          : ''}
-
-        <div class="toolbar-section">
+        <!-- Left side: Layout and Network Type Controls -->
+        <div class="toolbar-section dropdowns">
           <scientific-dropdown
             .options="${[
               {label: 'Force', value: 'cose'},
@@ -1006,18 +1065,62 @@ export class ScientificNetwork
               {label: 'Random', value: 'random'},
             ]}"
             .selectedValue="${this.layout}"
+            .theme="${this.theme}"
             @change="${this._handleLayoutChange}"
             placeholder="Layout Algorithm"
           ></scientific-dropdown>
+
+          <scientific-dropdown
+            .options="${[
+              {label: 'Undirected', value: 'false'},
+              {label: 'Directed', value: 'true'},
+            ]}"
+            .selectedValue="${this.directed ? 'true' : 'false'}"
+            .theme="${this.theme}"
+            @change="${this._handleDirectedChange}"
+            placeholder="Network Type"
+          ></scientific-dropdown>
         </div>
 
-        <div class="toolbar-divider"></div>
+        <!-- Center: Zoom Controls -->
+        ${this.enableZoom
+          ? html`
+              <div class="toolbar-section">
+                <scientific-button
+                  variant="outline"
+                  size="small"
+                  label="+"
+                  .theme="${this.theme}"
+                  @click="${this._handleZoomIn}"
+                  title="Zoom In"
+                ></scientific-button>
+                <scientific-button
+                  variant="outline"
+                  size="small"
+                  label="−"
+                  .theme="${this.theme}"
+                  @click="${this._handleZoomOut}"
+                  title="Zoom Out"
+                ></scientific-button>
+                <scientific-button
+                  variant="outline"
+                  size="small"
+                  label="⌂"
+                  .theme="${this.theme}"
+                  @click="${this._handleZoomFit}"
+                  title="Fit to Screen"
+                ></scientific-button>
+              </div>
+            `
+          : ''}
 
+        <!-- Right side: Export Controls -->
         <div class="toolbar-section">
           <scientific-button
             variant="outline"
             size="small"
             label="PNG"
+            .theme="${this.theme}"
             @click="${() => this._handleExport('png')}"
             title="Export PNG"
           ></scientific-button>
@@ -1025,6 +1128,7 @@ export class ScientificNetwork
             variant="outline"
             size="small"
             label="JPG"
+            .theme="${this.theme}"
             @click="${() => this._handleExport('jpg')}"
             title="Export JPG"
           ></scientific-button>
@@ -1032,6 +1136,7 @@ export class ScientificNetwork
             variant="outline"
             size="small"
             label="PDF"
+            .theme="${this.theme}"
             @click="${() => this._handleExport('pdf')}"
             title="Export PDF"
           ></scientific-button>
@@ -1039,6 +1144,7 @@ export class ScientificNetwork
             variant="outline"
             size="small"
             label="JSON"
+            .theme="${this.theme}"
             @click="${() => this._handleExport('json')}"
             title="Export JSON"
           ></scientific-button>
@@ -1049,8 +1155,6 @@ export class ScientificNetwork
 
   private _renderInfo() {
     if (!this.metrics && !this.cy) return '';
-
-    const zoomLevel = this.cy ? Math.round(this.cy.zoom() * 100) : 100;
 
     return html`
       <div class="network-info">
@@ -1102,7 +1206,7 @@ export class ScientificNetwork
           ? html`
               <div class="info-row">
                 <span>Zoom:</span>
-                <span>${zoomLevel}%</span>
+                <span>${this.currentZoom}%</span>
               </div>
             `
           : nothing}

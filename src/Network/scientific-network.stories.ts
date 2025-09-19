@@ -670,7 +670,7 @@ export const ThemeComparison: Story = {
   },
   render: () => html`
     <div
-      style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; row-gap: 210px; width: 100%; padding: 20px;"
+      style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; row-gap: 325px; width: 100%; padding: 20px;"
     >
       <div style="min-width: 0;">
         <h3 style="margin: 0 0 15px 0; font-size: 16px;">Default Theme</h3>
