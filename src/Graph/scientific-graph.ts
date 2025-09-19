@@ -5,12 +5,15 @@ import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import {
   sharedVariables,
+  themeStyles,
   containerStyles,
   headerStyles,
   messageStyles,
   loadingSpinnerStyles,
   responsiveStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {graphThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
   classNames,
@@ -45,10 +48,14 @@ export interface GraphStatistics {
   variance: number;
 }
 
+export type GraphTheme = ScientificTheme;
+
 @customElement('scientific-graph')
 export class ScientificGraph extends LitElement implements ExportableComponent {
   static override styles = [
     sharedVariables,
+    themeStyles,
+    graphThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,
@@ -244,6 +251,9 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
 
   @property({type: String})
   override title = 'Scientific Graph';
+
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
 
   @property({type: String})
   subtitle = '';
@@ -805,6 +815,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                     .selectedValue=${this.isAreaChart ? 'area' : this.type}
                     .disabled=${this.isLoading}
                     .placeholder=${'Select chart type'}
+                    .theme=${this.theme}
                     @option-selected=${this._handleTypeChange}
                   ></scientific-dropdown>
                 </div>
@@ -820,6 +831,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
                                 .action=${this._handleExport('png')}
+                                .theme=${this.theme}
                                 title="Export chart as PNG image"
                               ></scientific-button>
                             `
@@ -832,6 +844,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
                                 .action=${this._handleExport('jpg')}
+                                .theme=${this.theme}
                                 title="Export chart as JPG image"
                               ></scientific-button>
                             `
@@ -844,6 +857,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                                 .size=${'small'}
                                 .disabled=${this.isLoading || !this.chart}
                                 .action=${this._handleExport('pdf')}
+                                .theme=${this.theme}
                                 title="Export chart as PDF document"
                               ></scientific-button>
                             `
@@ -856,6 +870,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                     .size=${'small'}
                     .disabled=${this.isLoading}
                     .action=${this._handleDataRefresh()}
+                    .theme=${this.theme}
                     title="Refresh Chart"
                   ></scientific-button>
 
