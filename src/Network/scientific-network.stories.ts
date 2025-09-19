@@ -176,6 +176,8 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`onNodeClick\` — Node click handler function
 - \`onEdgeClick\` — Edge click handler function
 - \`onExport\` — Export handler function
+- \`enableNodeCreation\` — Enables interactive node creation functionality
+- \`enableEdgeCreation\` — Enables interactive edge creation functionality
 
 ## Events
 
@@ -184,6 +186,8 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`canvas-clicked\` — Fired when canvas background is clicked
 - \`network-zoom\` — Fired when zoom level changes
 - \`network-export\` — Fired when network is exported
+- \`node-added\` — Fired when a new node is created interactively
+- \`edge-added\` — Fired when a new edge is created interactively
 
 ## Basic Usage
 
@@ -212,6 +216,19 @@ A **powerful**, **interactive** network visualization component built with Cytos
   showTooltips
   @node-selected="\${handleNodeSelection}"
   @network-export="\${handleExport}"
+></scientific-network>
+\`\`\`
+
+**Interactive Creation Example:**
+\`\`\`html
+<scientific-network
+  title="Interactive Network Builder"
+  .data="\${networkData}"
+  enableNodeCreation
+  enableEdgeCreation
+  showToolbar
+  @node-added="\${handleNodeAdded}"
+  @edge-added="\${handleEdgeAdded}"
 ></scientific-network>
 \`\`\`
 
@@ -249,12 +266,31 @@ interface NetworkEdge {
 
 - **Multiple Layout Algorithms**: Force-directed, hierarchical, circular, and more
 - **Interactive Controls**: Zoom, pan, node selection, and neighbor highlighting
+- **Interactive Creation**: Add new nodes and edges directly on the canvas
 - **Analytics Integration**: Built-in network metrics (centrality, density, components)
 - **Export Capabilities**: PNG and JSON export functionality
 - **Responsive Design**: Adapts to container size changes
 - **Real-time Updates**: Dynamic data updates with smooth transitions
 - **Accessibility**: Keyboard navigation and screen reader support
 - **Customizable Styling**: Extensive CSS variable system and theme support
+
+## Interactive Creation
+
+The network component supports dynamic creation of nodes and edges:
+
+**Node Creation:**
+- Enable with \`enableNodeCreation\` property
+- Click "Add Node" button in toolbar to enter creation mode
+- Click anywhere on the canvas to place new nodes
+- Nodes are automatically assigned unique IDs
+- Fires \`node-added\` event with node details
+
+**Edge Creation:**
+- Enable with \`enableEdgeCreation\` property  
+- Click "Add Edge" button in toolbar to enter creation mode
+- Click first node (source), then second node (target)
+- Edge is automatically created between the two nodes
+- Fires \`edge-added\` event with edge details
 
 ## Layout Algorithms
 
@@ -430,6 +466,14 @@ The component supports multiple themes through CSS custom properties:
     layoutOptions: {
       control: 'object',
       description: 'Custom options for the layout algorithm',
+    },
+    enableNodeCreation: {
+      control: 'boolean',
+      description: 'Whether to enable interactive node creation',
+    },
+    enableEdgeCreation: {
+      control: 'boolean',
+      description: 'Whether to enable interactive edge creation',
     },
   },
 } satisfies Meta<ScientificNetwork>;
@@ -725,6 +769,107 @@ export const ThemeComparison: Story = {
             --network-canvas-min-height: 250px;
           "
         ></scientific-network>
+      </div>
+    </div>
+  `,
+};
+
+export const InteractiveNodeCreation: Story = {
+  args: {
+    title: 'Interactive Node Creation',
+    subtitle:
+      'Click the "Add Node" button and then click on the canvas to create new nodes',
+    data: {
+      nodes: [
+        {id: 'node1', label: 'Start Node', data: {type: 'initial'}},
+        {id: 'node2', label: 'Example Node', data: {type: 'example'}},
+      ],
+      edges: [
+        {id: 'edge1', source: 'node1', target: 'node2', label: 'connects to'},
+      ],
+    },
+    layout: 'cose',
+    theme: 'scientific',
+    showToolbar: true,
+    showInfo: true,
+    showMetrics: true,
+    enableZoom: true,
+    enablePan: true,
+    enableSelection: true,
+    showTooltips: true,
+    enableNodeCreation: true,
+    enableEdgeCreation: true,
+  },
+  render: (args) => html`
+    <scientific-network
+      title=${args.title}
+      subtitle=${args.subtitle}
+      .data=${args.data}
+      ?directed=${args.directed}
+      layout=${args.layout}
+      theme=${args.theme}
+      ?interactive=${args.interactive}
+      ?showToolbar=${args.showToolbar}
+      ?showInfo=${args.showInfo}
+      ?showMetrics=${args.showMetrics}
+      ?isLoading=${args.isLoading}
+      errorMessage=${args.errorMessage}
+      ?enableZoom=${args.enableZoom}
+      ?enablePan=${args.enablePan}
+      ?enableSelection=${args.enableSelection}
+      ?showTooltips=${args.showTooltips}
+      ?enableNodeCreation=${args.enableNodeCreation}
+      ?enableEdgeCreation=${args.enableEdgeCreation}
+      .layoutOptions=${args.layoutOptions}
+      @node-added=${(e: CustomEvent) => {
+        console.log('New node added:', e.detail);
+      }}
+      @edge-added=${(e: CustomEvent) => {
+        console.log('New edge added:', e.detail);
+      }}
+      @node-selected=${(e: CustomEvent) =>
+        console.log('Node selected:', e.detail)}
+      @canvas-clicked=${(e: CustomEvent) =>
+        console.log('Canvas clicked:', e.detail)}
+    ></scientific-network>
+    <div
+      style="margin-top: 16px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;"
+    >
+      <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 16px;">
+        🎯 Interactive Creation Guide
+      </h4>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <strong style="color: #3730a3;">Creating Nodes:</strong>
+          <ol style="margin: 8px 0 0 20px; color: #475569;">
+            <li>Click the "Add Node" button in the toolbar</li>
+            <li>Click anywhere on the canvas to place a new node</li>
+            <li>The node will be automatically positioned where you clicked</li>
+            <li>Click "Add Node" again to exit creation mode</li>
+          </ol>
+        </div>
+        <div>
+          <strong style="color: #be185d;">Creating Edges:</strong>
+          <ol style="margin: 8px 0 0 20px; color: #475569;">
+            <li>Click the "Add Edge" button in the toolbar</li>
+            <li>Click on the first node (source)</li>
+            <li>Click on the second node (target)</li>
+            <li>An edge will be created connecting the two nodes</li>
+          </ol>
+        </div>
+      </div>
+      <div
+        style="margin-top: 12px; padding: 12px; background: #dbeafe; border-radius: 6px;"
+      >
+        <strong style="color: #1e40af;">💡 Tips:</strong>
+        <ul style="margin: 8px 0 0 20px; color: #1e40af;">
+          <li>New nodes are automatically given unique IDs</li>
+          <li>Check the browser console for detailed event logs</li>
+          <li>
+            Created elements integrate seamlessly with the existing network
+          </li>
+          <li>Use the layout controls to reorganize after adding elements</li>
+        </ul>
       </div>
     </div>
   `,

@@ -321,6 +321,19 @@ export class ScientificNetwork
         --button-min-height: 32px;
         --button-font-size: var(--scientific-text-sm);
       }
+
+      .creating-nodes {
+        cursor: crosshair !important;
+      }
+
+      .creating-edges {
+        cursor: copy !important;
+      }
+
+      .network-canvas.creating-nodes,
+      .network-canvas.creating-edges {
+        cursor: inherit;
+      }
     `,
   ];
 
@@ -340,6 +353,8 @@ export class ScientificNetwork
   @property({type: Boolean}) enablePan = true;
   @property({type: Boolean}) enableSelection = true;
   @property({type: Boolean}) showTooltips = true;
+  @property({type: Boolean}) enableNodeCreation = false;
+  @property({type: Boolean}) enableEdgeCreation = false;
   @property({type: Object}) layoutOptions: Partial<LayoutOptions> = {};
   @property({attribute: false}) onNodeClick?: (
     node: NetworkNode,
@@ -358,6 +373,9 @@ export class ScientificNetwork
   @state() private selectedEdges: string[] = [];
   @state() private metrics: NetworkMetrics | null = null;
   @state() private currentZoom = 100;
+  @state() private isCreatingNode = false;
+  @state() private isCreatingEdge = false;
+  @state() private edgeCreationSource: string | null = null;
   @state() private tooltip: {
     visible: boolean;
     content: string;
@@ -467,10 +485,8 @@ export class ScientificNetwork
         this._setupEventListeners();
         this._calculateMetrics();
 
-        // Initialize zoom level
         this.currentZoom = Math.round(this.cy!.zoom() * 100);
 
-        // Only start observing for resize after Cytoscape is fully ready
         if (this.resizeObserver) {
           this.resizeObserver.observe(this);
         }
@@ -610,6 +626,15 @@ export class ScientificNetwork
           'transition-duration': 0.3,
         },
       },
+      {
+        selector: '.edge-source',
+        style: {
+          'background-color': colors.warningColor,
+          'border-color': colors.warningColor,
+          'border-width': 4,
+          'z-index': 999,
+        },
+      },
     ] as Record<string, unknown>[];
   }
 
@@ -632,6 +657,17 @@ export class ScientificNetwork
     this.cy.on('tap', 'node', (event) => {
       const node = event.target;
       const nodeData = this._cytoscapeNodeToNetworkNode(node);
+
+      if (this.isCreatingEdge) {
+        if (!this.edgeCreationSource) {
+          this.edgeCreationSource = node.id();
+          node.addClass('edge-source');
+        } else if (this.edgeCreationSource !== node.id()) {
+          this._addEdge(this.edgeCreationSource, node.id());
+          this.cy!.nodes().removeClass('edge-source');
+        }
+        return;
+      }
 
       this.selectedNodes = [node.id()];
       this.selectedEdges = [];
@@ -671,9 +707,20 @@ export class ScientificNetwork
 
     this.cy.on('tap', (event) => {
       if (event.target === this.cy) {
+        if (this.isCreatingNode) {
+          const position = event.position;
+          this._addNode(position);
+          return;
+        }
+
         this.selectedNodes = [];
         this.selectedEdges = [];
         this._clearHighlights();
+
+        if (this.isCreatingEdge) {
+          this.edgeCreationSource = null;
+          this.cy!.nodes().removeClass('edge-source');
+        }
 
         this.dispatchEvent(
           new CustomEvent('canvas-clicked', {
@@ -893,6 +940,115 @@ export class ScientificNetwork
     });
   }
 
+  private _toggleNodeCreation() {
+    this.isCreatingNode = !this.isCreatingNode;
+    this.isCreatingEdge = false;
+    this.edgeCreationSource = null;
+
+    if (this.cy) {
+      this.cy.autoungrabify(this.isCreatingNode);
+    }
+  }
+
+  private _toggleEdgeCreation() {
+    this.isCreatingEdge = !this.isCreatingEdge;
+    this.isCreatingNode = false;
+    this.edgeCreationSource = null;
+
+    if (this.cy) {
+      this.cy.autoungrabify(this.isCreatingEdge);
+    }
+  }
+
+  private _generateNodeId(): string {
+    const existingIds = this.data.nodes.map((node) => node.id);
+    let id = `node-${this.data.nodes.length + 1}`;
+    let counter = this.data.nodes.length + 1;
+
+    while (existingIds.includes(id)) {
+      counter++;
+      id = `node-${counter}`;
+    }
+
+    return id;
+  }
+
+  private _generateEdgeId(): string {
+    const existingIds = this.data.edges.map((edge) => edge.id);
+    let id = `edge-${this.data.edges.length + 1}`;
+    let counter = this.data.edges.length + 1;
+
+    while (existingIds.includes(id)) {
+      counter++;
+      id = `edge-${counter}`;
+    }
+
+    return id;
+  }
+
+  private _addNode(position: {x: number; y: number}) {
+    const nodeId = this._generateNodeId();
+    const newNode: NetworkNode = {
+      id: nodeId,
+      label: nodeId,
+      position,
+    };
+
+    this.data.nodes.push(newNode);
+
+    if (this.cy) {
+      this.cy.add({
+        data: {
+          id: nodeId,
+          label: nodeId,
+        },
+        position,
+      });
+    }
+
+    dispatchCustomEvent(this, 'node-added', {
+      node: newNode,
+    });
+
+    this.isCreatingNode = false;
+    if (this.cy) {
+      this.cy.autoungrabify(false);
+    }
+  }
+
+  private _addEdge(sourceId: string, targetId: string) {
+    const edgeId = this._generateEdgeId();
+    const newEdge: NetworkEdge = {
+      id: edgeId,
+      source: sourceId,
+      target: targetId,
+      label: `${sourceId}-${targetId}`,
+    };
+
+    this.data.edges.push(newEdge);
+
+    if (this.cy) {
+      this.cy.add({
+        data: {
+          id: edgeId,
+          source: sourceId,
+          target: targetId,
+          label: `${sourceId}-${targetId}`,
+        },
+      });
+    }
+
+    dispatchCustomEvent(this, 'edge-added', {
+      edge: newEdge,
+    });
+
+    this.edgeCreationSource = null;
+    this.isCreatingEdge = false;
+    if (this.cy) {
+      this.cy.autoungrabify(false);
+    }
+  }
+
   getCanvasElement(): HTMLCanvasElement | null {
     if (!this.cy) return null;
     const container = this.cy.container();
@@ -1032,10 +1188,16 @@ export class ScientificNetwork
   }
 
   private _renderNetwork() {
+    const canvasClasses = classNames(
+      'network-canvas',
+      this.isCreatingNode && 'creating-nodes',
+      this.isCreatingEdge && 'creating-edges'
+    );
+
     return html`
       <div class="network-container">
         ${this.isLoading ? this._renderLoading() : nothing}
-        <div class="network-canvas"></div>
+        <div class="${canvasClasses}"></div>
         ${this.showInfo ? this._renderInfo() : nothing}
       </div>
     `;
@@ -1053,7 +1215,6 @@ export class ScientificNetwork
   private _renderToolbar() {
     return html`
       <div class="network-toolbar">
-        <!-- Left side: Layout and Network Type Controls -->
         <div class="toolbar-section dropdowns">
           <scientific-dropdown
             .options="${[
@@ -1082,10 +1243,33 @@ export class ScientificNetwork
           ></scientific-dropdown>
         </div>
 
-        <!-- Center: Zoom Controls -->
-        ${this.enableZoom
-          ? html`
-              <div class="toolbar-section">
+        <div class="toolbar-section">
+          ${this.enableNodeCreation
+            ? html`
+                <scientific-button
+                  variant="${this.isCreatingNode ? 'primary' : 'outline'}"
+                  size="small"
+                  label="+ Node"
+                  .theme="${this.theme}"
+                  @click="${this._toggleNodeCreation}"
+                  title="Add Node (click on canvas)"
+                ></scientific-button>
+              `
+            : ''}
+          ${this.enableEdgeCreation
+            ? html`
+                <scientific-button
+                  variant="${this.isCreatingEdge ? 'primary' : 'outline'}"
+                  size="small"
+                  label="+ Edge"
+                  .theme="${this.theme}"
+                  @click="${this._toggleEdgeCreation}"
+                  title="Add Edge (click two nodes)"
+                ></scientific-button>
+              `
+            : ''}
+          ${this.enableZoom
+            ? html`
                 <scientific-button
                   variant="outline"
                   size="small"
@@ -1110,9 +1294,9 @@ export class ScientificNetwork
                   @click="${this._handleZoomFit}"
                   title="Fit to Screen"
                 ></scientific-button>
-              </div>
-            `
-          : ''}
+              `
+            : ''}
+        </div>
 
         <!-- Right side: Export Controls -->
         <div class="toolbar-section">
