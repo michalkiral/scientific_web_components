@@ -334,15 +334,26 @@ export class ScientificNetwork
         cursor: text !important;
       }
 
+      .removing {
+        cursor: not-allowed !important;
+      }
+
       .network-canvas.creating-nodes,
       .network-canvas.creating-edges,
-      .network-canvas.renaming {
+      .network-canvas.renaming,
+      .network-canvas.removing {
         cursor: inherit;
       }
 
       .renaming-element {
         border: 2px dashed var(--scientific-primary-color, #007bff) !important;
         background-color: rgba(0, 123, 255, 0.1) !important;
+      }
+
+      .removing-element {
+        border: 2px dashed var(--scientific-danger-color, #dc3545) !important;
+        background-color: rgba(220, 53, 69, 0.1) !important;
+        opacity: 0.7 !important;
       }
 
       .rename-input {
@@ -383,6 +394,7 @@ export class ScientificNetwork
   @property({type: Boolean}) enableNodeCreation = false;
   @property({type: Boolean}) enableEdgeCreation = false;
   @property({type: Boolean}) enableRenaming = false;
+  @property({type: Boolean}) enableRemoval = false;
   @property({type: Object}) layoutOptions: Partial<LayoutOptions> = {};
   @property({attribute: false}) onNodeClick?: (
     node: NetworkNode,
@@ -405,6 +417,9 @@ export class ScientificNetwork
   @state() private isCreatingEdge = false;
   @state() private edgeCreationSource: string | null = null;
   @state() private isRenaming = false;
+  @state() private isRemoving = false;
+  @state() private removalCandidate: string | null = null;
+  @state() private removalCandidateType: 'node' | 'edge' | null = null;
   @state() private renamingElementId: string | null = null;
   @state() private renamingElementType: 'node' | 'edge' | null = null;
   @state() private tooltip: {
@@ -694,6 +709,11 @@ export class ScientificNetwork
       const node = event.target;
       const nodeData = this._cytoscapeNodeToNetworkNode(node);
 
+      if (this.isRemoving) {
+        this._handleRemovalClick(node.id(), 'node');
+        return;
+      }
+
       if (this.isRenaming) {
         this._startRenaming(node.id(), 'node', event);
         return;
@@ -730,6 +750,11 @@ export class ScientificNetwork
     this.cy.on('tap', 'edge', (event) => {
       const edge = event.target;
       const edgeData = this._cytoscapeEdgeToNetworkEdge(edge);
+
+      if (this.isRemoving) {
+        this._handleRemovalClick(edge.id(), 'edge');
+        return;
+      }
 
       if (this.isRenaming) {
         this._startRenaming(edge.id(), 'edge', event);
@@ -780,13 +805,46 @@ export class ScientificNetwork
     if (this.showTooltips) {
       this.cy.on('mouseover', 'node', (event) => {
         const node = event.target;
-        this._showTooltip(
-          event.originalEvent,
-          this._getNodeTooltipContent(node)
-        );
+        if (this.isRemoving) {
+          node.addClass('removing-element');
+          const isCandidate = this.removalCandidate === node.id();
+          this._showTooltip(
+            event.originalEvent,
+            isCandidate ? 'Click again to confirm removal' : 'Click to mark for removal'
+          );
+        } else {
+          this._showTooltip(
+            event.originalEvent,
+            this._getNodeTooltipContent(node)
+          );
+        }
       });
 
-      this.cy.on('mouseout', 'node', () => {
+      this.cy.on('mouseover', 'edge', (event) => {
+        const edge = event.target;
+        if (this.isRemoving) {
+          edge.addClass('removing-element');
+          const isCandidate = this.removalCandidate === edge.id();
+          this._showTooltip(
+            event.originalEvent,
+            isCandidate ? 'Click again to confirm removal' : 'Click to mark for removal'
+          );
+        }
+      });
+
+      this.cy.on('mouseout', 'node', (event) => {
+        const node = event.target;
+        if (this.removalCandidate !== node.id()) {
+          node.removeClass('removing-element');
+        }
+        this._hideTooltip();
+      });
+
+      this.cy.on('mouseout', 'edge', (event) => {
+        const edge = event.target;
+        if (this.removalCandidate !== edge.id()) {
+          edge.removeClass('removing-element');
+        }
         this._hideTooltip();
       });
     }
@@ -999,13 +1057,7 @@ export class ScientificNetwork
 
   private _toggleNodeCreation() {
     this.isCreatingNode = !this.isCreatingNode;
-    this.isCreatingEdge = false;
-    this.isRenaming = false;
-    this.edgeCreationSource = null;
-
-    if (!this.isRenaming) {
-      this._cancelRenaming();
-    }
+    this._setExclusiveMode('isCreatingNode');
 
     if (this.cy) {
       this.cy.autoungrabify(this.isCreatingNode);
@@ -1014,13 +1066,7 @@ export class ScientificNetwork
 
   private _toggleEdgeCreation() {
     this.isCreatingEdge = !this.isCreatingEdge;
-    this.isCreatingNode = false;
-    this.isRenaming = false;
-    this.edgeCreationSource = null;
-
-    if (!this.isRenaming) {
-      this._cancelRenaming();
-    }
+    this._setExclusiveMode('isCreatingEdge');
 
     if (this.cy) {
       this.cy.autoungrabify(this.isCreatingEdge);
@@ -1029,17 +1075,157 @@ export class ScientificNetwork
 
   private _toggleRenaming() {
     this.isRenaming = !this.isRenaming;
-    this.isCreatingNode = false;
-    this.isCreatingEdge = false;
-    this.edgeCreationSource = null;
+    this._setExclusiveMode('isRenaming');
 
     if (this.isRenaming) {
-      this.selectedNodes = [];
-      this.selectedEdges = [];
-      this._clearHighlights();
+      this._clearSelections();
     } else {
       this._cancelRenaming();
     }
+  }
+
+  private _toggleRemoval() {
+    this.isRemoving = !this.isRemoving;
+    this._setExclusiveMode('isRemoving');
+
+    if (this.isRemoving) {
+      this._clearSelections();
+    } else {
+      this._clearRemovalCandidate();
+    }
+  }
+
+  private _setExclusiveMode(activeMode: 'isCreatingNode' | 'isCreatingEdge' | 'isRenaming' | 'isRemoving') {
+    if (activeMode !== 'isCreatingNode') this.isCreatingNode = false;
+    if (activeMode !== 'isCreatingEdge') this.isCreatingEdge = false;
+    if (activeMode !== 'isRenaming') this.isRenaming = false;
+    if (activeMode !== 'isRemoving') this.isRemoving = false;
+
+    this.edgeCreationSource = null;
+
+    if (activeMode !== 'isRenaming') {
+      this._cancelRenaming();
+    }
+
+    if (activeMode !== 'isRemoving') {
+      this._clearRemovalCandidate();
+    }
+
+    if (this.cy && activeMode !== 'isCreatingNode' && activeMode !== 'isCreatingEdge') {
+      this.cy.autoungrabify(false);
+    }
+  }
+
+  private _clearSelections() {
+    this.selectedNodes = [];
+    this.selectedEdges = [];
+    this._clearHighlights();
+  }
+
+  private _handleRemovalClick(elementId: string, elementType: 'node' | 'edge') {
+    if (this.removalCandidate === elementId && this.removalCandidateType === elementType) {
+      // Second click - confirm removal
+      this._removeElement(elementId, elementType);
+      this._clearRemovalCandidate();
+    } else {
+      // First click - mark as candidate
+      this._setRemovalCandidate(elementId, elementType);
+    }
+  }
+
+  private _setRemovalCandidate(elementId: string, elementType: 'node' | 'edge') {
+    this._clearRemovalCandidate();
+
+    this.removalCandidate = elementId;
+    this.removalCandidateType = elementType;
+
+    if (this.cy) {
+      const element = this.cy.getElementById(elementId);
+      element.addClass('removing-element');
+    }
+
+    setTimeout(() => {
+      if (this.removalCandidate === elementId) {
+        this._clearRemovalCandidate();
+      }
+    }, 3000);
+  }
+
+  private _clearRemovalCandidate() {
+    if (this.removalCandidate && this.cy) {
+      const element = this.cy.getElementById(this.removalCandidate);
+      element.removeClass('removing-element');
+    }
+
+    this.removalCandidate = null;
+    this.removalCandidateType = null;
+  }
+
+  private _removeElement(elementId: string, elementType: 'node' | 'edge') {
+    if (!this.cy) return;
+
+    try {
+      const element = this.cy.getElementById(elementId);
+      if (element.length === 0) {
+        console.warn(`Element ${elementId} not found`);
+        return;
+      }
+
+      if (elementType === 'node') {
+        this._removeNodeFromData(elementId);
+        this._removeConnectedEdges(elementId);
+      } else {
+        this._removeEdgeFromData(elementId);
+      }
+
+      element.remove();
+
+      this._calculateMetrics();
+      
+      dispatchCustomEvent(this, `${elementType}-removed`, {
+        elementId,
+        elementType,
+      });
+
+      dispatchCustomEvent(this, 'network-updated', {
+        action: 'remove',
+        elementType,
+        elementId,
+      });
+
+    } catch (error) {
+      console.error(`Failed to remove ${elementType}:`, error);
+    }
+  }
+
+  private _removeNodeFromData(nodeId: string) {
+    const nodeIndex = this.data.nodes.findIndex(node => node.id === nodeId);
+    if (nodeIndex !== -1) {
+      this.data.nodes.splice(nodeIndex, 1);
+    }
+  }
+
+  private _removeEdgeFromData(edgeId: string) {
+    const edgeIndex = this.data.edges.findIndex(edge => edge.id === edgeId);
+    if (edgeIndex !== -1) {
+      this.data.edges.splice(edgeIndex, 1);
+    }
+  }
+
+  private _removeConnectedEdges(nodeId: string) {
+    const connectedEdges = this.data.edges.filter(
+      edge => edge.source === nodeId || edge.target === nodeId
+    );
+
+    connectedEdges.forEach(edge => {
+      this._removeEdgeFromData(edge.id);
+      if (this.cy) {
+        const cyEdge = this.cy.getElementById(edge.id);
+        if (cyEdge.length > 0) {
+          cyEdge.remove();
+        }
+      }
+    });
   }
 
   private _startRenaming(
@@ -1419,7 +1605,8 @@ export class ScientificNetwork
       'network-canvas',
       this.isCreatingNode && 'creating-nodes',
       this.isCreatingEdge && 'creating-edges',
-      this.isRenaming && 'renaming'
+      this.isRenaming && 'renaming',
+      this.isRemoving && 'removing'
     );
 
     return html`
@@ -1504,7 +1691,19 @@ export class ScientificNetwork
                   label="Rename"
                   .theme="${this.theme}"
                   @click="${this._toggleRenaming}"
-                  title="Rename elements (double-click element)"
+                  title="Rename elements (click element)"
+                ></scientific-button>
+              `
+            : ''}
+          ${this.enableRemoval
+            ? html`
+                <scientific-button
+                  variant="${this.isRemoving ? 'danger' : 'outline'}"
+                  size="small"
+                  label="Remove"
+                  .theme="${this.theme}"
+                  @click="${this._toggleRemoval}"
+                  title="Remove elements (double-click element to confirm)"
                 ></scientific-button>
               `
             : ''}

@@ -179,6 +179,7 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`enableNodeCreation\` — Enables interactive node creation functionality
 - \`enableEdgeCreation\` — Enables interactive edge creation functionality
 - \`enableRenaming\` — Enables interactive renaming of nodes and edges
+- \`enableRemoval\` — Enables interactive removal of nodes and edges
 
 ## Events
 
@@ -191,6 +192,9 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`edge-added\` — Fired when a new edge is created interactively
 - \`node-renamed\` — Fired when a node is renamed
 - \`edge-renamed\` — Fired when an edge is renamed
+- \`node-removed\` — Fired when a node is removed
+- \`edge-removed\` — Fired when an edge is removed
+- \`network-updated\` — Fired when the network structure changes
 
 ## Basic Usage
 
@@ -488,6 +492,10 @@ The component supports multiple themes through CSS custom properties:
     enableRenaming: {
       control: 'boolean',
       description: 'Whether to enable renaming of nodes and edges',
+    },
+    enableRemoval: {
+      control: 'boolean',
+      description: 'Whether to enable removal of nodes and edges',
     },
   },
 } satisfies Meta<ScientificNetwork>;
@@ -792,7 +800,7 @@ export const InteractiveNodeCreation: Story = {
   args: {
     title: 'Interactive Network Builder',
     subtitle:
-      'Create nodes, edges, and rename elements dynamically',
+      'Create nodes, edges, rename elements, and remove them dynamically',
     data: {
       nodes: [
         {id: 'node1', label: 'Start Node', data: {type: 'initial'}},
@@ -814,6 +822,7 @@ export const InteractiveNodeCreation: Story = {
     enableNodeCreation: true,
     enableEdgeCreation: true,
     enableRenaming: true,
+    enableRemoval: true,
   },
   render: (args) => html`
     <scientific-network
@@ -836,6 +845,7 @@ export const InteractiveNodeCreation: Story = {
       ?enableNodeCreation=${args.enableNodeCreation}
       ?enableEdgeCreation=${args.enableEdgeCreation}
       ?enableRenaming=${args.enableRenaming}
+      ?enableRemoval=${args.enableRemoval}
       .layoutOptions=${args.layoutOptions}
       @node-added=${(e: CustomEvent) => {
         console.log('New node added:', e.detail);
@@ -849,6 +859,15 @@ export const InteractiveNodeCreation: Story = {
       @edge-renamed=${(e: CustomEvent) => {
         console.log('Edge renamed:', e.detail);
       }}
+      @node-removed=${(e: CustomEvent) => {
+        console.log('Node removed:', e.detail);
+      }}
+      @edge-removed=${(e: CustomEvent) => {
+        console.log('Edge removed:', e.detail);
+      }}
+      @network-updated=${(e: CustomEvent) => {
+        console.log('Network updated:', e.detail);
+      }}
       @node-selected=${(e: CustomEvent) =>
         console.log('Node selected:', e.detail)}
       @canvas-clicked=${(e: CustomEvent) =>
@@ -858,7 +877,7 @@ export const InteractiveNodeCreation: Story = {
       style="margin-top: 16px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;"
     >
       <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 16px;">
-        🎯 Interactive Creation Guide
+        🎯 Interactive Network Builder Guide
       </h4>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div>
@@ -869,9 +888,10 @@ export const InteractiveNodeCreation: Story = {
             <li>The node will be automatically positioned where you clicked</li>
             <li>Click "Add Node" again to exit creation mode</li>
           </ol>
-        </div>
-        <div>
-          <strong style="color: #be185d;">Creating Edges:</strong>
+
+          <strong style="color: #be185d; margin-top: 12px; display: block;"
+            >Creating Edges:</strong
+          >
           <ol style="margin: 8px 0 0 20px; color: #475569;">
             <li>Click the "Add Edge" button in the toolbar</li>
             <li>Click on the first node (source)</li>
@@ -879,18 +899,55 @@ export const InteractiveNodeCreation: Story = {
             <li>An edge will be created connecting the two nodes</li>
           </ol>
         </div>
+        <div>
+          <strong style="color: #059669;">Renaming Elements:</strong>
+          <ol style="margin: 8px 0 0 20px; color: #475569;">
+            <li>Click the "Rename" button in the toolbar</li>
+            <li>Click on any node or edge to start renaming</li>
+            <li>Type the new name in the input field</li>
+            <li>Press Enter to confirm or Escape to cancel</li>
+          </ol>
+
+          <strong style="color: #dc2626; margin-top: 12px; display: block;"
+            >Removing Elements:</strong
+          >
+          <ol style="margin: 8px 0 0 20px; color: #475569;">
+            <li>Click the red "Remove" button in the toolbar</li>
+            <li>Click on any node or edge to mark for removal</li>
+            <li>Click the same element again to confirm removal</li>
+            <li>Removing a node also removes its connected edges</li>
+          </ol>
+        </div>
       </div>
       <div
         style="margin-top: 12px; padding: 12px; background: #dbeafe; border-radius: 6px;"
       >
-        <strong style="color: #1e40af;">💡 Tips:</strong>
+        <strong style="color: #1e40af;">💡 Pro Tips:</strong>
         <ul style="margin: 8px 0 0 20px; color: #1e40af;">
-          <li>New nodes are automatically given unique IDs</li>
-          <li>Check the browser console for detailed event logs</li>
           <li>
-            Created elements integrate seamlessly with the existing network
+            <strong>Safety First:</strong> Removal requires double-click
+            confirmation to prevent accidents
           </li>
-          <li>Use the layout controls to reorganize after adding elements</li>
+          <li>
+            <strong>Auto-timeout:</strong> Removal candidates automatically
+            clear after 3 seconds
+          </li>
+          <li>
+            <strong>Cascading Removal:</strong> Removing a node automatically
+            removes all connected edges
+          </li>
+          <li>
+            <strong>Visual Feedback:</strong> Elements show red dashed borders
+            when marked for removal
+          </li>
+          <li>
+            <strong>Event Logging:</strong> Check the browser console for
+            detailed operation logs
+          </li>
+          <li>
+            <strong>Mode Switching:</strong> Modes are mutually exclusive -
+            activating one deactivates others
+          </li>
         </ul>
       </div>
     </div>
