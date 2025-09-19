@@ -330,9 +330,36 @@ export class ScientificNetwork
         cursor: copy !important;
       }
 
+      .renaming {
+        cursor: text !important;
+      }
+
       .network-canvas.creating-nodes,
-      .network-canvas.creating-edges {
+      .network-canvas.creating-edges,
+      .network-canvas.renaming {
         cursor: inherit;
+      }
+
+      .renaming-element {
+        border: 2px dashed var(--scientific-primary-color, #007bff) !important;
+        background-color: rgba(0, 123, 255, 0.1) !important;
+      }
+
+      .rename-input {
+        position: absolute;
+        background: white;
+        border: 2px solid var(--scientific-primary-color, #007bff);
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        outline: none;
+      }
+
+      .rename-input:focus {
+        border-color: var(--scientific-primary-color, #007bff);
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
       }
     `,
   ];
@@ -355,6 +382,7 @@ export class ScientificNetwork
   @property({type: Boolean}) showTooltips = true;
   @property({type: Boolean}) enableNodeCreation = false;
   @property({type: Boolean}) enableEdgeCreation = false;
+  @property({type: Boolean}) enableRenaming = false;
   @property({type: Object}) layoutOptions: Partial<LayoutOptions> = {};
   @property({attribute: false}) onNodeClick?: (
     node: NetworkNode,
@@ -376,6 +404,9 @@ export class ScientificNetwork
   @state() private isCreatingNode = false;
   @state() private isCreatingEdge = false;
   @state() private edgeCreationSource: string | null = null;
+  @state() private isRenaming = false;
+  @state() private renamingElementId: string | null = null;
+  @state() private renamingElementType: 'node' | 'edge' | null = null;
   @state() private tooltip: {
     visible: boolean;
     content: string;
@@ -599,6 +630,9 @@ export class ScientificNetwork
           color: colors.textColor,
           'text-rotation': 'autorotate',
           'text-margin-y': -10,
+          'overlay-color': 'transparent',
+          'overlay-padding': '8px',
+          'overlay-opacity': 0,
         },
       },
       {
@@ -652,11 +686,18 @@ export class ScientificNetwork
   }
 
   private _setupEventListeners() {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
 
     this.cy.on('tap', 'node', (event) => {
       const node = event.target;
       const nodeData = this._cytoscapeNodeToNetworkNode(node);
+
+      if (this.isRenaming) {
+        this._startRenaming(node.id(), 'node', event);
+        return;
+      }
 
       if (this.isCreatingEdge) {
         if (!this.edgeCreationSource) {
@@ -689,6 +730,11 @@ export class ScientificNetwork
     this.cy.on('tap', 'edge', (event) => {
       const edge = event.target;
       const edgeData = this._cytoscapeEdgeToNetworkEdge(edge);
+
+      if (this.isRenaming) {
+        this._startRenaming(edge.id(), 'edge', event);
+        return;
+      }
 
       this.selectedEdges = [edge.id()];
       this.selectedNodes = [];
@@ -778,7 +824,9 @@ export class ScientificNetwork
   }
 
   private _highlightNeighbors(node: NodeSingular) {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
 
     this._clearHighlights();
 
@@ -788,7 +836,9 @@ export class ScientificNetwork
   }
 
   private _clearHighlights() {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
     this.cy.elements().removeClass('highlighted');
   }
 
@@ -815,7 +865,9 @@ export class ScientificNetwork
   }
 
   private _loadData() {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
 
     try {
       const elements = this._convertDataToCytoscapeElements();
@@ -829,7 +881,10 @@ export class ScientificNetwork
   }
 
   private _applyLayout() {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
+
     try {
       this.cy.layout(this._getLayoutOptions()).run();
     } catch (error) {
@@ -838,7 +893,9 @@ export class ScientificNetwork
   }
 
   private _applyTheme() {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
     this.cy.style(
       this._getCytoscapeStyles() as unknown as cytoscape.StylesheetCSS[]
     );
@@ -943,7 +1000,12 @@ export class ScientificNetwork
   private _toggleNodeCreation() {
     this.isCreatingNode = !this.isCreatingNode;
     this.isCreatingEdge = false;
+    this.isRenaming = false;
     this.edgeCreationSource = null;
+
+    if (!this.isRenaming) {
+      this._cancelRenaming();
+    }
 
     if (this.cy) {
       this.cy.autoungrabify(this.isCreatingNode);
@@ -953,11 +1015,170 @@ export class ScientificNetwork
   private _toggleEdgeCreation() {
     this.isCreatingEdge = !this.isCreatingEdge;
     this.isCreatingNode = false;
+    this.isRenaming = false;
     this.edgeCreationSource = null;
+
+    if (!this.isRenaming) {
+      this._cancelRenaming();
+    }
 
     if (this.cy) {
       this.cy.autoungrabify(this.isCreatingEdge);
     }
+  }
+
+  private _toggleRenaming() {
+    this.isRenaming = !this.isRenaming;
+    this.isCreatingNode = false;
+    this.isCreatingEdge = false;
+    this.edgeCreationSource = null;
+
+    if (this.isRenaming) {
+      this.selectedNodes = [];
+      this.selectedEdges = [];
+      this._clearHighlights();
+    } else {
+      this._cancelRenaming();
+    }
+  }
+
+  private _startRenaming(
+    elementId: string,
+    elementType: 'node' | 'edge',
+    event: EventObject
+  ) {
+    this._cancelRenaming();
+
+    this.renamingElementId = elementId;
+    this.renamingElementType = elementType;
+
+    const element = this.cy!.getElementById(elementId);
+    const currentLabel = element.data('label') || elementId;
+
+    const clickPos = event.renderedPosition;
+
+    this._showRenameInput(
+      clickPos.x,
+      clickPos.y,
+      currentLabel,
+      elementId,
+      elementType
+    );
+
+    element.addClass('renaming-element');
+  }
+
+  private _showRenameInput(
+    x: number,
+    y: number,
+    currentValue: string,
+    elementId: string,
+    elementType: 'node' | 'edge'
+  ) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentValue;
+    input.className = 'rename-input';
+    input.style.left = `${x - 50}px`;
+    input.style.top = `${y - 15}px`;
+
+    const networkContainer =
+      this.shadowRoot?.querySelector('.network-container');
+    if (!networkContainer) return;
+
+    networkContainer.appendChild(input);
+
+    input.focus();
+    input.select();
+
+    const completeRename = () => {
+      const newLabel = input.value.trim();
+      if (newLabel && newLabel !== currentValue) {
+        this._completeRenaming(elementId, elementType, newLabel);
+      } else {
+        this._cancelRenaming();
+      }
+      if (networkContainer.contains(input)) {
+        networkContainer.removeChild(input);
+      }
+    };
+
+    const cancelRename = () => {
+      this._cancelRenaming();
+      if (networkContainer.contains(input)) {
+        networkContainer.removeChild(input);
+      }
+    };
+
+    input.addEventListener('keydown', (e) => {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        completeRename();
+      } else if (e.key === 'Escape') {
+        cancelRename();
+      }
+    });
+
+    input.addEventListener('blur', completeRename);
+
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  private _completeRenaming(
+    elementId: string,
+    elementType: 'node' | 'edge',
+    newLabel: string
+  ) {
+    if (!this.cy) {
+      return;
+    }
+
+    const element = this.cy.getElementById(elementId);
+    element.removeClass('renaming-element');
+
+    element.data('label', newLabel);
+
+    if (elementType === 'node') {
+      const nodeIndex = this.data.nodes.findIndex((n) => n.id === elementId);
+      if (nodeIndex !== -1) {
+        this.data.nodes[nodeIndex].label = newLabel;
+      }
+    } else {
+      const edgeIndex = this.data.edges.findIndex((e) => e.id === elementId);
+      if (edgeIndex !== -1) {
+        this.data.edges[edgeIndex].label = newLabel;
+      }
+    }
+
+    dispatchCustomEvent(this, `${elementType}-renamed`, {
+      elementId,
+      newLabel,
+      elementType,
+    });
+
+    this.renamingElementId = null;
+    this.renamingElementType = null;
+  }
+
+  private _cancelRenaming() {
+    if (!this.cy || !this.renamingElementId || !this.renamingElementType) {
+      return;
+    }
+
+    const element = this.cy.getElementById(this.renamingElementId);
+    element.removeClass('renaming-element');
+
+    const networkContainer =
+      this.shadowRoot?.querySelector('.network-container');
+    const existingInput = networkContainer?.querySelector('.rename-input');
+    if (existingInput && networkContainer) {
+      networkContainer.removeChild(existingInput);
+    }
+
+    this.renamingElementId = null;
+    this.renamingElementType = null;
   }
 
   private _generateNodeId(): string {
@@ -1050,14 +1271,17 @@ export class ScientificNetwork
   }
 
   getCanvasElement(): HTMLCanvasElement | null {
-    if (!this.cy) return null;
+    if (!this.cy) {
+      return null;
+    }
     const container = this.cy.container();
     return container?.querySelector('canvas') || null;
   }
 
   getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
-    if (!this.cy) return null;
-
+    if (!this.cy) {
+      return null;
+    }
     try {
       const colors = this._getThemeColors();
       const bg = colors.bgColor;
@@ -1083,7 +1307,9 @@ export class ScientificNetwork
   }
 
   getExportData(): unknown {
-    if (!this.cy) return null;
+    if (!this.cy) {
+      return null;
+    }
     return {
       title: this.title,
       subtitle: this.subtitle,
@@ -1096,8 +1322,9 @@ export class ScientificNetwork
   }
 
   private async _handleExport(format: ExportOptions['format']) {
-    if (!this.cy) return;
-
+    if (!this.cy) {
+      return;
+    }
     try {
       if (
         this.onExport &&
@@ -1191,7 +1418,8 @@ export class ScientificNetwork
     const canvasClasses = classNames(
       'network-canvas',
       this.isCreatingNode && 'creating-nodes',
-      this.isCreatingEdge && 'creating-edges'
+      this.isCreatingEdge && 'creating-edges',
+      this.isRenaming && 'renaming'
     );
 
     return html`
@@ -1265,6 +1493,18 @@ export class ScientificNetwork
                   .theme="${this.theme}"
                   @click="${this._toggleEdgeCreation}"
                   title="Add Edge (click two nodes)"
+                ></scientific-button>
+              `
+            : ''}
+          ${this.enableRenaming
+            ? html`
+                <scientific-button
+                  variant="${this.isRenaming ? 'primary' : 'outline'}"
+                  size="small"
+                  label="Rename"
+                  .theme="${this.theme}"
+                  @click="${this._toggleRenaming}"
+                  title="Rename elements (double-click element)"
                 ></scientific-button>
               `
             : ''}

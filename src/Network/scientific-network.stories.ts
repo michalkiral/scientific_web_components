@@ -178,6 +178,7 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`onExport\` — Export handler function
 - \`enableNodeCreation\` — Enables interactive node creation functionality
 - \`enableEdgeCreation\` — Enables interactive edge creation functionality
+- \`enableRenaming\` — Enables interactive renaming of nodes and edges
 
 ## Events
 
@@ -188,6 +189,8 @@ A **powerful**, **interactive** network visualization component built with Cytos
 - \`network-export\` — Fired when network is exported
 - \`node-added\` — Fired when a new node is created interactively
 - \`edge-added\` — Fired when a new edge is created interactively
+- \`node-renamed\` — Fired when a node is renamed
+- \`edge-renamed\` — Fired when an edge is renamed
 
 ## Basic Usage
 
@@ -291,6 +294,13 @@ The network component supports dynamic creation of nodes and edges:
 - Click first node (source), then second node (target)
 - Edge is automatically created between the two nodes
 - Fires \`edge-added\` event with edge details
+
+**Element Renaming:**
+- Enable with \`enableRenaming\` property
+- Click "Rename" button in toolbar to enter renaming mode
+- Double-click on any node or edge to start renaming
+- Type new name and press Enter to confirm, or Escape to cancel
+- Fires \`node-renamed\` or \`edge-renamed\` events with old and new labels
 
 ## Layout Algorithms
 
@@ -474,6 +484,10 @@ The component supports multiple themes through CSS custom properties:
     enableEdgeCreation: {
       control: 'boolean',
       description: 'Whether to enable interactive edge creation',
+    },
+    enableRenaming: {
+      control: 'boolean',
+      description: 'Whether to enable renaming of nodes and edges',
     },
   },
 } satisfies Meta<ScientificNetwork>;
@@ -776,9 +790,9 @@ export const ThemeComparison: Story = {
 
 export const InteractiveNodeCreation: Story = {
   args: {
-    title: 'Interactive Node Creation',
+    title: 'Interactive Network Builder',
     subtitle:
-      'Click the "Add Node" button and then click on the canvas to create new nodes',
+      'Create nodes, edges, and rename elements dynamically',
     data: {
       nodes: [
         {id: 'node1', label: 'Start Node', data: {type: 'initial'}},
@@ -799,6 +813,7 @@ export const InteractiveNodeCreation: Story = {
     showTooltips: true,
     enableNodeCreation: true,
     enableEdgeCreation: true,
+    enableRenaming: true,
   },
   render: (args) => html`
     <scientific-network
@@ -820,12 +835,19 @@ export const InteractiveNodeCreation: Story = {
       ?showTooltips=${args.showTooltips}
       ?enableNodeCreation=${args.enableNodeCreation}
       ?enableEdgeCreation=${args.enableEdgeCreation}
+      ?enableRenaming=${args.enableRenaming}
       .layoutOptions=${args.layoutOptions}
       @node-added=${(e: CustomEvent) => {
         console.log('New node added:', e.detail);
       }}
       @edge-added=${(e: CustomEvent) => {
         console.log('New edge added:', e.detail);
+      }}
+      @node-renamed=${(e: CustomEvent) => {
+        console.log('Node renamed:', e.detail);
+      }}
+      @edge-renamed=${(e: CustomEvent) => {
+        console.log('Edge renamed:', e.detail);
       }}
       @node-selected=${(e: CustomEvent) =>
         console.log('Node selected:', e.detail)}
