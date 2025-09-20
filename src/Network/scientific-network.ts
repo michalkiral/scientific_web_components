@@ -162,7 +162,10 @@ export class ScientificNetwork
       }
 
       .toolbar-section.dropdowns {
-        gap: var(--network-dropdown-gap, 4rem);
+        flex-direction: column;
+        gap: var(--scientific-spacing-xs);
+        flex: 0 0 auto;
+        align-items: flex-start;
       }
 
       .toolbar-section:first-child {
@@ -185,53 +188,6 @@ export class ScientificNetwork
 
       .network-toolbar scientific-dropdown {
         --dropdown-width: 120px;
-        --dropdown-min-height: 32px;
-        --dropdown-font-size: var(--scientific-text-sm);
-        --dropdown-padding: var(--scientific-spacing-sm)
-          var(--scientific-spacing-md);
-      }
-
-      @media (max-width: 1024px) {
-        .network-toolbar {
-          justify-content: center;
-        }
-
-        .toolbar-section:first-child,
-        .toolbar-section:last-child {
-          flex: none;
-          justify-content: center;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .scientific-header {
-          gap: var(--scientific-spacing-xs);
-        }
-
-        .network-toolbar {
-          flex-direction: column;
-          gap: var(--scientific-spacing-md);
-          align-items: stretch;
-          padding: var(--scientific-spacing-md);
-          min-height: auto;
-        }
-
-        .toolbar-section {
-          justify-content: center;
-          flex-wrap: wrap;
-          width: 100%;
-          gap: var(--scientific-spacing-sm);
-        }
-
-        .toolbar-section:first-child,
-        .toolbar-section:last-child {
-          flex: none;
-          justify-content: center;
-        }
-
-        .toolbar-divider {
-          display: none;
-        }
       }
 
       @media (max-width: 480px) {
@@ -256,13 +212,6 @@ export class ScientificNetwork
           flex: 1;
           min-width: 120px;
           max-width: 200px;
-        }
-
-        .network-toolbar scientific-dropdown {
-          --dropdown-width: 100%;
-          --dropdown-font-size: var(--scientific-text-xs);
-          --dropdown-padding: var(--scientific-spacing-xs)
-            var(--scientific-spacing-sm);
         }
 
         .network-toolbar scientific-button {
@@ -437,10 +386,14 @@ export class ScientificNetwork
   private cy: Core | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private resizeTimeout: number | null = null;
+  private keyboardHandler: ((event: KeyboardEvent) => void) | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this._setupResizeObserver();
+    setTimeout(() => {
+      this._setupKeyboardListeners();
+    }, 100);
   }
 
   override disconnectedCallback() {
@@ -456,6 +409,7 @@ export class ScientificNetwork
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = null;
     }
+    this._removeKeyboardListeners();
   }
 
   override firstUpdated() {
@@ -492,6 +446,46 @@ export class ScientificNetwork
         }
       }, 100);
     });
+  }
+
+  private _setupKeyboardListeners() {
+    if (this.keyboardHandler) {
+      document.removeEventListener('keydown', this.keyboardHandler);
+    }
+
+    this.keyboardHandler = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement ||
+        (event.target as HTMLElement)?.contentEditable === 'true'
+      ) {
+        return;
+      }
+
+      if (event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+
+      if (event.key === '1') {
+        event.preventDefault();
+        event.stopPropagation();
+        this._activateNodeCreation();
+      } else if (event.key === '2') {
+        event.preventDefault();
+        event.stopPropagation();
+        this._activateEdgeCreation();
+      }
+    };
+
+    document.addEventListener('keydown', this.keyboardHandler, {capture: true});
+  }
+
+  private _removeKeyboardListeners() {
+    if (this.keyboardHandler) {
+      document.removeEventListener('keydown', this.keyboardHandler);
+      this.keyboardHandler = null;
+    }
   }
 
   private _initializeCytoscape() {
@@ -810,7 +804,9 @@ export class ScientificNetwork
           const isCandidate = this.removalCandidate === node.id();
           this._showTooltip(
             event.originalEvent,
-            isCandidate ? 'Click again to confirm removal' : 'Click to mark for removal'
+            isCandidate
+              ? 'Click again to confirm removal'
+              : 'Click to mark for removal'
           );
         } else {
           this._showTooltip(
@@ -827,7 +823,9 @@ export class ScientificNetwork
           const isCandidate = this.removalCandidate === edge.id();
           this._showTooltip(
             event.originalEvent,
-            isCandidate ? 'Click again to confirm removal' : 'Click to mark for removal'
+            isCandidate
+              ? 'Click again to confirm removal'
+              : 'Click to mark for removal'
           );
         }
       });
@@ -1073,6 +1071,38 @@ export class ScientificNetwork
     }
   }
 
+  private _activateNodeCreation() {
+    this.isCreatingEdge = false;
+    this.isRenaming = false;
+    this.isRemoving = false;
+    this.edgeCreationSource = null;
+    this._cancelRenaming();
+    this._clearRemovalCandidate();
+
+    this.isCreatingNode = true;
+    if (this.cy) {
+      this.cy.autoungrabify(true);
+    }
+
+    this.requestUpdate();
+  }
+
+  private _activateEdgeCreation() {
+    this.isCreatingNode = false;
+    this.isRenaming = false;
+    this.isRemoving = false;
+    this.edgeCreationSource = null;
+    this._cancelRenaming();
+    this._clearRemovalCandidate();
+
+    this.isCreatingEdge = true;
+    if (this.cy) {
+      this.cy.autoungrabify(true);
+    }
+
+    this.requestUpdate();
+  }
+
   private _toggleRenaming() {
     this.isRenaming = !this.isRenaming;
     this._setExclusiveMode('isRenaming');
@@ -1095,7 +1125,13 @@ export class ScientificNetwork
     }
   }
 
-  private _setExclusiveMode(activeMode: 'isCreatingNode' | 'isCreatingEdge' | 'isRenaming' | 'isRemoving') {
+  private _setExclusiveMode(
+    activeMode:
+      | 'isCreatingNode'
+      | 'isCreatingEdge'
+      | 'isRenaming'
+      | 'isRemoving'
+  ) {
     if (activeMode !== 'isCreatingNode') this.isCreatingNode = false;
     if (activeMode !== 'isCreatingEdge') this.isCreatingEdge = false;
     if (activeMode !== 'isRenaming') this.isRenaming = false;
@@ -1111,7 +1147,11 @@ export class ScientificNetwork
       this._clearRemovalCandidate();
     }
 
-    if (this.cy && activeMode !== 'isCreatingNode' && activeMode !== 'isCreatingEdge') {
+    if (
+      this.cy &&
+      activeMode !== 'isCreatingNode' &&
+      activeMode !== 'isCreatingEdge'
+    ) {
       this.cy.autoungrabify(false);
     }
   }
@@ -1123,17 +1163,21 @@ export class ScientificNetwork
   }
 
   private _handleRemovalClick(elementId: string, elementType: 'node' | 'edge') {
-    if (this.removalCandidate === elementId && this.removalCandidateType === elementType) {
-      // Second click - confirm removal
+    if (
+      this.removalCandidate === elementId &&
+      this.removalCandidateType === elementType
+    ) {
       this._removeElement(elementId, elementType);
       this._clearRemovalCandidate();
     } else {
-      // First click - mark as candidate
       this._setRemovalCandidate(elementId, elementType);
     }
   }
 
-  private _setRemovalCandidate(elementId: string, elementType: 'node' | 'edge') {
+  private _setRemovalCandidate(
+    elementId: string,
+    elementType: 'node' | 'edge'
+  ) {
     this._clearRemovalCandidate();
 
     this.removalCandidate = elementId;
@@ -1181,7 +1225,7 @@ export class ScientificNetwork
       element.remove();
 
       this._calculateMetrics();
-      
+
       dispatchCustomEvent(this, `${elementType}-removed`, {
         elementId,
         elementType,
@@ -1192,21 +1236,20 @@ export class ScientificNetwork
         elementType,
         elementId,
       });
-
     } catch (error) {
       console.error(`Failed to remove ${elementType}:`, error);
     }
   }
 
   private _removeNodeFromData(nodeId: string) {
-    const nodeIndex = this.data.nodes.findIndex(node => node.id === nodeId);
+    const nodeIndex = this.data.nodes.findIndex((node) => node.id === nodeId);
     if (nodeIndex !== -1) {
       this.data.nodes.splice(nodeIndex, 1);
     }
   }
 
   private _removeEdgeFromData(edgeId: string) {
-    const edgeIndex = this.data.edges.findIndex(edge => edge.id === edgeId);
+    const edgeIndex = this.data.edges.findIndex((edge) => edge.id === edgeId);
     if (edgeIndex !== -1) {
       this.data.edges.splice(edgeIndex, 1);
     }
@@ -1214,10 +1257,10 @@ export class ScientificNetwork
 
   private _removeConnectedEdges(nodeId: string) {
     const connectedEdges = this.data.edges.filter(
-      edge => edge.source === nodeId || edge.target === nodeId
+      (edge) => edge.source === nodeId || edge.target === nodeId
     );
 
-    connectedEdges.forEach(edge => {
+    connectedEdges.forEach((edge) => {
       this._removeEdgeFromData(edge.id);
       if (this.cy) {
         const cyEdge = this.cy.getElementById(edge.id);
@@ -1643,7 +1686,7 @@ export class ScientificNetwork
             .selectedValue="${this.layout}"
             .theme="${this.theme}"
             @change="${this._handleLayoutChange}"
-            placeholder="Layout Algorithm"
+            label="Layout Algorithm"
           ></scientific-dropdown>
 
           <scientific-dropdown
@@ -1654,7 +1697,7 @@ export class ScientificNetwork
             .selectedValue="${this.directed ? 'true' : 'false'}"
             .theme="${this.theme}"
             @change="${this._handleDirectedChange}"
-            placeholder="Network Type"
+            label="Network Type"
           ></scientific-dropdown>
         </div>
 

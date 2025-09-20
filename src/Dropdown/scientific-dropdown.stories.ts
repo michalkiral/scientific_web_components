@@ -448,7 +448,7 @@ export const WidthSynchronization: Story = {
 
 export const ThemeComparison: Story = {
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 150px;">
+    <div style="display: flex; flex-direction: column; gap: 25px;">
       <div>
         <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
           Default Theme

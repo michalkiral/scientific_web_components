@@ -876,6 +876,26 @@ export const InteractiveNodeCreation: Story = {
     <div
       style="margin-top: 16px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;"
     >
+      <style>
+        kbd {
+          background: #374151;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
+          font-size: 12px;
+          font-weight: bold;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        code {
+          background: #e5e7eb;
+          color: #374151;
+          padding: 2px 4px;
+          border-radius: 3px;
+          font-family: 'Courier New', monospace;
+          font-size: 12px;
+        }
+      </style>
       <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 16px;">
         🎯 Interactive Network Builder Guide
       </h4>
@@ -883,7 +903,10 @@ export const InteractiveNodeCreation: Story = {
         <div>
           <strong style="color: #3730a3;">Creating Nodes:</strong>
           <ol style="margin: 8px 0 0 20px; color: #475569;">
-            <li>Click the "Add Node" button in the toolbar</li>
+            <li>
+              Click the "Add Node" button in the toolbar (or press
+              <kbd>1</kbd> to activate)
+            </li>
             <li>Click anywhere on the canvas to place a new node</li>
             <li>The node will be automatically positioned where you clicked</li>
             <li>Click "Add Node" again to exit creation mode</li>
@@ -893,7 +916,10 @@ export const InteractiveNodeCreation: Story = {
             >Creating Edges:</strong
           >
           <ol style="margin: 8px 0 0 20px; color: #475569;">
-            <li>Click the "Add Edge" button in the toolbar</li>
+            <li>
+              Click the "Add Edge" button in the toolbar (or press
+              <kbd>2</kbd> to activate)
+            </li>
             <li>Click on the first node (source)</li>
             <li>Click on the second node (target)</li>
             <li>An edge will be created connecting the two nodes</li>
@@ -947,6 +973,11 @@ export const InteractiveNodeCreation: Story = {
           <li>
             <strong>Mode Switching:</strong> Modes are mutually exclusive -
             activating one deactivates others
+          </li>
+          <li>
+            <strong>Keyboard Shortcuts:</strong> Press <code>1</code> to
+            activate + Node mode, press <code>2</code> to activate + Edge mode
+            (shortcuts activate modes, don't toggle them off)
           </li>
         </ul>
       </div>

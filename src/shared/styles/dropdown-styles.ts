@@ -8,7 +8,6 @@ export const dropdownBaseStyles = css`
     min-width: var(--dropdown-min-width, auto);
     max-width: var(--dropdown-max-width, none);
     box-sizing: border-box;
-    z-index: var(--dropdown-container-z-index, 1);
   }
 
   .dropdown-label {
@@ -32,7 +31,7 @@ export const dropdownBaseStyles = css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 40px;
+    min-height: var(--scientific-min-height, 20px);
     outline: none;
   }
 
@@ -92,8 +91,6 @@ export const dropdownBaseStyles = css`
 export const dropdownContainerStyles = css`
   .options-container {
     position: absolute;
-    top: calc(100% - 1px);
-    left: 0;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid var(--dropdown-border-color, #d1d5db);
