@@ -135,10 +135,7 @@ export class ScientificNetwork
 
       .network-toolbar {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
         padding: var(--network-toolbar-padding, var(--scientific-spacing-md));
         background: var(
           --network-toolbar-bg,
@@ -150,73 +147,55 @@ export class ScientificNetwork
           var(--scientific-border-radius)
         );
         box-shadow: var(--network-toolbar-shadow, var(--scientific-shadow));
-        gap: var(--network-toolbar-section-gap, var(--scientific-spacing-lg));
-        min-height: var(--network-toolbar-min-height, 56px);
       }
 
       .toolbar-section {
         display: flex;
-        gap: var(--network-toolbar-item-gap, var(--scientific-spacing-sm));
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .toolbar-section.dropdowns {
         flex-direction: column;
-        gap: var(--scientific-spacing-xs);
-        flex: 0 0 auto;
-        align-items: flex-start;
+        align-items: center;
+        gap: var(--scientific-spacing-sm);
       }
 
-      .toolbar-section:first-child {
-        flex: 1;
-        justify-content: flex-start;
+      .section-title {
+        font-size: var(--scientific-text-sm);
+        font-weight: 600;
+        color: var(--scientific-text-secondary);
+        margin-bottom: var(--scientific-spacing-xs);
+        text-transform: uppercase;
       }
 
-      .toolbar-section:last-child {
-        flex: 1;
-        justify-content: flex-end;
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--scientific-spacing-sm);
+        justify-content: center;
       }
 
-      .toolbar-divider {
-        width: 1px;
-        height: 32px;
-        background: var(--border-color, #e0e0e0);
-        margin: 0 var(--scientific-spacing-sm);
-        flex-shrink: 0;
-      }
-
-      .network-toolbar scientific-dropdown {
-        --dropdown-width: 120px;
-      }
-
-      @media (max-width: 480px) {
+      @media (min-width: 768px) {
         .network-toolbar {
-          padding: var(--scientific-spacing-sm);
-          gap: var(--scientific-spacing-sm);
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: var(--scientific-spacing-md);
+          padding: var(--scientific-spacing-md);
         }
 
-        .toolbar-section {
-          flex-direction: row;
-          gap: var(--scientific-spacing-xs);
-          justify-content: center;
+        .interactive-section .button-group {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
         }
+      }
 
-        .toolbar-section scientific-button {
-          flex: 1;
-          min-width: 60px;
-          max-width: 80px;
-        }
+      .network-toolbar.grid-3 {
+        grid-template-columns: 1fr 1fr 1fr !important;
+      }
 
-        .toolbar-section scientific-dropdown {
-          flex: 1;
-          min-width: 120px;
-          max-width: 200px;
-        }
+      .network-toolbar.grid-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr !important;
+      }
 
-        .network-toolbar scientific-button {
-          --button-font-size: var(--scientific-text-xs);
-          --button-padding: var(--scientific-spacing-xs);
+      @media (max-width: 767px) {
+        .network-toolbar {
+          gap: var(--scientific-spacing-lg);
         }
       }
 
@@ -1033,11 +1012,6 @@ export class ScientificNetwork
     }
   }
 
-  private _handleLayoutChange(event: CustomEvent) {
-    const {value} = event.detail;
-    this.layout = value as NetworkLayout;
-  }
-
   private _handleDirectedChange(event: CustomEvent) {
     const {value} = event.detail;
     this.directed = value === 'true';
@@ -1051,6 +1025,11 @@ export class ScientificNetwork
     dispatchCustomEvent(this, 'network-direction-changed', {
       directed: this.directed,
     });
+  }
+
+  private _handleExportChange(event: CustomEvent) {
+    const {value} = event.detail;
+    this._handleExport(value as ExportOptions['format']);
   }
 
   private _toggleNodeCreation() {
@@ -1671,157 +1650,161 @@ export class ScientificNetwork
   }
 
   private _renderToolbar() {
+    const hasInteractiveFeatures = 
+      this.enableNodeCreation || 
+      this.enableEdgeCreation || 
+      this.enableRenaming || 
+      this.enableRemoval;
+
+    const gridClass = hasInteractiveFeatures ? 'grid-4' : 'grid-3';
+
     return html`
-      <div class="network-toolbar">
-        <div class="toolbar-section dropdowns">
-          <scientific-dropdown
-            .options="${[
-              {label: 'Force', value: 'cose'},
-              {label: 'Circle', value: 'circle'},
-              {label: 'Concentric', value: 'concentric'},
-              {label: 'Grid', value: 'grid'},
-              {label: 'Hierarchy', value: 'breadthfirst'},
-              {label: 'Random', value: 'random'},
-            ]}"
-            .selectedValue="${this.layout}"
-            .theme="${this.theme}"
-            @change="${this._handleLayoutChange}"
-            label="Layout Algorithm"
-          ></scientific-dropdown>
-
-          <scientific-dropdown
-            .options="${[
-              {label: 'Undirected', value: 'false'},
-              {label: 'Directed', value: 'true'},
-            ]}"
-            .selectedValue="${this.directed ? 'true' : 'false'}"
-            .theme="${this.theme}"
-            @change="${this._handleDirectedChange}"
-            label="Network Type"
-          ></scientific-dropdown>
+      <div class="network-toolbar ${gridClass}">
+        <div class="toolbar-section network-type-section">
+          <div class="section-title">Network Type</div>
+          <div class="button-group">
+            <scientific-button
+              variant="${!this.directed ? 'primary' : 'outline'}"
+              size="small"
+              label="Undirected"
+              .theme="${this.theme}"
+              @click="${() =>
+                this._handleDirectedChange(
+                  new CustomEvent('change', {detail: {value: 'false'}})
+                )}"
+            ></scientific-button>
+            <scientific-button
+              variant="${this.directed ? 'primary' : 'outline'}"
+              size="small"
+              label="Directed"
+              .theme="${this.theme}"
+              @click="${() =>
+                this._handleDirectedChange(
+                  new CustomEvent('change', {detail: {value: 'true'}})
+                )}"
+            ></scientific-button>
+          </div>
         </div>
 
-        <div class="toolbar-section">
-          ${this.enableNodeCreation
-            ? html`
-                <scientific-button
-                  variant="${this.isCreatingNode ? 'primary' : 'outline'}"
-                  size="small"
-                  label="+ Node"
-                  .theme="${this.theme}"
-                  @click="${this._toggleNodeCreation}"
-                  title="Add Node (click on canvas)"
-                ></scientific-button>
-              `
-            : ''}
-          ${this.enableEdgeCreation
-            ? html`
-                <scientific-button
-                  variant="${this.isCreatingEdge ? 'primary' : 'outline'}"
-                  size="small"
-                  label="+ Edge"
-                  .theme="${this.theme}"
-                  @click="${this._toggleEdgeCreation}"
-                  title="Add Edge (click two nodes)"
-                ></scientific-button>
-              `
-            : ''}
-          ${this.enableRenaming
-            ? html`
-                <scientific-button
-                  variant="${this.isRenaming ? 'primary' : 'outline'}"
-                  size="small"
-                  label="Rename"
-                  .theme="${this.theme}"
-                  @click="${this._toggleRenaming}"
-                  title="Rename elements (click element)"
-                ></scientific-button>
-              `
-            : ''}
-          ${this.enableRemoval
-            ? html`
-                <scientific-button
-                  variant="${this.isRemoving ? 'danger' : 'outline'}"
-                  size="small"
-                  label="Remove"
-                  .theme="${this.theme}"
-                  @click="${this._toggleRemoval}"
-                  title="Remove elements (double-click element to confirm)"
-                ></scientific-button>
-              `
-            : ''}
-          ${this.enableZoom
-            ? html`
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="+"
-                  .theme="${this.theme}"
-                  @click="${this._handleZoomIn}"
-                  title="Zoom In"
-                ></scientific-button>
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="−"
-                  .theme="${this.theme}"
-                  @click="${this._handleZoomOut}"
-                  title="Zoom Out"
-                ></scientific-button>
-                <scientific-button
-                  variant="outline"
-                  size="small"
-                  label="⌂"
-                  .theme="${this.theme}"
-                  @click="${this._handleZoomFit}"
-                  title="Fit to Screen"
-                ></scientific-button>
-              `
-            : ''}
+        ${hasInteractiveFeatures
+          ? html`
+              <div class="toolbar-section interactive-section">
+                <div class="section-title">Interactive Mode</div>
+                <div class="button-group">
+                  ${this.enableNodeCreation
+                    ? html`
+                        <scientific-button
+                          variant="${this.isCreatingNode ? 'primary' : 'outline'}"
+                          size="small"
+                          label="+ Node"
+                          .theme="${this.theme}"
+                          @click="${this._toggleNodeCreation}"
+                          title="Add Node (Press 1 or click on canvas)"
+                        ></scientific-button>
+                      `
+                    : ''}
+                  ${this.enableEdgeCreation
+                    ? html`
+                        <scientific-button
+                          variant="${this.isCreatingEdge ? 'primary' : 'outline'}"
+                          size="small"
+                          label="+ Edge"
+                          .theme="${this.theme}"
+                          @click="${this._toggleEdgeCreation}"
+                          title="Add Edge (Press 2 or click two nodes)"
+                        ></scientific-button>
+                      `
+                    : ''}
+                  ${this.enableRenaming
+                    ? html`
+                        <scientific-button
+                          variant="${this.isRenaming ? 'primary' : 'outline'}"
+                          size="small"
+                          label="Rename"
+                          .theme="${this.theme}"
+                          @click="${this._toggleRenaming}"
+                          title="Rename elements (click element)"
+                        ></scientific-button>
+                      `
+                    : ''}
+                  ${this.enableRemoval
+                    ? html`
+                        <scientific-button
+                          variant="${this.isRemoving ? 'danger' : 'outline'}"
+                          size="small"
+                          label="Remove"
+                          .theme="${this.theme}"
+                          @click="${this._toggleRemoval}"
+                          title="Remove elements (double-click element to confirm)"
+                        ></scientific-button>
+                      `
+                    : ''}
+                </div>
+              </div>
+            `
+          : ''}
+
+        <div class="toolbar-section controls-section">
+          <div class="section-title">Controls</div>
+          <div class="button-group">
+            ${this.enableZoom
+              ? html`
+                  <div class="zoom-buttons">
+                    <scientific-button
+                      variant="outline"
+                      size="small"
+                      label="+"
+                      .theme="${this.theme}"
+                      @click="${this._handleZoomIn}"
+                      title="Zoom In"
+                    ></scientific-button>
+                    <scientific-button
+                      variant="outline"
+                      size="small"
+                      label="−"
+                      .theme="${this.theme}"
+                      @click="${this._handleZoomOut}"
+                      title="Zoom Out"
+                    ></scientific-button>
+                    <scientific-button
+                      variant="outline"
+                      size="small"
+                      label="⌂"
+                      .theme="${this.theme}"
+                      @click="${this._handleZoomFit}"
+                      title="Fit to Screen"
+                    ></scientific-button>
+                  </div>
+                `
+              : ''}
+          </div>
         </div>
 
-        <!-- Right side: Export Controls -->
-        <div class="toolbar-section">
-          <scientific-button
-            variant="outline"
-            size="small"
-            label="PNG"
-            .theme="${this.theme}"
-            @click="${() => this._handleExport('png')}"
-            title="Export PNG"
-          ></scientific-button>
-          <scientific-button
-            variant="outline"
-            size="small"
-            label="JPG"
-            .theme="${this.theme}"
-            @click="${() => this._handleExport('jpg')}"
-            title="Export JPG"
-          ></scientific-button>
-          <scientific-button
-            variant="outline"
-            size="small"
-            label="PDF"
-            .theme="${this.theme}"
-            @click="${() => this._handleExport('pdf')}"
-            title="Export PDF"
-          ></scientific-button>
-          <scientific-button
-            variant="outline"
-            size="small"
-            label="JSON"
-            .theme="${this.theme}"
-            @click="${() => this._handleExport('json')}"
-            title="Export JSON"
-          ></scientific-button>
+        <div class="toolbar-section export-section">
+          <div class="section-title">Export</div>
+          <div class="button-group">
+            <scientific-dropdown
+              .options="${[
+                {value: 'png', label: 'PNG'},
+                {value: 'jpg', label: 'JPG'},
+                {value: 'pdf', label: 'PDF'},
+                {value: 'json', label: 'JSON'},
+              ]}"
+              .theme="${this.theme}"
+              @change="${this._handleExportChange}"
+              placeholder="Select an export format"
+              label=""
+            ></scientific-dropdown>
+          </div>
         </div>
       </div>
     `;
   }
 
   private _renderInfo() {
-    if (!this.metrics && !this.cy) return '';
-
+    if (!this.metrics && !this.cy) {
+      return '';
+    }
     return html`
       <div class="network-info">
         ${this.metrics

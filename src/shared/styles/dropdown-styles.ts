@@ -6,7 +6,7 @@ export const dropdownBaseStyles = css`
     display: block;
     width: var(--dropdown-width, 100%);
     min-width: var(--dropdown-min-width, auto);
-    max-width: var(--dropdown-max-width, none);
+    max-width: var(--dropdown-max-width, 100%);
     box-sizing: border-box;
   }
 
@@ -19,7 +19,6 @@ export const dropdownBaseStyles = css`
   }
 
   .dropdown-select {
-    width: 100%;
     padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
     border: 1px solid var(--dropdown-border-color, #d1d5db);
     border-radius: var(--scientific-border-radius);
@@ -83,7 +82,7 @@ export const dropdownBaseStyles = css`
 
   @media (max-width: 768px) {
     .dropdown-select {
-      min-height: 44px;
+      min-height: 22px;
     }
   }
 `;
