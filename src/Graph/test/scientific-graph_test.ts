@@ -72,26 +72,6 @@ suite('ScientificGraph', () => {
     assert.equal(el.type, 'bar');
   });
 
-  //   test('export buttons are present and not disabled', async () => {
-  //     const el = await fixture<ScientificGraph>(html`<scientific-graph></scientific-graph>`);
-
-  //     const exportPngBtn = el.shadowRoot!.querySelector('[data-format="png"]') as HTMLElement;
-  //     const exportJpegBtn = el.shadowRoot!.querySelector('[data-format="jpeg"]') as HTMLElement;
-  //     const exportPdfBtn = el.shadowRoot!.querySelector('[data-format="pdf"]') as HTMLElement;
-
-  //     assert.isNotNull(exportPngBtn);
-  //     assert.isNotNull(exportJpegBtn);
-  //     assert.isNotNull(exportPdfBtn);
-
-  //     const pngButton = exportPngBtn.querySelector('scientific-button') as any;
-  //     const jpegButton = exportJpegBtn.querySelector('scientific-button') as any;
-  //     const pdfButton = exportPdfBtn.querySelector('scientific-button') as any;
-
-  //     if (pngButton) assert.isFalse(pngButton.disabled);
-  //     if (jpegButton) assert.isFalse(jpegButton.disabled);
-  //     if (pdfButton) assert.isFalse(pdfButton.disabled);
-  //   });
-
   test('handles dropdown chart type selection', async () => {
     const el = await fixture<ScientificGraph>(
       html`<scientific-graph></scientific-graph>`
@@ -175,35 +155,6 @@ suite('ScientificGraph', () => {
     assert.isNotNull(computedStyle.width);
     assert.isNotNull(computedStyle.height);
   });
-
-  //   test('emits chart-ready event', async () => {
-  //     const el = await fixture<ScientificGraph>(html`<scientific-graph></scientific-graph>`);
-
-  //     el.addEventListener('chart-ready', () => {
-  //       assert.isTrue(true);
-  //     });
-
-  //     await aTimeout(100);
-
-  //     // Chart ready event depends on actual Chart.js integration
-  //     // This test validates the event listener is set up correctly
-  //   });
-
-  //   test('handles export functionality', async () => {
-  //     const el = await fixture<ScientificGraph>(html`<scientific-graph></scientific-graph>`);
-
-  //     const exportBtn = el.shadowRoot!.querySelector('[data-format="png"]') as HTMLElement;
-  //     assert.isNotNull(exportBtn);
-
-  //     try {
-  //       exportBtn.click();
-  //       await el.updateComplete;
-  //       assert.isTrue(true, 'Export button click succeeded');
-  //     } catch (error) {
-  //       // Export might fail in test environment without actual chart
-  //       assert.isTrue(true, 'Export test handled gracefully');
-  //     }
-  //   });
 
   test('applies custom CSS variables', async () => {
     const el = await fixture(html`

@@ -247,6 +247,15 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Button theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     label: {control: 'text', description: 'Button label'},
     loading: {control: 'boolean', description: 'Loading state'},
     loadingLabel: {control: 'text', description: 'Label when loading'},
@@ -293,6 +302,7 @@ type Story = StoryObj;
 export const Default: Story = {
   args: {
     label: 'Click Me',
+    theme: 'default',
     variant: 'primary',
     size: 'medium',
     loading: false,
@@ -312,6 +322,7 @@ export const Default: Story = {
   },
   render: ({
     label,
+    theme,
     variant,
     size,
     loading,
@@ -331,6 +342,7 @@ export const Default: Story = {
   }) =>
     html`<scientific-button
       .label=${label}
+      .theme=${theme}
       .variant=${variant}
       .size=${size}
       .loading=${loading}
@@ -427,22 +439,6 @@ export const IconExamples: Story = {
       ></scientific-button>
     </div>
   `,
-};
-
-export const Loading: Story = {
-  args: {
-    label: 'Processing',
-    loading: true,
-    loadingLabel: 'Please wait...',
-    variant: 'primary',
-  },
-  render: ({label, loading, loadingLabel, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .loading=${loading}
-      .loadingLabel=${loadingLabel}
-      .variant=${variant}
-    ></scientific-button>`,
 };
 
 export const LoadingStates: Story = {
@@ -577,92 +573,6 @@ export const AsLinks: Story = {
   `,
 };
 
-export const FormButtons: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 16px; max-width: 400px;"
-    >
-      <h4 style="margin: 0;">Basic Form Integration</h4>
-      <form
-        id="demo-form"
-        style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #ddd; border-radius: 8px;"
-        @submit=${(e: Event) => {
-          e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
-          console.log(
-            'Form submitted with data:',
-            Object.fromEntries(formData)
-          );
-          alert('Form submitted! Check console for data.');
-        }}
-        @reset=${() => {
-          console.log('Form reset');
-          alert('Form reset!');
-        }}
-      >
-        <label>
-          Name:
-          <input
-            type="text"
-            name="username"
-            required
-            style="margin-left: 8px; padding: 4px;"
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            required
-            style="margin-left: 8px; padding: 4px;"
-          />
-        </label>
-
-        <div
-          style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;"
-        >
-          <scientific-button
-            label="Submit Form"
-            type="submit"
-            name="action"
-            value="submit"
-            variant="success"
-          ></scientific-button>
-          <scientific-button
-            label="Reset Form"
-            type="reset"
-            variant="secondary"
-          ></scientific-button>
-          <scientific-button
-            label="Cancel"
-            type="button"
-            variant="outline"
-          ></scientific-button>
-        </div>
-      </form>
-
-      <h4 style="margin: 16px 0 0 0;">External Form Association</h4>
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <scientific-button
-          label="Submit External Form"
-          type="submit"
-          form="demo-form"
-          name="external_action"
-          value="external_submit"
-          variant="primary"
-        ></scientific-button>
-        <scientific-button
-          label="Reset External Form"
-          type="reset"
-          form="demo-form"
-          variant="danger"
-        ></scientific-button>
-      </div>
-    </div>
-  `,
-};
-
 export const WithActions: Story = {
   args: {
     label: 'Async Action',
@@ -677,25 +587,6 @@ export const WithActions: Story = {
       @button-click-complete=${() => console.log('Action completed')}
       @button-click-error=${(e: CustomEvent) =>
         console.error('Action failed:', e.detail)}
-    ></scientific-button>`,
-};
-
-export const CustomStyles: Story = {
-  args: {
-    label: 'Custom Styled',
-    variant: 'primary',
-  },
-  render: ({label, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .variant=${variant}
-      style="
-        --button-bg-color: linear-gradient(45deg, #e91e63, #f06292);
-        --button-border-radius: 25px;
-        --button-padding: 16px 32px;
-        --button-shadow: 0 8px 24px rgba(233, 30, 99, 0.3);
-        --button-hover-transform: translateY(-2px) scale(1.02);
-      "
     ></scientific-button>`,
 };
 
@@ -743,4 +634,226 @@ export const StyleCustomization: Story = {
       </div>
     </div>
   `,
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 48px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="default"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="default"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="default"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="default"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="default"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="default"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="dark"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="dark"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="dark"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="dark"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="dark"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="dark"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button
+            label="Primary"
+            theme="scientific"
+            variant="primary"
+          ></scientific-button>
+          <scientific-button
+            label="Secondary"
+            theme="scientific"
+            variant="secondary"
+          ></scientific-button>
+          <scientific-button
+            label="Outline"
+            theme="scientific"
+            variant="outline"
+          ></scientific-button>
+          <scientific-button
+            label="Ghost"
+            theme="scientific"
+            variant="ghost"
+          ></scientific-button>
+          <scientific-button
+            label="Danger"
+            theme="scientific"
+            variant="danger"
+          ></scientific-button>
+          <scientific-button
+            label="Success"
+            theme="scientific"
+            variant="success"
+          ></scientific-button>
+        </div>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches for all button variants.',
+      },
+    },
+  },
+};
+
+export const ThemeVariantGrid: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Loading States Across Themes
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <scientific-button
+            label="Loading Default"
+            theme="default"
+            variant="primary"
+            loading
+          ></scientific-button>
+          <scientific-button
+            label="Loading Dark"
+            theme="dark"
+            variant="primary"
+            loading
+          ></scientific-button>
+          <scientific-button
+            label="Loading Scientific"
+            theme="scientific"
+            variant="primary"
+            loading
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Disabled States Across Themes
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <scientific-button
+            label="Disabled Default"
+            theme="default"
+            variant="primary"
+            disabled
+          ></scientific-button>
+          <scientific-button
+            label="Disabled Dark"
+            theme="dark"
+            variant="primary"
+            disabled
+          ></scientific-button>
+          <scientific-button
+            label="Disabled Scientific"
+            theme="scientific"
+            variant="primary"
+            disabled
+          ></scientific-button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+          Size Variations with Scientific Theme
+        </h3>
+        <div
+          style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;"
+        >
+          <scientific-button
+            label="Small Scientific"
+            theme="scientific"
+            variant="primary"
+            size="small"
+          ></scientific-button>
+          <scientific-button
+            label="Medium Scientific"
+            theme="scientific"
+            variant="primary"
+            size="medium"
+          ></scientific-button>
+          <scientific-button
+            label="Large Scientific"
+            theme="scientific"
+            variant="primary"
+            size="large"
+          ></scientific-button>
+        </div>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Grid view showcasing various button states and sizes across different themes, demonstrating theme consistency and visual hierarchy.',
+      },
+    },
+  },
 };

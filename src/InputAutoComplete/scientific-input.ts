@@ -2,211 +2,63 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {
   sharedVariables,
-  containerStyles,
-  headerStyles,
   inputStyles,
   messageStyles,
   responsiveStyles,
+  themeStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {dropdownContainerStyles} from '../shared/styles/dropdown-styles.js';
+import {
+  inputContainerStyles,
+  autocompleteStyles,
+  inputClearButtonStyles,
+} from '../shared/styles/input-styles.js';
+import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
+import {
+  handleDropdownKeyboard,
+  filterOptions,
+  generateAutocompleteHint,
+  createClickOutsideHandler,
+  type DropdownOption,
+  type DropdownKeyboardHandler,
+} from '../shared/utils/dropdown-utils.js';
+import {renderDropdownOptions} from '../shared/utils/dropdown-render.js';
 
-export interface InputOption {
-  label: string;
-  value: string;
-  disabled?: boolean;
-  group?: string;
-}
+export type InputOption = DropdownOption;
 
 @customElement('scientific-input')
-export class ScientificInput extends LitElement {
+export class ScientificInput
+  extends LitElement
+  implements DropdownKeyboardHandler
+{
   static override styles = [
     sharedVariables,
-    containerStyles,
-    headerStyles,
+    themeStyles,
+    inputThemeStyles,
     inputStyles,
     messageStyles,
     responsiveStyles,
+    inputContainerStyles,
+    autocompleteStyles,
+    dropdownContainerStyles,
+    inputClearButtonStyles,
     css`
       :host {
         display: block;
         width: var(--input-width, 100%);
         font-family: var(--scientific-font-family);
       }
-
-      .scientific-container {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        gap: var(--scientific-spacing-sm);
-        width: 100%;
-      }
-
-      .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        z-index: 1;
-      }
-
-      .autocomplete-hint {
-        position: absolute;
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        border: none;
-        border-radius: var(--scientific-border-radius);
-        background: transparent;
-        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
-        font-size: var(--scientific-text-base);
-        font-family: inherit;
-        pointer-events: none;
-        z-index: 1;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-
-      .clear-button {
-        position: absolute;
-        right: var(--scientific-spacing-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--input-clear-size, 20px);
-        height: var(--input-clear-size, 20px);
-        background: transparent;
-        border: none;
-        border-radius: var(--scientific-border-radius-sm);
-        cursor: pointer;
-        color: var(--scientific-text-muted);
-        transition: var(--scientific-transition-fast);
-        padding: 0;
-        font-size: var(--scientific-text-xs);
-        font-weight: 500;
-      }
-
-      .clear-button:hover {
-        background-color: var(--scientific-bg-muted);
-        color: var(--scientific-text-secondary);
-        transform: scale(1.1);
-      }
-
-      .clear-button:active {
-        transform: scale(0.95);
-      }
-
-      .dropdown-container {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        border: var(--scientific-border);
-        border-top: none;
-        border-radius: 0 0 var(--scientific-border-radius)
-          var(--scientific-border-radius);
-        background-color: var(--scientific-bg-primary, #fff);
-        box-shadow: var(--scientific-shadow-lg);
-        z-index: var(--input-dropdown-z-index, 1000);
-        max-height: var(--input-dropdown-max-height, 200px);
-        overflow-y: auto;
-        animation: slideDown 0.15s ease-out;
-      }
-
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .option {
-        padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
-        cursor: pointer;
-        transition: var(--scientific-transition-fast);
-        border-bottom: 1px solid var(--scientific-border-light);
-        color: var(--scientific-text-primary);
-        font-size: var(--scientific-text-base);
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
-      .option:last-child {
-        border-bottom: none;
-      }
-
-      .option:hover {
-        background-color: var(--scientific-bg-muted);
-      }
-
-      .option.highlighted {
-        background-color: var(--scientific-bg-accent);
-        color: var(--scientific-text-primary);
-      }
-
-      .option.disabled {
-        background-color: var(--scientific-bg-disabled);
-        color: var(--scientific-text-disabled);
-        cursor: not-allowed;
-      }
-
-      .option-group {
-        padding: var(--scientific-spacing-sm) var(--scientific-spacing-lg)
-          var(--scientific-spacing-xs);
-        font-size: var(--scientific-text-xs);
-        font-weight: 600;
-        color: var(--scientific-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        background-color: var(--scientific-bg-muted);
-        border-bottom: 1px solid var(--scientific-border-light);
-      }
-
-      .no-options {
-        padding: var(--scientific-spacing-lg);
-        text-align: center;
-        color: var(--scientific-text-muted);
-        font-style: italic;
-        font-size: var(--scientific-text-sm);
-      }
-
-      .input-field {
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        font-size: var(--input-font-size, var(--scientific-text-base));
-        min-height: var(--input-min-height, 44px);
-      }
-
-      .autocomplete-hint {
-        position: absolute;
-        padding: var(
-          --input-padding,
-          var(--scientific-spacing-md) var(--scientific-spacing-lg)
-        );
-        left: 2px;
-        border: none;
-        border-radius: var(--scientific-border-radius);
-        background: transparent;
-        color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
-        font-size: var(--input-font-size, var(--scientific-text-base));
-        font-family: inherit;
-        pointer-events: none;
-        z-index: 1;
-        white-space: nowrap;
-        overflow: hidden;
-      }
     `,
   ];
 
   @property({type: String})
   label = '';
+
+  @property({type: String, reflect: true})
+  theme: ScientificTheme = 'default';
 
   @property({type: String})
   placeholder = 'Type to search...';
@@ -215,7 +67,7 @@ export class ScientificInput extends LitElement {
   value = '';
 
   @property({type: Array})
-  options: InputOption[] = [];
+  options: DropdownOption[] = [];
 
   @property({type: Boolean})
   disabled = false;
@@ -263,10 +115,10 @@ export class ScientificInput extends LitElement {
   autoFocus = false;
 
   @state()
-  private isOpen = false;
+  isOpen = false;
 
   @state()
-  private filteredOptions: InputOption[] = [];
+  private filteredOptionsCache: DropdownOption[] = [];
 
   @state()
   private highlightedIndex = -1;
@@ -276,6 +128,55 @@ export class ScientificInput extends LitElement {
 
   @state()
   private autocompleteHint = '';
+
+  get focusedIndex(): number {
+    return this.highlightedIndex;
+  }
+
+  set focusedIndex(value: number) {
+    this.highlightedIndex = value;
+  }
+
+  get filteredOptions(): DropdownOption[] {
+    return this.filteredOptionsCache;
+  }
+
+  set filteredOptions(value: DropdownOption[]) {
+    this.filteredOptionsCache = value;
+  }
+
+  selectOption(option: DropdownOption) {
+    if (option.disabled) return;
+
+    this.inputValue = option.label;
+    this.value = option.value;
+    this.closeDropdown();
+    this.autocompleteHint = '';
+
+    dispatchMultipleEvents(this, [
+      {
+        name: 'option-selected',
+        detail: {option, value: option.value, label: option.label},
+        options: {bubbles: true, composed: true},
+      },
+      {
+        name: 'change',
+        detail: {value: option.value, label: option.label},
+        options: {bubbles: true, composed: true},
+      },
+    ]);
+  }
+
+  closeDropdown() {
+    this.isOpen = false;
+    this.highlightedIndex = -1;
+  }
+
+  openDropdown() {
+    this.filterOptions();
+    this.isOpen =
+      this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
+  }
 
   private _debouncedFilter = debounce(() => {
     this._performFilter();
@@ -293,12 +194,9 @@ export class ScientificInput extends LitElement {
     document.removeEventListener('click', this.handleClickOutside);
   }
 
-  private handleClickOutside = (e: Event) => {
-    if (!this.contains(e.target as Node)) {
-      this.isOpen = false;
-      this.highlightedIndex = -1;
-    }
-  };
+  private handleClickOutside = createClickOutsideHandler(this, () => {
+    this.closeDropdown();
+  });
 
   private handleInput(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -307,8 +205,6 @@ export class ScientificInput extends LitElement {
 
     if (this.autoComplete) {
       this._debouncedFilter();
-      this.isOpen =
-        this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
     }
 
     dispatchMultipleEvents(this, [
@@ -327,128 +223,40 @@ export class ScientificInput extends LitElement {
 
   private _performFilter() {
     this.filterOptions();
+    this.isOpen =
+      this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
   }
 
   private filterOptions() {
-    if (!this.inputValue.trim()) {
-      this.filteredOptions = this.options;
-      this.autocompleteHint = '';
-      return;
-    }
-
-    this.filteredOptions = this.options.filter((option) =>
-      option.label.toLowerCase().includes(this.inputValue.toLowerCase())
-    );
+    this.filteredOptions = filterOptions(this.options, this.inputValue);
     this.highlightedIndex = -1;
 
-    if (this.filteredOptions.length > 0 && this.inputValue.length > 0) {
-      const firstMatch = this.filteredOptions[0];
-      const inputLower = this.inputValue.toLowerCase();
-      const labelLower = firstMatch.label.toLowerCase();
-
-      if (labelLower.startsWith(inputLower) && inputLower !== labelLower) {
-        this.autocompleteHint =
-          this.inputValue + firstMatch.label.slice(this.inputValue.length);
-      } else {
-        this.autocompleteHint = '';
-      }
-    } else {
-      this.autocompleteHint = '';
-    }
+    this.autocompleteHint = generateAutocompleteHint(
+      this.filteredOptions,
+      this.inputValue
+    );
   }
 
   private handleKeyDown(e: KeyboardEvent) {
-    if (!this.isOpen && ['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
-      this.isOpen = true;
-      this.filterOptions();
-    }
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        if (this.highlightedIndex < this.filteredOptions.length - 1) {
-          this.highlightedIndex++;
-        }
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        if (this.highlightedIndex > 0) {
-          this.highlightedIndex--;
-        }
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (
-          this.highlightedIndex >= 0 &&
-          this.filteredOptions[this.highlightedIndex] &&
-          !this.filteredOptions[this.highlightedIndex].disabled
-        ) {
-          this.selectOption(this.filteredOptions[this.highlightedIndex]);
-        } else if (this.allowCustomValues && this.inputValue.trim()) {
-          this.selectCustomValue();
-        }
-        break;
-      case 'Escape':
-        this.isOpen = false;
-        this.highlightedIndex = -1;
-        break;
-      case 'Tab':
-        if (
-          this.autocompleteHint &&
-          this.autocompleteHint !== this.inputValue
-        ) {
-          e.preventDefault();
-          this.inputValue = this.autocompleteHint;
-          this.value = this.autocompleteHint;
-          this.autocompleteHint = '';
-          this.filterOptions();
-        } else if (this.isOpen && this.filteredOptions.length > 0) {
-          e.preventDefault();
-          const optionToSelect =
-            this.highlightedIndex >= 0
-              ? this.filteredOptions[this.highlightedIndex]
-              : this.filteredOptions[0];
-
-          if (optionToSelect && !optionToSelect.disabled) {
-            this.selectOption(optionToSelect);
-          }
-        } else {
-          this.isOpen = false;
-          this.highlightedIndex = -1;
-          this.autocompleteHint = '';
-        }
-        break;
-    }
-  }
-
-  private selectOption(option: InputOption) {
-    if (option.disabled) return;
-
-    this.inputValue = option.label;
-    this.value = option.value;
-    this.isOpen = false;
-    this.highlightedIndex = -1;
-    this.autocompleteHint = '';
-
-    dispatchMultipleEvents(this, [
-      {
-        name: 'option-selected',
-        detail: {option, value: option.value, label: option.label},
-        options: {bubbles: true, composed: true},
+    handleDropdownKeyboard.call(this, e, {
+      openOnNavigation: true,
+      allowCustomValues: this.allowCustomValues,
+      onCustomValue: () => this.selectCustomValue(),
+      onAutocompleteHint: () => {
+        this.inputValue = this.autocompleteHint;
+        this.value = this.autocompleteHint;
+        this.autocompleteHint = '';
+        this.filterOptions();
       },
-      {
-        name: 'change',
-        detail: {value: option.value, label: option.label},
-        options: {bubbles: true, composed: true},
-      },
-    ]);
+      autocompleteHint: this.autocompleteHint,
+      inputValue: this.inputValue,
+    });
   }
 
   private selectCustomValue() {
     const customValue = this.inputValue.trim();
     this.value = customValue;
-    this.isOpen = false;
-    this.highlightedIndex = -1;
+    this.closeDropdown();
 
     dispatchMultipleEvents(this, [
       {
@@ -464,15 +272,14 @@ export class ScientificInput extends LitElement {
     ]);
   }
 
-  private handleOptionClick(option: InputOption) {
+  private handleOptionClick(option: DropdownOption) {
     this.selectOption(option);
   }
 
   private handleClear() {
     this.inputValue = '';
     this.value = '';
-    this.isOpen = false;
-    this.highlightedIndex = -1;
+    this.closeDropdown();
     this.autocompleteHint = '';
 
     dispatchMultipleEvents(this, [
@@ -496,9 +303,7 @@ export class ScientificInput extends LitElement {
 
   private handleFocus() {
     if (this.autoComplete) {
-      this.filterOptions();
-      this.isOpen =
-        this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
+      this.openDropdown();
     }
 
     dispatchMultipleEvents(this, [
@@ -531,77 +336,19 @@ export class ScientificInput extends LitElement {
     );
   }
 
-  private renderDropdownOptions() {
-    if (!this.isOpen || this.filteredOptions.length === 0) {
-      if (this.isOpen && this.allowCustomValues && this.inputValue.trim()) {
-        return html`
-          <div class="dropdown-container">
-            <div
-              class="${classNames(
-                'option',
-                this.highlightedIndex === 0 && 'highlighted'
-              )}"
-              @click="${() => this.selectCustomValue()}"
-            >
-              Add "${this.inputValue}"
-            </div>
-          </div>
-        `;
-      }
-
-      if (this.isOpen) {
-        return html`
-          <div class="dropdown-container">
-            <div class="no-options">${this.noOptionsText}</div>
-          </div>
-        `;
-      }
-
-      return '';
-    }
-
-    const groupedOptions = this.groupOptions(this.filteredOptions);
-
-    return html`
-      <div class="dropdown-container">
-        ${Object.entries(groupedOptions).map(
-          ([group, options]) => html`
-            ${group !== 'default'
-              ? html`<div class="option-group">${group}</div>`
-              : ''}
-            ${options.map((option) => {
-              const globalIndex = this.filteredOptions.indexOf(option);
-              return html`
-                <div
-                  class="${classNames(
-                    'option',
-                    this.highlightedIndex === globalIndex && 'highlighted',
-                    option.disabled && 'disabled'
-                  )}"
-                  @click="${() => this.handleOptionClick(option)}"
-                >
-                  ${option.label}
-                </div>
-              `;
-            })}
-          `
-        )}
-      </div>
-    `;
-  }
-
-  private groupOptions(options: InputOption[]) {
-    const grouped: {[key: string]: InputOption[]} = {default: []};
-
-    options.forEach((option) => {
-      const group = option.group || 'default';
-      if (!grouped[group]) {
-        grouped[group] = [];
-      }
-      grouped[group].push(option);
+  private renderDropdown() {
+    return renderDropdownOptions({
+      isOpen: this.isOpen,
+      filteredOptions: this.filteredOptions,
+      focusedIndex: this.focusedIndex,
+      selectedValue: this.value,
+      searchable: false,
+      noOptionsText: this.noOptionsText,
+      allowCustomValues: this.allowCustomValues,
+      inputValue: this.inputValue,
+      onOptionClick: (option) => this.handleOptionClick(option),
+      onCustomValueClick: () => this.selectCustomValue(),
     });
-
-    return grouped;
   }
 
   override firstUpdated() {
@@ -618,30 +365,18 @@ export class ScientificInput extends LitElement {
     const hasIcon = this.icon && !showClear;
 
     return html`
-      <div class="scientific-container">
+      <div class="input-container">
         ${this.label
-          ? html`
-              <label
-                class="${classNames(
-                  'scientific-header',
-                  this.required && 'required'
-                )}"
-              >
-                ${this.label}
-              </label>
-            `
+          ? html`<label
+              class="${classNames('input-label', this.required && 'required')}"
+              >${this.label}</label
+            >`
           : ''}
 
         <div class="input-wrapper">
           ${this.autocompleteHint
             ? html`
-                <div
-                  class="autocomplete-hint ${this.size !== 'medium'
-                    ? this.size
-                    : ''}"
-                >
-                  ${this.autocompleteHint}
-                </div>
+                <div class="autocomplete-hint">${this.autocompleteHint}</div>
               `
             : ''}
 
@@ -664,7 +399,8 @@ export class ScientificInput extends LitElement {
             aria-haspopup="listbox"
             aria-autocomplete="list"
           />
-          ${this.renderDropdownOptions()}
+
+          ${this.renderDropdown()}
           ${showClear
             ? html`
                 <button

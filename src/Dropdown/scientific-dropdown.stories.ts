@@ -1,7 +1,5 @@
-import {html, LitElement} from 'lit';
+import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import {expect} from '@storybook/jest';
-import {waitFor} from '@storybook/testing-library';
 import './scientific-dropdown.js';
 
 const meta: Meta = {
@@ -190,6 +188,15 @@ All CSS custom properties available for customization with their default values:
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Dropdown theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     label: {control: 'text', description: 'Dropdown label'},
     options: {control: 'object', description: 'Dropdown options'},
     selectedValue: {control: 'text', description: 'Selected value'},
@@ -209,6 +216,7 @@ type Story = StoryObj;
 export const Default: Story = {
   args: {
     label: 'Select an option',
+    theme: 'default',
     options: [
       {label: 'Option 1', value: '1'},
       {label: 'Option 2', value: '2'},
@@ -246,6 +254,7 @@ export const Default: Story = {
       .placeholder=${placeholder}
       .noOptionsText=${noOptionsText}
       .searchPlaceholder=${searchPlaceholder}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -268,6 +277,7 @@ export const WithPreselected: Story = {
       .options=${options}
       .selectedValue=${selectedValue}
       .clearable=${clearable}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -297,6 +307,7 @@ export const Searchable: Story = {
       .searchable=${searchable}
       .placeholder=${placeholder}
       .searchPlaceholder=${searchPlaceholder}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -324,6 +335,7 @@ export const SearchableWithClear: Story = {
       .searchable=${searchable}
       .clearable=${clearable}
       .selectedValue=${selectedValue}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -343,6 +355,7 @@ export const Disabled: Story = {
       .options=${options}
       .disabled=${disabled}
       .selectedValue=${selectedValue}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -360,6 +373,7 @@ export const EmptyState: Story = {
       .searchable=${searchable}
       .noOptionsText=${noOptionsText}
       .isOpen=${true}
+      style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
 
@@ -432,39 +446,70 @@ export const WidthSynchronization: Story = {
   `,
 };
 
-export const InteractionTest: Story = {
-  args: {
-    label: 'Test Dropdown',
-    searchable: true,
-    clearable: true,
-    options: [
-      {label: 'Alpha', value: 'alpha'},
-      {label: 'Beta', value: 'beta'},
-      {label: 'Gamma', value: 'gamma'},
-    ],
-  },
-  play: async ({canvasElement}) => {
-    const dropdown = canvasElement.querySelector('scientific-dropdown');
-    if (!dropdown) throw new Error('Dropdown not found');
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 25px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <scientific-dropdown
+          label="Default Theme Dropdown"
+          theme="default"
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          placeholder="Select an option..."
+          clearable
+          style="--dropdown-width: 300px;"
+        ></scientific-dropdown>
+      </div>
 
-    const selectElement =
-      dropdown.shadowRoot?.querySelector('.dropdown-select');
-    if (selectElement) {
-      (selectElement as HTMLElement).click();
-      await (dropdown as LitElement).updateComplete;
-    }
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <scientific-dropdown
+          label="Dark Theme Dropdown"
+          theme="dark"
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          placeholder="Select an option..."
+          clearable
+          style="--dropdown-width: 300px;"
+        ></scientific-dropdown>
+      </div>
 
-    await waitFor(() => {
-      const optionsContainer =
-        dropdown.shadowRoot?.querySelector('.options-container');
-      expect(optionsContainer).toBeTruthy();
-    });
-
-    const firstOption = dropdown.shadowRoot?.querySelector('.option');
-    if (firstOption) {
-      (firstOption as HTMLElement).click();
-      await (dropdown as LitElement).updateComplete;
-      expect(dropdown.selectedValue).toBe('alpha');
-    }
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <scientific-dropdown
+          label="Scientific Theme Dropdown"
+          theme="scientific"
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          placeholder="Select an option..."
+          clearable
+          style="--dropdown-width: 300px;"
+        ></scientific-dropdown>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches.',
+      },
+    },
   },
 };

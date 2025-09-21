@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import type {Meta} from '@storybook/web-components-vite';
+import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-graph.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
@@ -350,6 +350,8 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
 
 export default meta;
 
+type Story = StoryObj;
+
 // Sample scientific datasets
 const temperatureData = {
   labels: [
@@ -429,10 +431,11 @@ const distributionData = {
   ],
 };
 
-export const Default = {
+export const Default: Story = {
   args: {
     title: 'Sample Scientific Data',
     subtitle: 'Basic line chart with default settings',
+    theme: 'default',
     type: 'line',
     variant: 'default',
     labels: temperatureData.labels,
@@ -451,9 +454,57 @@ export const Default = {
     xAxisTitle: '',
     yAxisTitle: '',
   },
+  render: ({
+    title,
+    subtitle,
+    theme,
+    type,
+    variant,
+    labels,
+    datasets,
+    showStatistics,
+    showLegend,
+    showToolbar,
+    showExportButtons,
+    exportFormats,
+    showGrid,
+    showAxes,
+    animateOnLoad,
+    responsive,
+    isLoading,
+    errorMessage,
+    xAxisTitle,
+    yAxisTitle,
+  }) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .theme=${theme}
+      .type=${type}
+      .variant=${variant}
+      .labels=${labels}
+      .datasets=${datasets}
+      .showStatistics=${showStatistics}
+      .showLegend=${showLegend}
+      .showToolbar=${showToolbar}
+      .showExportButtons=${showExportButtons}
+      .exportFormats=${exportFormats}
+      .showGrid=${showGrid}
+      .showAxes=${showAxes}
+      .animateOnLoad=${animateOnLoad}
+      .responsive=${responsive}
+      .isLoading=${isLoading}
+      .errorMessage=${errorMessage}
+      .xAxisTitle=${xAxisTitle}
+      .yAxisTitle=${yAxisTitle}
+      .onDataClick=${(dataPoint: number, datasetIndex: number, index: number) => {
+        console.log('Data point clicked:', dataPoint, 'Dataset:', datasetIndex, 'Index:', index);
+        alert(`Clicked data point: ${dataPoint} (Dataset ${datasetIndex}, Index ${index})`);
+      }}
+    ></scientific-graph>`,
 };
 
-export const BarChart = {
+export const BarChart: Story = {
   args: {
     title: 'Experimental Results',
     subtitle: 'Comparing treatment effectiveness',
@@ -467,7 +518,7 @@ export const BarChart = {
   },
 };
 
-export const PieChart = {
+export const PieChart: Story = {
   args: {
     title: 'Data Distribution',
     subtitle: 'Sample composition breakdown',
@@ -491,7 +542,7 @@ export const PieChart = {
   },
 };
 
-export const ScatterPlot = {
+export const ScatterPlot: Story = {
   args: {
     title: 'Correlation Analysis',
     subtitle: 'Variable X vs Variable Y relationship',
@@ -525,7 +576,7 @@ export const ScatterPlot = {
   },
 };
 
-export const MultipleDatasets = {
+export const MultipleDatasets: Story = {
   args: {
     title: 'Temperature Monitoring',
     subtitle: 'Annual temperature variations with multiple metrics',
@@ -550,7 +601,7 @@ export const MultipleDatasets = {
   },
 };
 
-export const Histogram = {
+export const Histogram: Story = {
   args: {
     title: 'Distribution Analysis',
     subtitle: 'Frequency distribution of measurement values',
@@ -564,7 +615,7 @@ export const Histogram = {
   },
 };
 
-export const CompactVariant = {
+export const CompactVariant: Story = {
   args: {
     title: 'Compact Graph',
     subtitle: 'Space-efficient visualization',
@@ -585,56 +636,35 @@ export const CompactVariant = {
   },
 };
 
-export const CustomStyling = {
+export const LoadingState: Story = {
   args: {
-    title: 'Custom Styled Graph',
-    subtitle: 'Demonstrating CSS variable customization',
-    type: 'bar',
-    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    title: 'Loading Graph',
+    subtitle: 'Demonstrating loading state',
+    isLoading: true,
+    type: 'line',
+    labels: ['A', 'B', 'C'],
     datasets: [
       {
-        label: 'Revenue ($M)',
-        data: [2.5, 3.8, 4.2, 5.1],
-        backgroundColor: 'rgba(102, 126, 234, 0.8)',
-        borderColor: '#667eea',
-        borderWidth: 2,
+        label: 'Data',
+        data: [1, 2, 3],
+        borderColor: '#007bff',
       },
     ],
-    showStatistics: true,
-    showLegend: false,
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render: (args: any) =>
-    html`<scientific-graph
-      .title=${args.title}
-      .subtitle=${args.subtitle}
-      .type=${args.type}
-      .labels=${args.labels}
-      .datasets=${args.datasets}
-      .showStatistics=${args.showStatistics}
-      .showLegend=${args.showLegend}
-      style="
-        --graph-bg-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --graph-border: none;
-        --graph-border-radius: 20px;
-        --graph-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        --graph-title-color: #1b28e7;
-        --graph-subtitle-color: rgba(255, 255, 255, 0.8);
-        --graph-header-border: 1px solid rgba(255, 255, 255, 0.2);
-        --graph-stats-border: 1px solid rgba(255, 255, 255, 0.2);
-        --graph-stat-bg-color: rgba(255, 255, 255, 0.1);
-        --graph-stat-border: 1px solid rgba(255, 255, 255, 0.2);
-        --graph-stat-label-color: rgba(255, 255, 255, 0.8);
-        --graph-stat-value-color: #b41b1b;
-        --graph-canvas-bg-color: rgba(255, 255, 255, 0.95);
-        --graph-padding: 32px;
-        max-width: 600px;
-        margin: 20px auto;
-      "
-    ></scientific-graph>`,
 };
 
-export const WithExportButtons = {
+export const ErrorState: Story = {
+  args: {
+    title: 'Error State Graph',
+    subtitle: 'Demonstrating error handling',
+    type: 'line',
+    labels: [],
+    datasets: [],
+    errorMessage: 'Failed to load chart data. Please try again.',
+  },
+};
+
+export const WithExportButtons: Story = {
   args: {
     title: 'Graph with Export Options',
     subtitle: 'Demonstrating customizable export functionality',
@@ -651,7 +681,7 @@ export const WithExportButtons = {
   },
 };
 
-export const CustomExportFormats = {
+export const CustomExportFormats: Story = {
   args: {
     title: 'Limited Export Options',
     subtitle: 'Only PNG and PDF export available',
@@ -666,7 +696,7 @@ export const CustomExportFormats = {
   },
 };
 
-export const CustomExportHandler = {
+export const CustomExportHandler: Story = {
   args: {
     title: 'Custom Export Handler',
     subtitle: 'Using external export functionality',
@@ -703,7 +733,7 @@ export const CustomExportHandler = {
     ></scientific-graph>`,
 };
 
-export const InteractiveExample = {
+export const InteractiveExample: Story = {
   args: {
     title: 'Interactive Scientific Graph',
     subtitle: 'Click on data points to see interactions',
@@ -754,30 +784,88 @@ export const InteractiveExample = {
     ></scientific-graph>`,
 };
 
-export const LoadingState = {
-  args: {
-    title: 'Loading Graph',
-    subtitle: 'Demonstrating loading state',
-    isLoading: true,
-    type: 'line',
-    labels: ['A', 'B', 'C'],
-    datasets: [
-      {
-        label: 'Data',
-        data: [1, 2, 3],
-        borderColor: '#007bff',
-      },
-    ],
-  },
-};
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 48px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <scientific-graph
+          title="Default Theme Graph"
+          subtitle="Standard theme with clean, modern styling"
+          theme="default"
+          type="line"
+          .labels=${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+          .datasets=${[
+            {
+              label: 'Dataset 1',
+              data: [12, 19, 8, 15, 22, 18],
+              borderColor: '#007bff',
+              backgroundColor: 'rgba(0, 123, 255, 0.1)',
+              borderWidth: 2,
+            },
+          ]}
+          showStatistics
+          style="max-width: 600px;"
+        ></scientific-graph>
+      </div>
 
-export const ErrorState = {
-  args: {
-    title: 'Error State Graph',
-    subtitle: 'Demonstrating error handling',
-    type: 'line',
-    labels: [],
-    datasets: [],
-    errorMessage: 'Failed to load chart data. Please try again.',
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <scientific-graph
+          title="Dark Theme Graph"
+          subtitle="Dark theme optimized for low-light environments"
+          theme="dark"
+          type="line"
+          .labels=${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+          .datasets=${[
+            {
+              label: 'Dataset 1',
+              data: [12, 19, 8, 15, 22, 18],
+              borderColor: '#60a5fa',
+              backgroundColor: 'rgba(96, 165, 250, 0.1)',
+              borderWidth: 2,
+            },
+          ]}
+          showStatistics
+          style="max-width: 600px;"
+        ></scientific-graph>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <scientific-graph
+          title="Scientific Theme Graph"
+          subtitle="Professional theme for scientific applications"
+          theme="scientific"
+          type="line"
+          .labels=${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+          .datasets=${[
+            {
+              label: 'Dataset 1',
+              data: [12, 19, 8, 15, 22, 18],
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 2,
+            },
+          ]}
+          showStatistics
+          style="max-width: 600px;"
+        ></scientific-graph>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches.',
+      },
+    },
   },
 };

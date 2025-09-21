@@ -109,127 +109,164 @@ A **highly customizable**, **accessible** autocomplete input component for scien
 Use CSS variables to customize appearance. Here are the most commonly used variables:
 
 **Basic Styling:**
-    scientific-input {
-      --input-width: 100%;
-      --input-border: 2px solid #e5e7eb;
-      --input-border-radius: 8px;
-      --input-bg-color: #ffffff;
-      --input-padding: 12px 16px;
-      --input-font-size: 16px;
-      --input-focus-border-color: #007bff;
-      --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-    }
+\`\`\`css
+scientific-input {
+  --input-width: 100%;
+  --input-border: 2px solid #e5e7eb;
+  --input-border-radius: 8px;
+  --input-bg-color: #ffffff;
+  --input-padding: 12px 16px;
+  --input-font-size: 16px;
+  --input-focus-border-color: #007bff;
+  --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+\`\`\`
 
 **Complete Variable List:**
 
-    scientific-input {
-      /* Container & Layout */
-      --input-width: 100%;
-      --input-min-width: auto;
-      --input-max-width: none;
-      --input-height: auto;
-      --input-min-height: 48px;
-      
-      /* Input Field Styling */
-      --input-padding: 12px 16px;
-      --input-border: 2px solid #e5e7eb;
-      --input-border-radius: 8px;
-      --input-bg-color: #ffffff;
-      --input-color: #374151;
-      --input-font-size: 16px;
-      --input-font-weight: 400;
-      --input-line-height: 1.5;
-      --input-transition: all 0.2s ease-in-out;
-      
-      /* Label Styling */
-      --input-label-font-size: 14px;
-      --input-label-font-weight: 500;
-      --input-label-color: #374151;
-      --input-label-margin-bottom: 6px;
-      
-      /* Focus States */
-      --input-focus-border-color: #007bff;
-      --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-      --input-focus-bg-color: #ffffff;
-      
-      /* Hover States */
-      --input-hover-border-color: #d1d5db;
-      
-      /* Disabled States */
-      --input-disabled-bg-color: #f9fafb;
-      --input-disabled-border-color: #e5e7eb;
-      --input-disabled-color: #9ca3af;
-      
-      /* Error States */
-      --input-error-border-color: #ef4444;
-      --input-error-focus-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-      --input-error-color: #dc2626;
-      
-      /* Success States */
-      --input-success-border-color: #10b981;
-      --input-success-focus-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-      --input-success-color: #059669;
-      
-      /* Placeholder */
-      --input-placeholder-color: #9ca3af;
-      
-      /* Icon */
-      --input-icon-color: #6b7280;
-      --input-icon-size: 18px;
-      
-      /* Clear Button */
-      --input-clear-color: #6b7280;
-      --input-clear-hover-color: #374151;
-      
-      /* Dropdown */
-      --input-dropdown-bg-color: #ffffff;
-      --input-dropdown-border: 1px solid #e5e7eb;
-      --input-dropdown-border-radius: 8px;
-      --input-dropdown-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --input-dropdown-max-height: 200px;
-      --input-dropdown-z-index: 1000;
-      
-      /* Options */
-      --input-option-padding: 12px 16px;
-      --input-option-color: #374151;
-      --input-option-hover-bg-color: #f9fafb;
-      --input-option-selected-bg-color: #eff6ff;
-      --input-option-selected-color: #2563eb;
-      --input-option-highlighted-bg-color: #f3f4f6;
-      --input-option-disabled-color: #9ca3af;
-      --input-option-disabled-bg-color: transparent;
-      
-      /* Group Headers */
-      --input-group-header-color: #6b7280;
-      --input-group-header-font-weight: 600;
-      --input-group-header-padding: 8px 16px;
-      --input-group-header-bg-color: #f9fafb;
-      
-      /* Helper Text */
-      --input-helper-font-size: 14px;
-      --input-helper-color: #6b7280;
-      --input-helper-margin-top: 6px;
-      
-      /* Size Variants */
-      --input-small-font-size: 14px;
-      --input-small-padding: 8px 12px;
-      --input-small-min-height: 36px;
-      
-      --input-large-font-size: 18px;
-      --input-large-padding: 16px 20px;
-      --input-large-min-height: 56px;
-      
-      /* Mobile Responsive */
-      --input-mobile-font-size: 16px;
-      --input-mobile-min-height: 44px;
-      --input-small-mobile-min-height: 32px;
-      --input-large-mobile-min-height: 52px;
-    }
+All CSS custom properties available for customization with their default values:
+
+\`\`\`css
+scientific-input {
+  /* Container & Layout */
+  --input-width: 100%;
+  --input-min-width: auto;
+  --input-max-width: none;
+  --input-container-z-index: 1;
+  
+  /* Label Styling */
+  --input-label-margin-bottom: var(--scientific-spacing-sm);
+  --input-label-font-size: var(--scientific-text-sm);
+  --input-label-font-weight: 500;
+  --input-label-color: #374151;
+  
+  /* Main Input Field Styling */
+  --input-padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
+  --input-border: var(--scientific-border);
+  --input-border-radius: var(--scientific-border-radius);
+  --input-bg-color: #ffffff;
+  --input-color: #374151;
+  --input-font-size: var(--scientific-text-base);
+  --input-transition: var(--scientific-transition);
+  --input-shadow: var(--scientific-shadow-sm);
+  --input-min-height: 48px;
+  
+  /* Hover States */
+  --input-hover-border-color: var(--scientific-border-hover);
+  --input-hover-shadow: var(--scientific-shadow);
+  
+  /* Focus States */
+  --input-focus-border-color: var(--scientific-border-focus);
+  --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  
+  /* Disabled States */
+  --input-disabled-bg-color: #f9fafb;
+  --input-disabled-border-color: #e5e7eb;
+  --input-disabled-color: #9ca3af;
+  
+  /* Error States */
+  --input-error-border-color: var(--scientific-danger-color);
+  --input-error-color: var(--scientific-danger-color);
+  --input-error-bg-color: #fef2f2;
+  
+  /* Success States */
+  --input-success-border-color: var(--scientific-success-color);
+  --input-success-color: var(--scientific-success-color);
+  --input-success-bg-color: #f0fdf4;
+  
+  /* Placeholder */
+  --input-placeholder-color: #9ca3af;
+  
+  /* Icon Styling */
+  --input-icon-color: #6b7280;
+  --input-icon-size: 20px;
+  
+  /* Clear Button */
+  --input-clear-color: #6b7280;
+  --input-clear-hover-color: var(--scientific-danger-color);
+  --input-clear-size: 18px;
+  
+  /* Autocomplete Dropdown */
+  --input-dropdown-min-width: 100%;
+  --input-dropdown-max-width: none;
+  --input-dropdown-border: var(--scientific-border);
+  --input-dropdown-border-radius: 0 0 var(--scientific-border-radius) var(--scientific-border-radius);
+  --input-dropdown-bg-color: #ffffff;
+  --input-dropdown-shadow: var(--scientific-shadow-lg);
+  --input-dropdown-z-index: 1000;
+  --input-dropdown-max-height: 200px;
+  --input-dropdown-animation: slideDown 0.15s ease-out;
+  
+  /* Autocomplete Options */
+  --input-option-padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
+  --input-option-border: 1px solid #f3f4f6;
+  --input-option-color: #374151;
+  --input-option-font-size: var(--scientific-text-base);
+  --input-option-hover-bg-color: #f9fafb;
+  --input-option-selected-bg-color: #eff6ff;
+  --input-option-selected-color: var(--scientific-primary-color);
+  --input-option-selected-font-weight: 500;
+  --input-option-highlighted-bg-color: #f3f4f6;
+  --input-option-disabled-color: #9ca3af;
+  --input-option-disabled-bg-color: #f9fafb;
+  
+  /* Group Headers */
+  --input-group-header-padding: var(--scientific-spacing-sm) var(--scientific-spacing-lg);
+  --input-group-header-font-size: var(--scientific-text-xs);
+  --input-group-header-font-weight: 600;
+  --input-group-header-color: #6b7280;
+  --input-group-header-bg-color: #f9fafb;
+  --input-group-header-border: 1px solid #e5e7eb;
+  
+  /* Helper Text */
+  --input-helper-font-size: var(--scientific-text-sm);
+  --input-helper-color: #6b7280;
+  --input-helper-margin-top: var(--scientific-spacing-xs);
+  
+  /* Error/Success Messages */
+  --input-message-font-size: var(--scientific-text-sm);
+  --input-message-margin-top: var(--scientific-spacing-xs);
+  --input-error-message-color: var(--scientific-danger-color);
+  --input-success-message-color: var(--scientific-success-color);
+  
+  /* Size Variants */
+  --input-small-padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+  --input-small-font-size: var(--scientific-text-sm);
+  --input-small-min-height: 36px;
+  --input-large-padding: var(--scientific-spacing-lg) var(--scientific-spacing-xl);
+  --input-large-font-size: var(--scientific-text-lg);
+  --input-large-min-height: 56px;
+  
+  /* Autocomplete Hint */
+  --input-hint-color: #9ca3af;
+  --input-hint-font-style: italic;
+  
+  /* No Options State */
+  --input-no-options-padding: var(--scientific-spacing-lg);
+  --input-no-options-color: #9ca3af;
+  --input-no-options-font-style: italic;
+  
+  /* Mobile Responsive */
+  --input-mobile-font-size: var(--scientific-text-base);
+  --input-mobile-min-height: 44px;
+  --input-mobile-max-height: 150px;
+  --input-mobile-option-padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+}
+\`\`\`
         `,
       },
     },
   },
   argTypes: {
+    theme: {
+      control: {type: 'select'},
+      options: ['default', 'dark', 'scientific'],
+      description: 'Input theme variant',
+      table: {
+        type: {summary: "'default' | 'dark' | 'scientific'"},
+        defaultValue: {summary: "'default'"},
+      },
+    },
     label: {
       control: 'text',
       description: 'Label text displayed above the input',
@@ -262,11 +299,19 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       control: {type: 'select'},
       options: ['small', 'medium', 'large'],
       description: 'Size of the input field',
+      table: {
+        type: {summary: "'small' | 'medium' | 'large'"},
+        defaultValue: {summary: "'medium'"},
+      },
     },
     state: {
       control: {type: 'select'},
       options: ['default', 'error', 'success'],
       description: 'Visual state of the input',
+      table: {
+        type: {summary: "'default' | 'error' | 'success'"},
+        defaultValue: {summary: "'default'"},
+      },
     },
     helperText: {
       control: 'text',
@@ -720,6 +765,77 @@ export const TabAutocompletion: Story = {
       description: {
         story:
           'Demonstrates the Tab autocompletion feature. Start typing and press Tab to complete with the first matching option. Also shows autocomplete hints as you type.',
+      },
+    },
+  },
+};
+
+export const ThemeComparison: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 150px;">
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Default Theme
+        </h3>
+        <scientific-input
+          label="Default Theme Input"
+          theme="default"
+          placeholder="Enter text..."
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          clearable
+          helperText="Standard theme with clean, modern styling"
+          style="--input-width: 300px;"
+        ></scientific-input>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Dark Theme
+        </h3>
+        <scientific-input
+          label="Dark Theme Input"
+          theme="dark"
+          placeholder="Enter text..."
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          clearable
+          helperText="Dark theme optimized for low-light environments"
+          style="--input-width: 300px;"
+        ></scientific-input>
+      </div>
+
+      <div>
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+          Scientific Theme
+        </h3>
+        <scientific-input
+          label="Scientific Theme Input"
+          theme="scientific"
+          placeholder="Enter text..."
+          .options=${[
+            {label: 'Option 1', value: '1'},
+            {label: 'Option 2', value: '2'},
+            {label: 'Option 3', value: '3'},
+          ]}
+          clearable
+          helperText="Professional theme for scientific applications"
+          style="--input-width: 300px;"
+        ></scientific-input>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of all available themes showing the visual differences and styling approaches.',
       },
     },
   },

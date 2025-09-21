@@ -6,7 +6,10 @@ import {
   headerStyles,
   messageStyles,
   responsiveStyles,
+  themeStyles,
+  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
+import {sliderThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
 
@@ -15,10 +18,14 @@ export interface SliderMark {
   label?: string;
 }
 
+export type SliderTheme = ScientificTheme;
+
 @customElement('scientific-slider')
 export class ScientificSlider extends LitElement {
   static override styles = [
     sharedVariables,
+    themeStyles,
+    sliderThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,
@@ -45,12 +52,15 @@ export class ScientificSlider extends LitElement {
         align-items: center;
         gap: var(--scientific-spacing-sm);
         padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
-        background-color: var(--slider-value-bg-color, #f3f4f6);
+        background-color: var(
+          --slider-value-bg-color,
+          var(--scientific-bg-secondary, #f3f4f6)
+        );
         border: var(--scientific-border);
         border-radius: var(--scientific-border-radius);
         font-size: var(--scientific-text-sm);
         font-weight: 600;
-        color: var(--scientific-text-primary);
+        color: var(--slider-value-color, var(--scientific-text-primary));
         min-width: var(--slider-value-min-width, 60px);
         justify-content: center;
       }
@@ -144,23 +154,25 @@ export class ScientificSlider extends LitElement {
 
       .slider-tooltip {
         position: absolute;
-        bottom: calc(100% + 12px);
+        bottom: calc(100% + 16px);
         left: 50%;
         transform: translateX(-50%);
-        padding: var(--scientific-spacing-xs) var(--scientific-spacing-sm);
+        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
         background-color: var(
           --slider-tooltip-bg-color,
-          var(--scientific-text-primary)
+          var(--scientific-text-primary, #374151)
         );
         color: var(--slider-tooltip-color, #ffffff);
         font-size: var(--scientific-text-xs);
-        font-weight: 500;
+        font-weight: 600;
         border-radius: var(--scientific-border-radius);
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
         transition: var(--scientific-transition-fast);
         z-index: 4;
+        box-shadow: var(--scientific-shadow);
+        min-width: max-content;
       }
 
       .slider-tooltip::after {
@@ -169,10 +181,10 @@ export class ScientificSlider extends LitElement {
         top: 100%;
         left: 50%;
         transform: translateX(-50%);
-        border: 5px solid transparent;
+        border: 6px solid transparent;
         border-top-color: var(
           --slider-tooltip-bg-color,
-          var(--scientific-text-primary)
+          var(--scientific-text-primary, #374151)
         );
       }
 
@@ -297,6 +309,9 @@ export class ScientificSlider extends LitElement {
 
   @property({type: String})
   description = '';
+
+  @property({type: String})
+  theme: ScientificTheme = 'default';
 
   @property({type: Number})
   min = 0;
