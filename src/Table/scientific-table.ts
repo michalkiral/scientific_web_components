@@ -2,6 +2,8 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
+import '../Button/scientific-button.js';
+import '../Dropdown/scientific-dropdown.js';
 import {
   containerStyles,
   headerStyles,
@@ -75,7 +77,6 @@ export class ScientificTable extends LitElement {
         border: var(--table-border, 2px solid #e5e7eb);
         border-radius: var(--table-border-radius, 12px);
         box-shadow: var(--table-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-        overflow: hidden;
         display: flex;
         flex-direction: column;
         gap: var(--table-gap, 0);
@@ -245,60 +246,6 @@ export class ScientificTable extends LitElement {
         display: flex;
         align-items: center;
         gap: var(--table-pagination-gap, 8px);
-      }
-
-      .pagination-button {
-        padding: var(--table-pagination-button-padding, 6px 12px);
-        border: var(--table-pagination-button-border, 1px solid #d1d5db);
-        border-radius: var(--table-pagination-button-border-radius, 4px);
-        background-color: var(--table-pagination-button-bg-color, #ffffff);
-        color: var(--table-pagination-button-color, #374151);
-        font-size: var(--table-pagination-button-font-size, 14px);
-        cursor: pointer;
-        transition: var(
-          --table-pagination-button-transition,
-          all 0.2s ease-in-out
-        );
-        user-select: none;
-      }
-
-      .pagination-button:hover:not(:disabled) {
-        background-color: var(
-          --table-pagination-button-hover-bg-color,
-          #f3f4f6
-        );
-        border-color: var(
-          --table-pagination-button-hover-border-color,
-          #9ca3af
-        );
-      }
-
-      .pagination-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .pagination-button.active {
-        background-color: var(
-          --table-pagination-button-active-bg-color,
-          #007bff
-        );
-        color: var(--table-pagination-button-active-color, #ffffff);
-        border-color: var(
-          --table-pagination-button-active-border-color,
-          #007bff
-        );
-      }
-
-      .page-size-selector {
-        padding: var(--table-page-size-padding, 6px 8px);
-        border: var(--table-page-size-border, 1px solid #d1d5db);
-        border-radius: var(--table-page-size-border-radius, 4px);
-        background-color: var(--table-page-size-bg-color, #ffffff);
-        color: var(--table-page-size-color, #374151);
-        font-size: var(--table-page-size-font-size, 14px);
-        font-family: inherit;
-        cursor: pointer;
       }
 
       .empty-state {
@@ -529,11 +476,10 @@ export class ScientificTable extends LitElement {
     try {
       const result = await parseCSVStream(
         reader,
-        undefined, // Don't use progress callback to avoid update conflicts
+        undefined,
         {hasHeaders: true, skipEmptyLines: true}
       );
 
-      // Update the component with complete data all at once
       this.columns = result.headers.map((col) => ({
         key: col,
         label: col,
@@ -545,8 +491,6 @@ export class ScientificTable extends LitElement {
       this.data = result.data;
       this.loading = false;
 
-      // No need to call requestUpdate() - Lit will handle this automatically
-      // when reactive properties change
     } catch (error) {
       console.error('Error parsing CSV:', error);
       this.loading = false;
@@ -695,9 +639,8 @@ export class ScientificTable extends LitElement {
     }
   }
 
-  private _changePageSize(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    this.pageSize = Number(select.value);
+  private _changePageSize(event: CustomEvent) {
+    this.pageSize = Number(event.detail.value);
     this.currentPage = 1;
   }
 
@@ -785,56 +728,59 @@ export class ScientificTable extends LitElement {
 
     return html`
       <div class="table-pagination">
-        <button
-          class="pagination-button"
-          ?disabled=${this.currentPage === 1}
-          @click=${() => this._changePage(this.currentPage - 1)}
-        >
-          ‹ Previous
-        </button>
+        <scientific-button
+          .label=${'‹ Previous'}
+          .variant=${'outline'}
+          .size=${'small'}
+          .disabled=${this.currentPage === 1}
+          .action=${() => this._changePage(this.currentPage - 1)}
+          .theme=${this.theme}
+        ></scientific-button>
 
         ${startPage > 1
           ? html`
-              <button
-                class="pagination-button"
-                @click=${() => this._changePage(1)}
-              >
-                1
-              </button>
+              <scientific-button
+                .label=${'1'}
+                .variant=${'outline'}
+                .size=${'small'}
+                .action=${() => this._changePage(1)}
+                .theme=${this.theme}
+              ></scientific-button>
               ${startPage > 2 ? html`<span>...</span>` : ''}
             `
           : ''}
         ${pages.map(
           (page) => html`
-            <button
-              class="pagination-button ${page === this.currentPage
-                ? 'active'
-                : ''}"
-              @click=${() => this._changePage(page)}
-            >
-              ${page}
-            </button>
+            <scientific-button
+              .label=${String(page)}
+              .variant=${page === this.currentPage ? 'primary' : 'outline'}
+              .size=${'small'}
+              .action=${() => this._changePage(page)}
+              .theme=${this.theme}
+            ></scientific-button>
           `
         )}
         ${endPage < this.totalPages
           ? html`
               ${endPage < this.totalPages - 1 ? html`<span>...</span>` : ''}
-              <button
-                class="pagination-button"
-                @click=${() => this._changePage(this.totalPages)}
-              >
-                ${this.totalPages}
-              </button>
+              <scientific-button
+                .label=${String(this.totalPages)}
+                .variant=${'outline'}
+                .size=${'small'}
+                .action=${() => this._changePage(this.totalPages)}
+                .theme=${this.theme}
+              ></scientific-button>
             `
           : ''}
 
-        <button
-          class="pagination-button"
-          ?disabled=${this.currentPage === this.totalPages}
-          @click=${() => this._changePage(this.currentPage + 1)}
-        >
-          Next ›
-        </button>
+        <scientific-button
+          .label=${'Next ›'}
+          .variant=${'outline'}
+          .size=${'small'}
+          .disabled=${this.currentPage === this.totalPages}
+          .action=${() => this._changePage(this.currentPage + 1)}
+          .theme=${this.theme}
+        ></scientific-button>
       </div>
     `;
   }
@@ -990,17 +936,17 @@ export class ScientificTable extends LitElement {
                           style="display: flex; align-items: center; gap: 8px;"
                         >
                           <span>Show:</span>
-                          <select
-                            class="page-size-selector"
-                            .value=${String(this.pageSize)}
-                            @change=${this._changePageSize}
-                          >
-                            ${this.pageSizeOptions.map(
-                              (size) => html`
-                                <option value="${size}">${size}</option>
-                              `
-                            )}
-                          </select>
+                          <scientific-dropdown
+                            .options=${this.pageSizeOptions.map((size) => ({
+                              label: String(size),
+                              value: String(size),
+                            }))}
+                            .selectedValue=${String(this.pageSize)}
+                            .theme=${this.theme}
+                            @option-selected=${this._changePageSize}
+                            style="min-width: 80px;"
+                            label=""
+                          ></scientific-dropdown>
                         </div>
 
                         ${this._renderPagination()}
