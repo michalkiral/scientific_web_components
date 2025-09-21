@@ -267,22 +267,6 @@ suite('scientific-table', () => {
     assert.equal(headers.length, 2, 'Should have 2 headers from CSV');
   });
 
-  test('handles compact variant', async () => {
-    const el = await fixture<ScientificTable>(html`
-      <scientific-table
-        .columns=${testColumns}
-        .data=${testData}
-        .variant=${'compact'}
-      ></scientific-table>
-    `);
-
-    const container = el.shadowRoot!.querySelector('.table-container');
-    assert.isTrue(
-      container!.classList.contains('compact'),
-      'Should have compact class'
-    );
-  });
-
   test('displays table with title and description', async () => {
     const el = await fixture<ScientificTable>(html`
       <scientific-table

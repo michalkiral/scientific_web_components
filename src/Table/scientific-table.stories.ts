@@ -260,7 +260,6 @@ A **comprehensive**, **accessible** data table component designed for scientific
 - \`pageSize\` — Number of rows per page
 - \`currentPage\` — Current active page
 - \`pageSizeOptions\` — Available page size options
-- \`variant\` — Table size variant: default, compact
 - \`showSearch\` — Show global search input
 - \`searchPlaceholder\` — Placeholder text for search input
 - \`emptyStateTitle\` — Title shown when no data is available
@@ -473,12 +472,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --table-error-border-color: #fecaca;
       --table-error-color: #dc2626;
       
-      /* Compact Variant */
-      --table-compact-cell-padding: 8px;
-      --table-compact-header-padding: 12px 8px;
-      --table-compact-font-size: 13px;
-      --table-compact-row-height: auto;
-      
       /* Mobile Responsive */
       --table-mobile-font-size: 14px;
       --table-mobile-cell-padding: 8px;
@@ -515,7 +508,7 @@ The table accepts data in the \`TableData\` format:
     theme: {
       control: {type: 'select'},
       options: ['default', 'dark', 'scientific'],
-      description: 'Table theme variant',
+      description: 'Table theme style',
       table: {
         type: {summary: "'default' | 'dark' | 'scientific'"},
         defaultValue: {summary: "'default'"},
@@ -625,15 +618,6 @@ The table accepts data in the \`TableData\` format:
       table: {
         type: {summary: 'number[]'},
         defaultValue: {summary: '[10, 25, 50, 100]'},
-      },
-    },
-    variant: {
-      control: {type: 'select'},
-      options: ['default', 'compact'],
-      description: 'Table size variant',
-      table: {
-        type: {summary: "'default' | 'compact'"},
-        defaultValue: {summary: "'default'"},
       },
     },
     showSearch: {
@@ -774,24 +758,6 @@ export const WithSelection: Story = {
       description: {
         story:
           'Table with row selection enabled. Check the browser console to see selection events.',
-      },
-    },
-  },
-};
-
-export const Compact: Story = {
-  args: {
-    title: 'Compact Scientific Data',
-    columns: sampleColumns,
-    data: sampleData.slice(0, 6),
-    variant: 'compact',
-    pageSize: 5,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Compact table variant with reduced padding and spacing for dense data display.',
       },
     },
   },

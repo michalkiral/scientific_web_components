@@ -246,6 +246,17 @@ export class ScientificTable extends LitElement {
         display: flex;
         align-items: center;
         gap: var(--table-pagination-gap, 8px);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .table-pagination scientific-button {
+        --button-width: 40px;
+      }
+
+      .table-pagination scientific-button:first-child,
+      .table-pagination scientific-button:last-child {
+        --button-width: auto;
       }
 
       .empty-state {
@@ -299,6 +310,8 @@ export class ScientificTable extends LitElement {
 
         .table-pagination {
           justify-content: center;
+          flex-wrap: wrap;
+          gap: var(--table-mobile-pagination-gap, 6px);
         }
 
         .table-header-cell,
@@ -306,19 +319,6 @@ export class ScientificTable extends LitElement {
           padding: var(--table-mobile-cell-padding, 8px 12px);
           font-size: var(--table-mobile-font-size, 13px);
         }
-      }
-
-      .table-container.compact .table-header {
-        padding: var(--table-compact-header-padding, 12px 16px);
-      }
-
-      .table-container.compact .table-header-cell,
-      .table-container.compact .table-cell {
-        padding: var(--table-compact-cell-padding, 8px 12px);
-      }
-
-      .table-container.compact .table-footer {
-        padding: var(--table-compact-footer-padding, 12px 16px);
       }
     `,
   ];
@@ -364,9 +364,6 @@ export class ScientificTable extends LitElement {
 
   @property({type: Array})
   pageSizeOptions = [5, 10, 25, 50, 100];
-
-  @property({type: String})
-  variant: 'default' | 'compact' = 'default';
 
   @property({type: Boolean})
   showSearch = true;
@@ -460,10 +457,14 @@ export class ScientificTable extends LitElement {
     this.loading = true;
     try {
       const response = await fetch(this.csvPath!);
-      if (!response.ok) throw new Error('Failed to fetch CSV file.');
+      if (!response.ok) {
+        throw new Error('Failed to fetch CSV file.');
+      }
 
       const reader = response.body?.getReader();
-      if (!reader) throw new Error('Failed to read CSV file.');
+      if (!reader) {
+        throw new Error('Failed to read CSV file.');
+      }
 
       this._parseCSVStreaming(reader);
     } catch (error) {
@@ -474,11 +475,10 @@ export class ScientificTable extends LitElement {
 
   async _parseCSVStreaming(reader: ReadableStreamDefaultReader<Uint8Array>) {
     try {
-      const result = await parseCSVStream(
-        reader,
-        undefined,
-        {hasHeaders: true, skipEmptyLines: true}
-      );
+      const result = await parseCSVStream(reader, undefined, {
+        hasHeaders: true,
+        skipEmptyLines: true,
+      });
 
       this.columns = result.headers.map((col) => ({
         key: col,
@@ -490,7 +490,6 @@ export class ScientificTable extends LitElement {
 
       this.data = result.data;
       this.loading = false;
-
     } catch (error) {
       console.error('Error parsing CSV:', error);
       this.loading = false;
@@ -575,7 +574,9 @@ export class ScientificTable extends LitElement {
 
   private _sortData(columnKey: string) {
     const column = this.columns.find((col) => col.key === columnKey);
-    if (!column || (column.sortable === false && this.sortable)) return;
+    if (!column || (column.sortable === false && this.sortable)) {
+      return;
+    }
 
     if (this.sortedColumn === columnKey) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -729,7 +730,7 @@ export class ScientificTable extends LitElement {
     return html`
       <div class="table-pagination">
         <scientific-button
-          .label=${'‹ Previous'}
+          .label=${'Previous'}
           .variant=${'outline'}
           .size=${'small'}
           .disabled=${this.currentPage === 1}
@@ -774,7 +775,7 @@ export class ScientificTable extends LitElement {
           : ''}
 
         <scientific-button
-          .label=${'Next ›'}
+          .label=${'Next'}
           .variant=${'outline'}
           .size=${'small'}
           .disabled=${this.currentPage === this.totalPages}
@@ -791,7 +792,7 @@ export class ScientificTable extends LitElement {
     const hasData = displayData.length > 0;
 
     return html`
-      <div class="table-container ${this.variant}">
+      <div class="table-container">
         ${this.loading
           ? html`
               <div class="loading-overlay">
