@@ -16,13 +16,13 @@ import {
 import {graphThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
-  classNames,
   formatValue,
   roundToDecimals,
+  getContainerClasses,
 } from '../shared/utils/dom-utils.js';
 import {getDefaultColor} from '../shared/utils/color-utils.js';
 import {
-  exportComponent,
+  createExportHandler,
   type ExportableComponent,
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
@@ -96,8 +96,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         gap: var(--graph-toolbar-gap, var(--scientific-spacing-md));
         padding: var(--graph-toolbar-padding, var(--scientific-spacing-md) 0);
         flex-wrap: wrap;
-        position: relative;
-        z-index: var(--graph-toolbar-z-index, 100);
       }
 
       .graph-controls {
@@ -106,22 +104,9 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         align-items: center;
         flex-wrap: wrap;
         position: relative;
-        z-index: var(--graph-controls-z-index, 101);
       }
 
       .graph-controls scientific-dropdown {
-        --dropdown-min-height: 36px;
-        --dropdown-padding: var(--scientific-spacing-sm)
-          var(--scientific-spacing-md);
-        --dropdown-font-size: var(--scientific-text-sm);
-        --dropdown-label-font-size: var(--scientific-text-xs);
-        --dropdown-label-margin-bottom: var(--scientific-spacing-xs);
-        --dropdown-options-border-radius: var(--scientific-border-radius);
-        --dropdown-z-index: 1100;
-        --dropdown-width: 180px;
-        --dropdown-options-width: 180px;
-        --dropdown-options-min-width: 180px;
-        --dropdown-options-max-width: 180px;
         width: 180px;
         display: block;
       }
@@ -137,10 +122,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         flex: 1;
         min-height: var(--graph-canvas-min-height, 300px);
         background-color: var(--graph-canvas-bg-color, #ffffff);
-        border-radius: var(
-          --graph-canvas-border-radius,
-          var(--scientific-border-radius)
-        );
         overflow: hidden;
       }
 
@@ -234,18 +215,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
           gap: var(--graph-mobile-stats-gap, var(--scientific-spacing-sm));
         }
       }
-
-      .graph-container.compact {
-        min-height: var(--graph-compact-min-height, 250px);
-      }
-
-      .graph-container.compact .graph-canvas-container {
-        min-height: var(--graph-compact-canvas-min-height, 200px);
-      }
-
-      .graph-container.compact .graph-statistics {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      }
     `,
   ];
 
@@ -257,9 +226,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
 
   @property({type: String})
   subtitle = '';
-
-  @property({type: String})
-  variant: 'default' | 'compact' = 'default';
 
   @property({type: String})
   type: ChartType = 'line';
@@ -435,15 +401,21 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
     try {
       const chartData = {
         labels: this.labels,
-        datasets: this.datasets.map((dataset, index) => ({
-          ...dataset,
-          backgroundColor:
-            dataset.backgroundColor ||
-            getDefaultColor(index, this.isAreaChart ? 0.3 : 0.2),
-          borderColor: dataset.borderColor || getDefaultColor(index, 1),
-          borderWidth: dataset.borderWidth || 2,
-          fill: this.isAreaChart ? true : dataset.fill ?? false,
-        })),
+        datasets: this.datasets.map((dataset, index) => {
+          const defaultBorderColor = getDefaultColor(index, 1);
+          const defaultBackgroundColor = getDefaultColor(
+            index,
+            this.isAreaChart ? 0.3 : 0.2
+          );
+
+          return {
+            ...dataset,
+            backgroundColor: dataset.backgroundColor || defaultBackgroundColor,
+            borderColor: dataset.borderColor || defaultBorderColor,
+            borderWidth: dataset.borderWidth || 2,
+            fill: this.isAreaChart ? true : dataset.fill ?? false,
+          };
+        }),
       };
 
       const chartOptions: ChartOptions = {
@@ -603,12 +575,12 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         ) {
           this.onExport(format);
         } else {
-          await exportComponent(this, {
-            format,
+          const handler = createExportHandler(this, {
             title: this.title,
             subtitle: this.subtitle,
             timestamp: true,
           });
+          await handler(format)();
         }
 
         dispatchCustomEvent(this, 'graph-exported', {
@@ -621,37 +593,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       }
     };
   };
-
-  getChartDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
-    if (!this.chart) return null;
-
-    if (format === 'jpg') {
-      const canvas = this.chart.canvas;
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-
-      if (!tempCtx) return null;
-
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-
-      tempCtx.fillStyle = '#ffffff';
-      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      tempCtx.drawImage(canvas, 0, 0);
-
-      return tempCanvas.toDataURL('image/jpeg', quality);
-    } else {
-      return this.chart.toBase64Image('image/png', quality);
-    }
-  }
-
-  getChart(): Chart | null {
-    return this.chart;
-  }
-
-  getCanvasElement(): HTMLCanvasElement | null {
-    return this.chart?.canvas || null;
-  }
 
   getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
     if (!this.chart) return null;
@@ -700,11 +641,12 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
   };
 
   private _getContainerClasses() {
-    return classNames(
-      'scientific-container',
-      'graph-container',
-      this.variant !== 'default' && this.variant,
-      this.isLoading && 'loading'
+    return getContainerClasses(
+      'scientific-container graph-container',
+      undefined,
+      undefined,
+      false,
+      this.isLoading ? 'loading' : undefined
     );
   }
 
@@ -775,6 +717,14 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         )}
       </div>
     `;
+  }
+
+  getChart(): Chart | null {
+    return this.chart;
+  }
+
+  getCanvasElement(): HTMLCanvasElement | null {
+    return this.chart?.canvas || null;
   }
 
   override render() {
