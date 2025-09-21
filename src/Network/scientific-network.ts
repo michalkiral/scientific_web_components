@@ -21,6 +21,7 @@ import {
 import {networkThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
+import {getThemeColors} from '../shared/utils/theme-utils.js';
 import {
   exportComponent,
   type ExportableComponent,
@@ -85,7 +86,6 @@ export class ScientificNetwork
         width: var(--network-width, 100%);
         height: var(--network-height, 400px);
         min-height: var(--network-min-height, 300px);
-        font-family: var(--scientific-font-family);
       }
 
       .network-container {
@@ -106,33 +106,10 @@ export class ScientificNetwork
         min-height: var(--network-canvas-min-height, 350px);
       }
 
-      .scientific-header {
-        display: flex;
-        flex-direction: column;
-        gap: var(--scientific-spacing-sm);
-        margin-bottom: var(--scientific-spacing-md);
-      }
-
-      .header-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--scientific-spacing-xs);
-      }
-
       .network-toolbar {
         display: flex;
         flex-direction: column;
-        padding: var(--network-toolbar-padding, var(--scientific-spacing-md));
-        background: var(
-          --network-toolbar-bg,
-          var(--container-bg-color, #ffffff)
-        );
-        border: var(--network-toolbar-border, var(--scientific-border));
-        border-radius: var(
-          --network-toolbar-border-radius,
-          var(--scientific-border-radius)
-        );
-        box-shadow: var(--network-toolbar-shadow, var(--scientific-shadow));
+        padding: var(--scientific-spacing-md);
       }
 
       .toolbar-section {
@@ -345,6 +322,13 @@ export class ScientificNetwork
   private resizeTimeout: number | null = null;
   private keyboardHandler: ((event: KeyboardEvent) => void) | null = null;
 
+  private keyboardShortcuts = new Map([
+    ['1', {action: 'createNode', description: 'Add Node'}],
+    ['2', {action: 'createEdge', description: 'Add Edge'}],
+    ['3', {action: 'toggleRename', description: 'Toggle Rename Mode'}],
+    ['4', {action: 'toggleRemoval', description: 'Toggle Removal Mode'}],
+  ]);
+
   override connectedCallback() {
     super.connectedCallback();
     this._setupResizeObserver();
@@ -411,31 +395,62 @@ export class ScientificNetwork
     }
 
     this.keyboardHandler = (event: KeyboardEvent) => {
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement ||
-        event.target instanceof HTMLSelectElement ||
-        (event.target as HTMLElement)?.contentEditable === 'true'
-      ) {
+      if (this._isTypingInInputField(event.target)) {
         return;
       }
 
+      // Ignore when modifier keys are pressed
       if (event.ctrlKey || event.altKey || event.metaKey) {
         return;
       }
 
-      if (event.key === '1') {
+      const shortcut = this.keyboardShortcuts.get(event.key);
+      if (shortcut) {
         event.preventDefault();
         event.stopPropagation();
-        this._activateNodeCreation();
-      } else if (event.key === '2') {
-        event.preventDefault();
-        event.stopPropagation();
-        this._activateEdgeCreation();
+
+        dispatchCustomEvent(this, 'keyboard-shortcut', {
+          key: event.key,
+          action: shortcut.action,
+          description: shortcut.description,
+        });
+
+        this._handleKeyboardAction(shortcut.action);
       }
     };
 
     document.addEventListener('keydown', this.keyboardHandler, {capture: true});
+  }
+
+  private _isTypingInInputField(target: EventTarget | null): boolean {
+    if (!target) return false;
+
+    const element = target as HTMLElement;
+    return (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLSelectElement ||
+      element.contentEditable === 'true'
+    );
+  }
+
+  private _handleKeyboardAction(action: string): void {
+    switch (action) {
+      case 'createNode':
+        this._activateNodeCreation();
+        break;
+      case 'createEdge':
+        this._activateEdgeCreation();
+        break;
+      case 'toggleRename':
+        this._toggleRenaming();
+        break;
+      case 'toggleRemoval':
+        this._toggleRemoval();
+        break;
+      default:
+        console.warn(`Unknown keyboard action: ${action}`);
+    }
   }
 
   private _removeKeyboardListeners() {
@@ -533,27 +548,7 @@ export class ScientificNetwork
   }
 
   private _getThemeColors() {
-    const style = getComputedStyle(this);
-    return {
-      nodeColor:
-        style.getPropertyValue('--scientific-primary-color').trim() ||
-        '#3b82f6',
-      edgeColor:
-        style.getPropertyValue('--scientific-text-muted').trim() || '#9ca3af',
-      textColor:
-        style.getPropertyValue('--scientific-text-secondary').trim() ||
-        '#374151',
-      borderColor:
-        style.getPropertyValue('--scientific-primary-hover').trim() ||
-        '#2563eb',
-      dangerColor:
-        style.getPropertyValue('--scientific-danger-color').trim() || '#ef4444',
-      warningColor:
-        style.getPropertyValue('--scientific-warning-color').trim() ||
-        '#fbbf24',
-      bgColor:
-        style.getPropertyValue('--container-bg-color').trim() || '#ffffff',
-    };
+    return getThemeColors(this);
   }
 
   private _getCytoscapeStyles() {
@@ -687,12 +682,10 @@ export class ScientificNetwork
         this.onNodeClick(nodeData, event);
       }
 
-      this.dispatchEvent(
-        new CustomEvent('node-selected', {
-          detail: {node: nodeData, cytoscapeEvent: event},
-          bubbles: true,
-        })
-      );
+      dispatchCustomEvent(this, 'node-selected', {
+        node: nodeData,
+        cytoscapeEvent: event,
+      });
 
       this._highlightNeighbors(node);
     });
@@ -718,12 +711,10 @@ export class ScientificNetwork
         this.onEdgeClick(edgeData, event);
       }
 
-      this.dispatchEvent(
-        new CustomEvent('edge-selected', {
-          detail: {edge: edgeData, cytoscapeEvent: event},
-          bubbles: true,
-        })
-      );
+      dispatchCustomEvent(this, 'edge-selected', {
+        edge: edgeData,
+        cytoscapeEvent: event,
+      });
     });
 
     this.cy.on('tap', (event) => {
@@ -743,12 +734,9 @@ export class ScientificNetwork
           this.cy!.nodes().removeClass('edge-source');
         }
 
-        this.dispatchEvent(
-          new CustomEvent('canvas-clicked', {
-            detail: {position: event.position},
-            bubbles: true,
-          })
-        );
+        dispatchCustomEvent(this, 'canvas-clicked', {
+          position: event.position,
+        });
       }
     });
 
@@ -805,12 +793,9 @@ export class ScientificNetwork
 
     this.cy.on('zoom', () => {
       this.currentZoom = Math.round(this.cy!.zoom() * 100);
-      this.dispatchEvent(
-        new CustomEvent('network-zoom', {
-          detail: {zoomLevel: this.cy!.zoom()},
-          bubbles: true,
-        })
-      );
+      dispatchCustomEvent(this, 'network-zoom', {
+        zoomLevel: this.cy!.zoom(),
+      });
     });
   }
 

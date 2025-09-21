@@ -10,3 +10,4 @@ export * from './utils/color-utils.js';
 export * from './utils/export-utils.js';
 export * from './utils/dropdown-utils.js';
 export * from './utils/dropdown-render.js';
+export * from './utils/theme-utils.js';
