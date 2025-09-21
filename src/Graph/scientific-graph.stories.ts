@@ -23,7 +23,6 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
 
 - \`title\` — Graph title text
 - \`subtitle\` — Graph subtitle/description text
-- \`variant\` — Graph style: default, compact
 - \`type\` — Chart type: line, bar, pie, doughnut, scatter, area, radar
 - \`isAreaChart\` — Internal flag for area chart rendering (automatically set when type is 'area')
 - \`labels\` — Array of labels for data points
@@ -141,96 +140,36 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --graph-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-**Complete Variable List:**
+**Available CSS Variables:**
 
     scientific-graph {
-      /* Container Styling */
-      --graph-bg-color: #ffffff;
-      --graph-border: 2px solid #e5e7eb;
-      --graph-border-radius: 12px;
-      --graph-padding: 24px;
-      --graph-margin: 0;
-      --graph-max-width: 100%;
+      /* Container dimensions */
       --graph-width: 100%;
+      --graph-max-width: 100%;
       --graph-min-height: 400px;
-      --graph-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --graph-hover-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-      --graph-transition: all 0.2s ease-in-out;
-      --graph-font-family: system-ui, -apple-system, sans-serif;
-      --graph-gap: 20px;
       
-      /* Loading Overlay */
-      --graph-loading-overlay-bg: rgba(255, 255, 255, 0.8);
-      --graph-loading-z-index: 10;
-      --graph-loading-spinner-color: #e5e7eb;
-      --graph-loading-spinner-active-color: #007bff;
-      
-      /* Header */
-      --graph-header-gap: 8px;
-      --graph-header-padding-bottom: 16px;
-      --graph-header-border: 1px solid #f3f4f6;
-      --graph-title-font-size: 24px;
-      --graph-title-font-weight: 600;
-      --graph-title-color: #111827;
-      --graph-title-line-height: 1.2;
-      --graph-subtitle-font-size: 16px;
-      --graph-subtitle-font-weight: 400;
-      --graph-subtitle-color: #6b7280;
-      --graph-subtitle-line-height: 1.4;
-      
-      /* Toolbar */
+      /* Component spacing */
       --graph-toolbar-gap: 12px;
       --graph-toolbar-padding: 12px 0;
-      --graph-toolbar-z-index: 100;
       --graph-controls-gap: 8px;
-      --graph-controls-z-index: 101;
       --graph-actions-gap: 8px;
+      --graph-stats-gap: 12px;
+      --graph-stats-padding: 16px 0 0 0;
+      --graph-stat-padding: 12px;
+      
+      /* Headers */
+      --graph-header-border: 1px solid #f3f4f6;
+      --graph-title-font-size: 24px;
+      --graph-subtitle-font-size: 16px;
       
       /* Canvas */
       --graph-canvas-min-height: 300px;
       --graph-canvas-bg-color: #ffffff;
-      --graph-canvas-border-radius: 8px;
       
-      /* Error Messages */
-      --graph-error-bg-color: #fef2f2;
-      --graph-error-border: 1px solid #fecaca;
-      --graph-error-border-radius: 8px;
-      --graph-error-padding: 12px 16px;
-      --graph-error-color: #dc2626;
-      --graph-error-font-size: 14px;
-      
-      /* Statistics */
-      --graph-stats-gap: 12px;
-      --graph-stats-padding: 16px 0 0 0;
+      /* Statistics styling */
       --graph-stats-border: 1px solid #f3f4f6;
-      --graph-stat-padding: 12px;
       --graph-stat-bg-color: #f9fafb;
-      --graph-stat-border-radius: 8px;
       --graph-stat-border: 1px solid #f3f4f6;
-      --graph-stat-label-font-size: 12px;
-      --graph-stat-label-font-weight: 500;
-      --graph-stat-label-color: #6b7280;
-      --graph-stat-value-font-size: 18px;
-      --graph-stat-value-font-weight: 600;
-      --graph-stat-value-color: #111827;
-      
-      /* Legend */
-      --graph-legend-gap: 12px;
-      --graph-legend-padding: 12px 0;
-      --graph-legend-border: 1px solid #f3f4f6;
-      --graph-legend-font-size: 14px;
-      --graph-legend-color: #374151;
-      
-      /* Compact Variant */
-      --graph-compact-padding: 16px;
-      --graph-compact-gap: 12px;
-      --graph-compact-min-height: 250px;
-      --graph-compact-canvas-min-height: 200px;
-      
-      /* Mobile Responsive */
-      --graph-mobile-padding: 16px;
-      --graph-mobile-gap: 16px;
-      --graph-mobile-stats-gap: 8px;
     }
         `,
       },
@@ -254,11 +193,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       control: 'boolean',
       description:
         'Internal flag for area chart rendering (automatically managed)',
-    },
-    variant: {
-      control: {type: 'select'},
-      options: ['default', 'compact'],
-      description: 'The variant of the graph container',
     },
     labels: {
       control: 'object',
@@ -415,29 +349,12 @@ const experimentData = {
   ],
 };
 
-const distributionData = {
-  labels: Array.from({length: 20}, (_, i) => (i * 5).toString()),
-  datasets: [
-    {
-      label: 'Frequency',
-      data: [
-        2, 5, 12, 18, 25, 32, 28, 35, 42, 38, 45, 39, 33, 28, 22, 15, 8, 5, 2,
-        1,
-      ],
-      backgroundColor: 'rgba(23, 162, 184, 0.6)',
-      borderColor: '#17a2b8',
-      borderWidth: 1,
-    },
-  ],
-};
-
 export const Default: Story = {
   args: {
     title: 'Sample Scientific Data',
     subtitle: 'Basic line chart with default settings',
     theme: 'default',
     type: 'line',
-    variant: 'default',
     labels: temperatureData.labels,
     datasets: temperatureData.datasets,
     showStatistics: true,
@@ -459,7 +376,6 @@ export const Default: Story = {
     subtitle,
     theme,
     type,
-    variant,
     labels,
     datasets,
     showStatistics,
@@ -481,7 +397,6 @@ export const Default: Story = {
       .subtitle=${subtitle}
       .theme=${theme}
       .type=${type}
-      .variant=${variant}
       .labels=${labels}
       .datasets=${datasets}
       .showStatistics=${showStatistics}
@@ -497,10 +412,24 @@ export const Default: Story = {
       .errorMessage=${errorMessage}
       .xAxisTitle=${xAxisTitle}
       .yAxisTitle=${yAxisTitle}
-      .onDataClick=${(dataPoint: number, datasetIndex: number, index: number) => {
-        console.log('Data point clicked:', dataPoint, 'Dataset:', datasetIndex, 'Index:', index);
-        alert(`Clicked data point: ${dataPoint} (Dataset ${datasetIndex}, Index ${index})`);
+      .onDataClick=${(
+        dataPoint: number,
+        datasetIndex: number,
+        index: number
+      ) => {
+        console.log(
+          'Data point clicked:',
+          dataPoint,
+          'Dataset:',
+          datasetIndex,
+          'Index:',
+          index
+        );
+        alert(
+          `Clicked data point: ${dataPoint} (Dataset ${datasetIndex}, Index ${index})`
+        );
       }}
+      style="width: 100%; max-width: 880px; height: 500px;"
     ></scientific-graph>`,
 };
 
@@ -516,30 +445,29 @@ export const BarChart: Story = {
     yAxisTitle: 'Response Rate (%)',
     xAxisTitle: 'Treatment Groups',
   },
-};
-
-export const PieChart: Story = {
-  args: {
-    title: 'Data Distribution',
-    subtitle: 'Sample composition breakdown',
-    type: 'pie',
-    labels: ['Group A', 'Group B', 'Group C', 'Group D', 'Other'],
-    datasets: [
-      {
-        label: 'Distribution',
-        data: [30, 25, 20, 15, 10],
-        backgroundColor: [
-          'rgba(0, 123, 255, 0.8)',
-          'rgba(40, 167, 69, 0.8)',
-          'rgba(255, 193, 7, 0.8)',
-          'rgba(220, 53, 69, 0.8)',
-          'rgba(108, 117, 125, 0.8)',
-        ],
-      },
-    ],
-    showStatistics: false,
-    showLegend: true,
-  },
+  render: ({
+    title,
+    subtitle,
+    type,
+    labels,
+    datasets,
+    showStatistics,
+    showLegend,
+    yAxisTitle,
+    xAxisTitle,
+  }) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${datasets}
+      .showStatistics=${showStatistics}
+      .showLegend=${showLegend}
+      .yAxisTitle=${yAxisTitle}
+      .xAxisTitle=${xAxisTitle}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`,
 };
 
 export const ScatterPlot: Story = {
@@ -574,6 +502,27 @@ export const ScatterPlot: Story = {
     yAxisTitle: 'Variable Y',
     showStatistics: false,
   },
+  render: ({
+    title,
+    subtitle,
+    type,
+    labels,
+    datasets,
+    xAxisTitle,
+    yAxisTitle,
+    showStatistics,
+  }) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${datasets}
+      .xAxisTitle=${xAxisTitle}
+      .yAxisTitle=${yAxisTitle}
+      .showStatistics=${showStatistics}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`,
 };
 
 export const MultipleDatasets: Story = {
@@ -599,41 +548,29 @@ export const MultipleDatasets: Story = {
     showStatistics: true,
     showLegend: true,
   },
-};
-
-export const Histogram: Story = {
-  args: {
-    title: 'Distribution Analysis',
-    subtitle: 'Frequency distribution of measurement values',
-    type: 'bar',
-    labels: distributionData.labels,
-    datasets: distributionData.datasets,
-    xAxisTitle: 'Value Range',
-    yAxisTitle: 'Frequency',
-    showStatistics: true,
-    showLegend: false,
-  },
-};
-
-export const CompactVariant: Story = {
-  args: {
-    title: 'Compact Graph',
-    subtitle: 'Space-efficient visualization',
-    variant: 'compact',
-    type: 'line',
-    labels: ['A', 'B', 'C', 'D', 'E'],
-    datasets: [
-      {
-        label: 'Series 1',
-        data: [12, 19, 8, 15, 22],
-        borderColor: '#28a745',
-        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-        borderWidth: 2,
-      },
-    ],
-    showStatistics: true,
-    showToolbar: false,
-  },
+  render: ({
+    title,
+    subtitle,
+    type,
+    labels,
+    datasets,
+    xAxisTitle,
+    yAxisTitle,
+    showStatistics,
+    showLegend,
+  }) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${datasets}
+      .xAxisTitle=${xAxisTitle}
+      .yAxisTitle=${yAxisTitle}
+      .showStatistics=${showStatistics}
+      .showLegend=${showLegend}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`,
 };
 
 export const LoadingState: Story = {
@@ -651,33 +588,60 @@ export const LoadingState: Story = {
       },
     ],
   },
+  render: ({title, subtitle, isLoading, type, labels, datasets}) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .isLoading=${isLoading}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${datasets}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`,
 };
 
 export const ErrorState: Story = {
   args: {
     title: 'Error State Graph',
-    subtitle: 'Demonstrating error handling',
+    subtitle: 'Demonstrating error handling when chart fails to render',
     type: 'line',
-    labels: [],
-    datasets: [],
-    errorMessage: 'Failed to load chart data. Please try again.',
-  },
-};
-
-export const WithExportButtons: Story = {
-  args: {
-    title: 'Graph with Export Options',
-    subtitle: 'Demonstrating customizable export functionality',
-    type: 'line',
-    labels: temperatureData.labels,
-    datasets: temperatureData.datasets,
-    showStatistics: true,
-    showLegend: true,
+    labels: ['A', 'B', 'C', 'D'],
+    datasets: [
+      {
+        label: 'Malformed Data',
+        data: [1, 2, 3, 4],
+        borderColor: '#dc3545',
+      },
+    ],
     showToolbar: true,
-    showExportButtons: true,
-    exportFormats: ['png', 'jpg', 'pdf'],
-    xAxisTitle: 'Month',
-    yAxisTitle: 'Temperature (°C)',
+    showStatistics: true,
+  },
+  render: ({
+    title,
+    subtitle,
+    type,
+    labels,
+    showToolbar,
+    showStatistics,
+  }) => {
+    const problematicDatasets = [
+      {
+        label: 'Problematic Data',
+        data: [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NaN, Number.MAX_VALUE * 2],
+        borderColor: '#dc3545',
+      },
+    ];
+    
+    return html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${problematicDatasets}
+      .showToolbar=${showToolbar}
+      .showStatistics=${showStatistics}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`;
   },
 };
 
@@ -694,6 +658,31 @@ export const CustomExportFormats: Story = {
     exportFormats: ['png', 'pdf'],
     yAxisTitle: 'Response Rate (%)',
   },
+  render: ({
+    title,
+    subtitle,
+    type,
+    labels,
+    datasets,
+    showStatistics,
+    showToolbar,
+    showExportButtons,
+    exportFormats,
+    yAxisTitle,
+  }) =>
+    html`<scientific-graph
+      .title=${title}
+      .subtitle=${subtitle}
+      .type=${type}
+      .labels=${labels}
+      .datasets=${datasets}
+      .showStatistics=${showStatistics}
+      .showToolbar=${showToolbar}
+      .showExportButtons=${showExportButtons}
+      .exportFormats=${exportFormats}
+      .yAxisTitle=${yAxisTitle}
+      style="width: 100%; max-width: 880px;"
+    ></scientific-graph>`,
 };
 
 export const CustomExportHandler: Story = {
@@ -725,62 +714,11 @@ export const CustomExportHandler: Story = {
       .exportFormats=${args.exportFormats}
       .onExport=${(format: string) => {
         alert(`Custom export handler called for format: ${format}`);
-        // Here you could implement your own export logic
       }}
       @graph-exported=${(e: CustomEvent) => {
         console.log('Export event fired:', e.detail);
       }}
-    ></scientific-graph>`,
-};
-
-export const InteractiveExample: Story = {
-  args: {
-    title: 'Interactive Scientific Graph',
-    subtitle: 'Click on data points to see interactions',
-    type: 'line',
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-    datasets: [
-      {
-        label: 'Growth Rate (%)',
-        data: [5.2, 7.8, 12.1, 15.3, 18.7, 22.4],
-        borderColor: '#007bff',
-        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-        borderWidth: 3,
-        tension: 0.2,
-        pointRadius: 6,
-        pointHoverRadius: 10,
-      },
-    ],
-    showStatistics: true,
-    xAxisTitle: 'Time Period',
-    yAxisTitle: 'Growth Rate (%)',
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render: (args: any) =>
-    html`<scientific-graph
-      .title=${args.title}
-      .subtitle=${args.subtitle}
-      .type=${args.type}
-      .labels=${args.labels}
-      .datasets=${args.datasets}
-      .showStatistics=${args.showStatistics}
-      .xAxisTitle=${args.xAxisTitle}
-      .yAxisTitle=${args.yAxisTitle}
-      .onDataClick=${(
-        dataPoint: number,
-        datasetIndex: number,
-        index: number
-      ) => {
-        alert(
-          `Clicked on data point: ${dataPoint} at index ${index} in dataset ${datasetIndex}`
-        );
-      }}
-      @graph-type-changed=${(e: CustomEvent) => {
-        console.log('Graph type changed to:', e.detail.type);
-      }}
-      @graph-exported=${(e: CustomEvent) => {
-        console.log('Graph exported as:', e.detail.format);
-      }}
+      style="width: 100%; max-width: 880px;"
     ></scientific-graph>`,
 };
 
