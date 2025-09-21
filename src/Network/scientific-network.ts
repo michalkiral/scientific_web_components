@@ -1073,10 +1073,18 @@ export class ScientificNetwork
       | 'isRenaming'
       | 'isRemoving'
   ) {
-    if (activeMode !== 'isCreatingNode') this.isCreatingNode = false;
-    if (activeMode !== 'isCreatingEdge') this.isCreatingEdge = false;
-    if (activeMode !== 'isRenaming') this.isRenaming = false;
-    if (activeMode !== 'isRemoving') this.isRemoving = false;
+    if (activeMode !== 'isCreatingNode') {
+      this.isCreatingNode = false;
+    }
+    if (activeMode !== 'isCreatingEdge') {
+      this.isCreatingEdge = false;
+    }
+    if (activeMode !== 'isRenaming') {
+      this.isRenaming = false;
+    }
+    if (activeMode !== 'isRemoving') {
+      this.isRemoving = false;
+    }
 
     this.edgeCreationSource = null;
 
