@@ -63,20 +63,6 @@ export interface NetworkMetrics {
   connectedComponents: number;
 }
 
-export type NetworkLayout =
-  | 'breadthfirst'
-  | 'circle'
-  | 'concentric'
-  | 'cose'
-  | 'grid'
-  | 'random'
-  | 'dagre'
-  | 'klay'
-  | 'cola'
-  | 'euler'
-  | 'spread'
-  | 'fcose';
-
 export type NetworkTheme = ScientificTheme;
 
 @customElement('scientific-network')
@@ -244,12 +230,6 @@ export class ScientificNetwork
         backdrop-filter: blur(4px);
       }
 
-      .network-toolbar scientific-button {
-        --button-padding: var(--scientific-spacing-sm);
-        --button-min-height: 32px;
-        --button-font-size: var(--scientific-text-sm);
-      }
-
       .creating-nodes {
         cursor: crosshair !important;
       }
@@ -307,7 +287,6 @@ export class ScientificNetwork
   @property({type: String}) subtitle = '';
   @property({type: Object}) data: NetworkData = {nodes: [], edges: []};
   @property({type: Boolean}) directed = false;
-  @property({type: String}) layout: NetworkLayout = 'cose';
   @property({type: String}) theme: NetworkTheme = 'default';
   @property({type: Boolean}) interactive = true;
   @property({type: Boolean}) showToolbar = true;
@@ -323,7 +302,6 @@ export class ScientificNetwork
   @property({type: Boolean}) enableEdgeCreation = false;
   @property({type: Boolean}) enableRenaming = false;
   @property({type: Boolean}) enableRemoval = false;
-  @property({type: Object}) layoutOptions: Partial<LayoutOptions> = {};
   @property({attribute: false}) onNodeClick?: (
     node: NetworkNode,
     event: EventObject
@@ -662,12 +640,11 @@ export class ScientificNetwork
 
   private _getLayoutOptions(): LayoutOptions {
     const baseOptions = {
-      name: this.layout,
+      name: 'cose',
       animate: true,
       animationDuration: 500,
       fit: true,
       padding: 30,
-      ...this.layoutOptions,
     };
 
     return baseOptions as LayoutOptions;
@@ -1185,8 +1162,9 @@ export class ScientificNetwork
   }
 
   private _removeElement(elementId: string, elementType: 'node' | 'edge') {
-    if (!this.cy) return;
-
+    if (!this.cy) {
+      return;
+    }
     try {
       const element = this.cy.getElementById(elementId);
       if (element.length === 0) {
@@ -1522,7 +1500,6 @@ export class ScientificNetwork
       title: this.title,
       subtitle: this.subtitle,
       network: this.cy.json(),
-      layout: this.layout,
       theme: this.theme,
       metrics: this.metrics,
       timestamp: new Date().toISOString(),
@@ -1650,10 +1627,10 @@ export class ScientificNetwork
   }
 
   private _renderToolbar() {
-    const hasInteractiveFeatures = 
-      this.enableNodeCreation || 
-      this.enableEdgeCreation || 
-      this.enableRenaming || 
+    const hasInteractiveFeatures =
+      this.enableNodeCreation ||
+      this.enableEdgeCreation ||
+      this.enableRenaming ||
       this.enableRemoval;
 
     const gridClass = hasInteractiveFeatures ? 'grid-4' : 'grid-3';
@@ -1694,7 +1671,9 @@ export class ScientificNetwork
                   ${this.enableNodeCreation
                     ? html`
                         <scientific-button
-                          variant="${this.isCreatingNode ? 'primary' : 'outline'}"
+                          variant="${this.isCreatingNode
+                            ? 'primary'
+                            : 'outline'}"
                           size="small"
                           label="+ Node"
                           .theme="${this.theme}"
@@ -1706,7 +1685,9 @@ export class ScientificNetwork
                   ${this.enableEdgeCreation
                     ? html`
                         <scientific-button
-                          variant="${this.isCreatingEdge ? 'primary' : 'outline'}"
+                          variant="${this.isCreatingEdge
+                            ? 'primary'
+                            : 'outline'}"
                           size="small"
                           label="+ Edge"
                           .theme="${this.theme}"
