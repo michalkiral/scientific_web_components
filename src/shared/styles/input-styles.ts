@@ -22,7 +22,12 @@ export const inputContainerStyles = css`
       var(--scientific-spacing-md) var(--scientific-spacing-lg)
     );
     font-size: var(--input-font-size, var(--scientific-text-base));
-    min-height: var(--input-min-height, 44px);
+    min-height: var(--input-min-height, 20px);
+  }
+
+  :host(.dropdown-open) .input-field {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
   .input-label {
@@ -98,5 +103,11 @@ export const inputClearButtonStyles = css`
 
   .clear-button:active {
     transform: scale(0.95);
+  }
+
+  .clear-button svg {
+    width: 12px;
+    height: 12px;
+    display: block;
   }
 `;
