@@ -110,20 +110,16 @@ suite('scientific-table', () => {
     const sortIndicator = nameHeader.querySelector('.sort-indicator');
 
     assert.exists(sortIndicator, 'Sort indicator should exist');
-    assert.include(
-      sortIndicator!.textContent,
-      '⇅',
+    assert.exists(
+      sortIndicator!.querySelector('svg'),
       'Should show default sort indicator'
     );
 
     nameHeader.click();
     await aTimeout(50);
 
-    assert.include(
-      sortIndicator!.textContent,
-      '▲',
-      'Should show ascending arrow after click'
-    );
+    const ascendingIcon = sortIndicator!.querySelector('svg');
+    assert.exists(ascendingIcon, 'Should show ascending arrow after click');
     assert.isTrue(
       sortIndicator!.classList.contains('active'),
       'Sort indicator should be active'
@@ -132,9 +128,9 @@ suite('scientific-table', () => {
     nameHeader.click();
     await aTimeout(50);
 
-    assert.include(
-      sortIndicator!.textContent,
-      '▼',
+    const descendingIcon = sortIndicator!.querySelector('svg');
+    assert.exists(
+      descendingIcon,
       'Should show descending arrow after second click'
     );
   });
@@ -171,6 +167,8 @@ suite('scientific-table', () => {
       ></scientific-table>
     `);
 
+    await el.updateComplete;
+
     const rows = el.shadowRoot!.querySelectorAll('tbody tr.table-row');
     assert.equal(rows.length, 5, 'Should display only 5 rows per page');
 
@@ -178,7 +176,7 @@ suite('scientific-table', () => {
     assert.exists(pagination, 'Pagination controls should be displayed');
 
     const pageButtons = el.shadowRoot!.querySelectorAll(
-      '.pagination-button:not([disabled])'
+      '.table-pagination scientific-button'
     );
     assert.isAtLeast(pageButtons.length, 2, 'Should have navigation buttons');
   });

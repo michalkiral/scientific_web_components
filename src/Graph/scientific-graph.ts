@@ -3,6 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import {renderIcon} from '../shared/icons/index.js';
 import {
   sharedVariables,
   themeStyles,
@@ -831,9 +832,13 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
           : ''}
         ${this.errorMessage
           ? html`
-              <div class="scientific-error graph-error" role="alert">
-                <span>⚠️</span>
-                <span>${this.errorMessage}</span>
+              <div class="scientific-message scientific-message--error graph-error" role="alert">
+                <div class="message-icon">
+                  ${renderIcon('warning', {size: 16})}
+                </div>
+                <div class="message-content">
+                  <span>${this.errorMessage}</span>
+                </div>
               </div>
             `
           : ''}

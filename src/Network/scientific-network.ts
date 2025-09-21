@@ -1,5 +1,6 @@
 import {LitElement, html, css, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {renderIcon} from '../shared/icons/index.js';
 import cytoscape, {
   Core,
   ElementDefinition,
@@ -1586,8 +1587,13 @@ export class ScientificNetwork
 
   private _renderError() {
     return html`
-      <div class="scientific-error" role="alert">
-        <span>${this.errorMessage}</span>
+      <div class="scientific-message scientific-message--error" role="alert">
+        <div class="message-icon">
+          ${renderIcon('warning', {size: 16})}
+        </div>
+        <div class="message-content">
+          <span>${this.errorMessage}</span>
+        </div>
       </div>
     `;
   }

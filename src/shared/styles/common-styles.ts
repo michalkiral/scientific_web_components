@@ -367,40 +367,6 @@ export const messageStyles = css`
     border: var(--info-border, 1px solid #bfdbfe);
     color: var(--info-color, var(--scientific-info-color));
   }
-
-  /* Legacy support - these will be deprecated */
-  .scientific-error {
-    background-color: var(--error-bg-color, #fef2f2);
-    border: var(--error-border, 1px solid #fecaca);
-    border-radius: var(--error-border-radius, var(--scientific-border-radius));
-    padding: var(
-      --error-padding,
-      var(--scientific-spacing-md) var(--scientific-spacing-lg)
-    );
-    color: var(--error-color, var(--scientific-danger-color));
-    font-size: var(--error-font-size, var(--scientific-text-sm));
-    display: flex;
-    align-items: center;
-    gap: var(--scientific-spacing-sm);
-  }
-
-  .scientific-success {
-    background-color: var(--success-bg-color, #f0fdf4);
-    border: var(--success-border, 1px solid #bbf7d0);
-    border-radius: var(
-      --success-border-radius,
-      var(--scientific-border-radius)
-    );
-    padding: var(
-      --success-padding,
-      var(--scientific-spacing-md) var(--scientific-spacing-lg)
-    );
-    color: var(--success-color, var(--scientific-success-color));
-    font-size: var(--success-font-size, var(--scientific-text-sm));
-    display: flex;
-    align-items: center;
-    gap: var(--scientific-spacing-sm);
-  }
 `;
 
 export const buttonStyles = css`

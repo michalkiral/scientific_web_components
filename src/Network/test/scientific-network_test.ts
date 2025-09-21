@@ -168,7 +168,7 @@ suite('ScientificNetwork', () => {
       ></scientific-network>
     `);
 
-    const errorElement = el.shadowRoot!.querySelector('.scientific-error');
+    const errorElement = el.shadowRoot!.querySelector('.scientific-message--error');
 
     assert.equal(el.errorMessage, 'Network failed to load');
     assert.isNotNull(errorElement);

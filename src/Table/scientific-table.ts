@@ -4,6 +4,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import {renderIcon} from '../shared/icons/index.js';
 import {
   containerStyles,
   headerStyles,
@@ -664,10 +665,24 @@ export class ScientificTable extends LitElement {
       case 'date':
         return new Date(String(value)).toLocaleDateString();
       case 'boolean':
-        return value ? '✓' : '✗';
+        return value ? 'true' : 'false';
       default:
         return String(value);
     }
+  }
+
+  private _renderCellContent(
+    value: unknown,
+    column: TableColumn,
+    row: TableData
+  ) {
+    if (column.type === 'boolean' && !column.formatter) {
+      return value 
+        ? renderIcon('check-circle', {size: 14, color: 'var(--scientific-success-color)'}) 
+        : renderIcon('x-circle', {size: 14, color: 'var(--scientific-danger-color)'});
+    }
+    
+    return this._formatCellValue(value, column, row);
   }
 
   private _getCellClasses(column: TableColumn): string {
@@ -862,9 +877,9 @@ export class ScientificTable extends LitElement {
                                   >
                                     ${this.sortedColumn === column.key
                                       ? this.sortDirection === 'asc'
-                                        ? '▲'
-                                        : '▼'
-                                      : '⇅'}
+                                        ? renderIcon('chevron-up', {size: 12})
+                                        : renderIcon('chevron-down', {size: 12})
+                                      : renderIcon('sort', {size: 12})}
                                   </span>
                                 `
                               : ''}
@@ -903,7 +918,7 @@ export class ScientificTable extends LitElement {
                           ${this.columns.map(
                             (column) => html`
                               <td class="${this._getCellClasses(column)}">
-                                ${this._formatCellValue(
+                                ${this._renderCellContent(
                                   row[column.key],
                                   column,
                                   row
