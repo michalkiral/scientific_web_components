@@ -330,9 +330,18 @@ export const messageStyles = css`
     );
     font-size: var(--message-font-size, var(--scientific-text-sm));
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--scientific-spacing-sm);
     margin-top: var(--message-margin-top, var(--scientific-spacing-xs));
+  }
+
+  .scientific-message .message-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .scientific-message .message-content {
+    flex: 1;
   }
 
   .scientific-message--error {

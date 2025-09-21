@@ -15,6 +15,7 @@ import {
   inputClearButtonStyles,
 } from '../shared/styles/input-styles.js';
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {renderIcon} from '../shared/icons/index.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
@@ -410,7 +411,7 @@ export class ScientificInput
                   tabindex="-1"
                   aria-label="Clear input"
                 >
-                  ✕
+                  ${renderIcon('close', {size: 12})}
                 </button>
               `
             : ''}
@@ -423,14 +424,14 @@ export class ScientificInput
         ${this.state === 'error' && this.errorMessage
           ? html`
               <div class="scientific-message scientific-message--error">
-                ⚠️ ${this.errorMessage}
+                ${this.errorMessage}
               </div>
             `
           : ''}
         ${this.state === 'success' && this.successMessage
           ? html`
               <div class="scientific-message scientific-message--success">
-                ✓ ${this.successMessage}
+                ${this.successMessage}
               </div>
             `
           : ''}

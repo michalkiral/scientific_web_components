@@ -92,7 +92,6 @@ export class ScientificDropdown
   @property({type: Number})
   focusedOptionIndex = -1;
 
-  // Implement DropdownKeyboardHandler interface
   get focusedIndex(): number {
     return this.focusedOptionIndex;
   }
@@ -164,7 +163,6 @@ export class ScientificDropdown
         ) as HTMLInputElement;
         searchInput?.focus();
       }
-      // Ensure options container matches dropdown width
       this.syncOptionsWidth();
     }, 0);
   }

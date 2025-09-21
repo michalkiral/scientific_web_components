@@ -90,6 +90,8 @@ export const dropdownBaseStyles = css`
 export const dropdownContainerStyles = css`
   .options-container {
     position: absolute;
+    top: 100%;
+    left: 0;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid var(--dropdown-border-color, #d1d5db);
