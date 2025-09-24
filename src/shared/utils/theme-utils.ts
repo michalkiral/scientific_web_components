@@ -58,3 +58,76 @@ export function applyThemeColors<T extends Record<string, string>>(
   
   return result;
 }
+
+// Chart.js specific theme utilities
+export interface ChartThemeColors {
+  gridColor: string;
+  axisLabelColor: string;
+  axisTitleColor: string;
+  tooltipBackgroundColor: string;
+  tooltipTextColor: string;
+  tooltipBorderColor: string;
+}
+
+export function getChartThemeColors(element: Element): ChartThemeColors {
+  const style = getComputedStyle(element);
+  
+  const gridColor = style.getPropertyValue('--scientific-text-muted').trim() || '#6b7280';
+  const textSecondary = style.getPropertyValue('--scientific-text-secondary').trim() || '#374151';
+  const textPrimary = style.getPropertyValue('--scientific-text-primary').trim() || '#111827';
+  const bgSecondary = style.getPropertyValue('--scientific-bg-secondary').trim() || '#f9fafb';
+  const borderFocus = style.getPropertyValue('--scientific-border-focus').trim() || '#3b82f6';
+  
+  return {
+    gridColor,
+    axisLabelColor: textSecondary,
+    axisTitleColor: textPrimary,
+    tooltipBackgroundColor: bgSecondary,
+    tooltipTextColor: textPrimary,
+    tooltipBorderColor: borderFocus,
+  };
+}
+
+export function createChartThemeConfig(element: Element) {
+  const colors = getChartThemeColors(element);
+  
+  return {
+    scales: {
+      x: {
+        grid: {
+          color: colors.gridColor,
+        },
+        ticks: {
+          color: colors.axisLabelColor,
+        },
+        title: {
+          color: colors.axisTitleColor,
+        },
+      },
+      y: {
+        grid: {
+          color: colors.gridColor,
+        },
+        ticks: {
+          color: colors.axisLabelColor,
+        },
+        title: {
+          color: colors.axisTitleColor,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: colors.axisLabelColor,
+        },
+      },
+      tooltip: {
+        backgroundColor: colors.tooltipBackgroundColor,
+        titleColor: colors.tooltipTextColor,
+        bodyColor: colors.tooltipTextColor,
+        borderColor: colors.tooltipBorderColor,
+      },
+    },
+  };
+}
