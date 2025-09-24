@@ -101,7 +101,6 @@ export const dropdownContainerStyles = css`
     border-bottom-right-radius: var(--scientific-border-radius);
     background-color: var(--dropdown-options-bg-color, #ffffff);
     box-shadow: var(--scientific-shadow-lg);
-    z-index: var(--dropdown-z-index, 1000);
     max-height: var(--dropdown-max-height, 200px);
     overflow: hidden;
     animation: slideDown 0.15s ease-out;
