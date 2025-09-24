@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import {LitElement, html, css} from 'lit';
+import {LitElement, html, css, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
@@ -27,7 +27,7 @@ export interface TableColumn {
   width?: string;
   align?: 'left' | 'center' | 'right';
   type?: 'text' | 'number' | 'date' | 'boolean';
-  formatter?: (value: unknown, row: TableData) => string;
+  formatter?: (value: unknown, row: TableData) => string | TemplateResult;
 }
 
 export interface TableData {
@@ -70,6 +70,7 @@ export class ScientificTable extends LitElement {
         );
         width: var(--table-width, 100%);
         max-width: var(--table-max-width, 100%);
+        box-sizing: border-box;
       }
 
       .table-container {
@@ -81,6 +82,8 @@ export class ScientificTable extends LitElement {
         display: flex;
         flex-direction: column;
         gap: var(--table-gap, 0);
+        box-sizing: border-box;
+        overflow: hidden;
       }
 
       .table-header {
@@ -98,8 +101,8 @@ export class ScientificTable extends LitElement {
         display: flex;
         flex-direction: column;
         gap: var(--table-title-gap, 4px);
-        flex: 1;
-        min-width: 200px;
+        flex: 1 1 auto;
+        min-width: 0;
       }
 
       .table-title {
@@ -198,7 +201,6 @@ export class ScientificTable extends LitElement {
 
       .table-row.selected {
         background-color: var(--table-row-selected-bg-color, #eff6ff);
-        border-color: var(--table-row-selected-border-color, #3b82f6);
       }
 
       .table-cell {
@@ -650,7 +652,7 @@ export class ScientificTable extends LitElement {
     value: unknown,
     column: TableColumn,
     row: TableData
-  ): string {
+  ): string | TemplateResult {
     if (column.formatter) {
       return column.formatter(value, row);
     }

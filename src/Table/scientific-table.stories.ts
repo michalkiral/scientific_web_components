@@ -865,7 +865,7 @@ export const CustomFormatting: Story = {
         formatter: (value: unknown) => {
           const ph = Number(value);
           const color = ph < 7 ? 'red' : ph > 7 ? 'blue' : 'green';
-          return `<span style="color: ${color}; font-weight: bold;">${ph.toFixed(
+          return html`<span style="color: ${color}; font-weight: bold;">${ph.toFixed(
             1
           )}</span>`;
         },
