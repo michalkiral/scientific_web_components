@@ -30,7 +30,6 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 - \`disabled\` — Whether the slider is disabled
 - \`required\` — Whether the slider is required (shows asterisk)
 - \`variant\` — Visual variant: default, compact
-- \`size\` — Size variant: small, medium, large
 - \`showTooltip\` — Whether to show tooltip on hover/drag
 - \`showValue\` — Whether to show current value in header
 - \`showRangeLabels\` — Whether to show min/max labels below slider
@@ -86,7 +85,6 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 
 - **Range Control**: Configurable min/max values with custom step sizes
 - **Multiple Variants**: Default and compact layouts for different use cases
-- **Size Options**: Small, medium, and large sizes for various contexts
 - **Visual States**: Error state with custom styling and validation messages
 - **Custom Marks**: Add labeled marks at specific values for reference points
 - **Tooltips**: Show current value on hover or during interaction
@@ -240,17 +238,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --slider-error-message-font-size: 12px;
       --slider-error-message-margin-top: 6px;
       
-      /* Size Variants */
-      --slider-small-track-height: 6px;
-      --slider-small-thumb-size: 16px;
-      --slider-small-fill-height: 6px;
-      --slider-small-padding: 12px;
-      
-      --slider-large-track-height: 12px;
-      --slider-large-thumb-size: 24px;
-      --slider-large-fill-height: 12px;
-      --slider-large-padding: 20px;
-      
       /* Compact Variant */
       --slider-compact-padding: 12px;
       --slider-compact-gap: 8px;
@@ -315,11 +302,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       options: ['default', 'compact'],
       description: 'Visual variant of the slider',
     },
-    size: {
-      control: {type: 'select'},
-      options: ['small', 'medium', 'large'],
-      description: 'Size variant of the slider',
-    },
     showTooltip: {
       control: 'boolean',
       description: 'Whether to show tooltip on hover/drag',
@@ -379,7 +361,6 @@ export const Default: Story = {
     disabled: false,
     required: false,
     variant: 'default',
-    size: 'medium',
     showTooltip: true,
     showValue: true,
     showRangeLabels: true,
@@ -399,7 +380,6 @@ export const Default: Story = {
     disabled,
     required,
     variant,
-    size,
     showTooltip,
     showValue,
     showRangeLabels,
@@ -420,7 +400,6 @@ export const Default: Story = {
         .disabled=${disabled}
         .required=${required}
         .variant=${variant}
-        .size=${size}
         .showTooltip=${showTooltip}
         .showValue=${showValue}
         .showRangeLabels=${showRangeLabels}
@@ -465,57 +444,6 @@ export const Variants: Story = {
           unit=""
           showValue
           .formatValue=${(value: number) => `${Math.round(value * 100)}%`}
-        ></scientific-slider>
-      </div>
-    </div>
-  `,
-};
-
-export const Sizes: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; width: 500px;"
-    >
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Small Size</h3>
-        <scientific-slider
-          label="Zoom Level"
-          size="small"
-          min="1"
-          max="10"
-          step="0.1"
-          value="2.5"
-          unit="x"
-          showValue
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Medium Size (Default)</h3>
-        <scientific-slider
-          label="Brightness"
-          size="medium"
-          min="0"
-          max="100"
-          step="1"
-          value="75"
-          unit="%"
-          showValue
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Large Size</h3>
-        <scientific-slider
-          label="Master Volume"
-          size="large"
-          min="0"
-          max="100"
-          step="1"
-          value="60"
-          unit="dB"
-          showValue
-          helperText="Large size for primary controls"
         ></scientific-slider>
       </div>
     </div>
@@ -888,41 +816,6 @@ export const CustomStyling: Story = {
       ></scientific-slider>
     </div>
   `,
-};
-
-export const ResponsiveDemo: Story = {
-  render: () => html`
-    <div
-      style="width: 100%; max-width: 800px; padding: 20px; border: 1px dashed #ccc;"
-    >
-      <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">
-        Resize this container to see responsive behavior
-      </p>
-      <scientific-slider
-        label="Responsive Slider"
-        description="Adapts to container width and mobile viewports"
-        min="0"
-        max="100"
-        step="1"
-        value="45"
-        unit="%"
-        showValue
-        .marks=${[
-          {value: 0},
-          {value: 25},
-          {value: 50},
-          {value: 75},
-          {value: 100},
-        ]}
-        helperText="Try resizing your browser window"
-      ></scientific-slider>
-    </div>
-  `,
-  parameters: {
-    viewport: {
-      defaultViewport: 'responsive',
-    },
-  },
 };
 
 export const ThemeComparison: Story = {

@@ -72,6 +72,13 @@ export class ScientificSlider extends LitElement {
         align-items: center;
         padding: var(--scientific-spacing-md) 0;
         margin: var(--scientific-spacing-sm) 0;
+        outline: none;
+        border-radius: var(--scientific-border-radius);
+      }
+
+      .slider-track-container:focus-visible {
+        outline: 2px solid var(--scientific-primary-color);
+        outline-offset: 2px;
       }
 
       .slider-track {
@@ -257,35 +264,6 @@ export class ScientificSlider extends LitElement {
         border-color: var(--slider-error-thumb-border-color, #fecaca);
       }
 
-      /* Size variants */
-      .slider-container.small {
-        padding: var(--scientific-spacing-md);
-        gap: var(--scientific-spacing-sm);
-      }
-
-      .slider-container.small .slider-track {
-        height: var(--slider-small-track-height, 6px);
-      }
-
-      .slider-container.small .slider-thumb {
-        width: var(--slider-small-thumb-size, 16px);
-        height: var(--slider-small-thumb-size, 16px);
-      }
-
-      .slider-container.large {
-        padding: var(--scientific-spacing-3xl);
-        gap: var(--scientific-spacing-xl);
-      }
-
-      .slider-container.large .slider-track {
-        height: var(--slider-large-track-height, 12px);
-      }
-
-      .slider-container.large .slider-thumb {
-        width: var(--slider-large-thumb-size, 24px);
-        height: var(--slider-large-thumb-size, 24px);
-      }
-
       @media (max-width: 768px) {
         .slider-thumb {
           width: var(--slider-mobile-thumb-size, 24px);
@@ -334,9 +312,6 @@ export class ScientificSlider extends LitElement {
 
   @property({type: String})
   variant: 'default' | 'compact' = 'default';
-
-  @property({type: String})
-  size: 'small' | 'medium' | 'large' = 'medium';
 
   @property({type: Boolean})
   showTooltip = true;
@@ -426,6 +401,13 @@ export class ScientificSlider extends LitElement {
   private _handleTrackClick(event: MouseEvent) {
     if (this.disabled) return;
 
+    const container = this.shadowRoot?.querySelector(
+      '.slider-track-container'
+    ) as HTMLElement;
+    if (container) {
+      container.focus();
+    }
+
     const track = this.shadowRoot?.querySelector(
       '.slider-track'
     ) as HTMLElement;
@@ -449,6 +431,13 @@ export class ScientificSlider extends LitElement {
     event.preventDefault();
     this.isDragging = true;
     this.showTooltipState = true;
+
+    const container = this.shadowRoot?.querySelector(
+      '.slider-track-container'
+    ) as HTMLElement;
+    if (container) {
+      container.focus();
+    }
 
     const track = this.shadowRoot?.querySelector(
       '.slider-track'
@@ -546,7 +535,6 @@ export class ScientificSlider extends LitElement {
       'slider-container',
       'scientific-container',
       this.variant !== 'default' && this.variant,
-      this.size !== 'medium' && this.size,
       this.disabled && 'disabled',
       this.state !== 'default' && this.state
     );
@@ -615,8 +603,20 @@ export class ScientificSlider extends LitElement {
 
   private _renderSlider(percentage: number, displayValue: string) {
     return html`
-      <div class="slider-track-container">
-        <div class="slider-track" @click="${this._handleTrackClick}">
+      <div 
+        class="slider-track-container"
+        tabindex="${this.disabled ? -1 : 0}"
+        role="slider"
+        aria-valuemin="${this.min}"
+        aria-valuemax="${this.max}"
+        aria-valuenow="${this.value}"
+        aria-valuetext="${displayValue}"
+        aria-label="${this.label || 'Slider'}"
+        aria-disabled="${this.disabled}"
+        @keydown="${this._handleKeyDown}"
+        @click="${this._handleTrackClick}"
+      >
+        <div class="slider-track">
           <div class="slider-fill" style="width: ${percentage}%"></div>
         </div>
 
@@ -624,15 +624,6 @@ export class ScientificSlider extends LitElement {
           class="${this._getThumbClasses()}"
           style="left: ${percentage}%"
           @mousedown="${this._handleThumbMouseDown}"
-          tabindex="${this.disabled ? -1 : 0}"
-          role="slider"
-          aria-valuemin="${this.min}"
-          aria-valuemax="${this.max}"
-          aria-valuenow="${this.value}"
-          aria-valuetext="${displayValue}"
-          aria-label="${this.label || 'Slider'}"
-          aria-disabled="${this.disabled}"
-          @keydown="${this._handleKeyDown}"
         >
           ${this.showTooltip
             ? html` <div class="slider-tooltip">${displayValue}</div> `
