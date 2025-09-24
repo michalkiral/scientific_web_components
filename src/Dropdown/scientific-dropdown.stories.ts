@@ -378,29 +378,66 @@ export const EmptyState: Story = {
 };
 
 export const CustomStyles: Story = {
-  args: {
-    label: 'Custom Styled Dropdown',
-    options: [
-      {label: 'Red Theme', value: 'red'},
-      {label: 'Blue Theme', value: 'blue'},
-      {label: 'Green Theme', value: 'green'},
-    ],
-    clearable: true,
+  render: () => {
+    let selectedTheme = '';
+
+    const handleThemeChange = (e: CustomEvent) => {
+      selectedTheme = e.detail.value;
+      const dropdown = e.target as HTMLElement;
+      
+      const styles = {
+        red: {
+          '--dropdown-focus-border-color': '#dc2626',
+          '--dropdown-option-selected-bg-color': '#fef2f2',
+          '--dropdown-option-selected-color': '#dc2626',
+          '--dropdown-open-border-color': '#dc2626',
+        },
+        blue: {
+          '--dropdown-focus-border-color': '#2563eb',
+          '--dropdown-option-selected-bg-color': '#eff6ff',
+          '--dropdown-option-selected-color': '#2563eb',
+          '--dropdown-open-border-color': '#2563eb',
+        },
+        green: {
+          '--dropdown-focus-border-color': '#16a34a',
+          '--dropdown-option-selected-bg-color': '#f0fdf4',
+          '--dropdown-option-selected-color': '#16a34a',
+          '--dropdown-open-border-color': '#16a34a',
+        },
+      };
+
+      const themeStyles = styles[selectedTheme as keyof typeof styles];
+      if (themeStyles) {
+        Object.entries(themeStyles).forEach(([property, value]) => {
+          dropdown.style.setProperty(property, value);
+        });
+      }
+    };
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <scientific-dropdown
+          label="Dynamic Theme Dropdown"
+          .options=${[
+            {label: 'Red Theme', value: 'red'},
+            {label: 'Blue Theme', value: 'blue'},
+            {label: 'Green Theme', value: 'green'},
+          ]}
+          .clearable=${true}
+          @change=${handleThemeChange}
+          style="
+            --dropdown-width: 350px;
+            --dropdown-border-radius: 12px;
+            --dropdown-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          "
+        ></scientific-dropdown>
+        
+        <p style="margin: 0; font-style: italic; color: #666; font-size: 14px;">
+          Select a theme option to see the dropdown colors change dynamically!
+        </p>
+      </div>
+    `;
   },
-  render: ({label, options, clearable}) =>
-    html`<scientific-dropdown
-      .label=${label}
-      .options=${options}
-      .clearable=${clearable}
-      style="
-        --dropdown-width: 350px;
-        --dropdown-border-radius: 12px;
-        --dropdown-focus-border-color: #e91e63;
-        --dropdown-option-selected-bg-color: #fce4ec;
-        --dropdown-option-selected-color: #e91e63;
-        --dropdown-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      "
-    ></scientific-dropdown>`,
 };
 
 export const WidthSynchronization: Story = {

@@ -331,8 +331,8 @@ export const dropdownThemeStyles = css`
     border-top-color: var(--scientific-text-muted);
   }
 
-  :host([theme='dark']) .dropdown-placeholder {
-    color: var(--scientific-text-muted);
+  :host([theme='dark']) {
+    --dropdown-placeholder-color: var(--scientific-text-muted);
   }
 
   :host([theme='dark']) .options-container {

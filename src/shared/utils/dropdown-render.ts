@@ -42,30 +42,36 @@ export function renderDropdownOptions(
   }
 
   if (filteredOptions.length === 0) {
-    if (allowCustomValues && inputValue.trim() && onCustomValueClick) {
-      return html`
-        <div class="options-container" role="listbox">
-          <div class="options-list">
-            <div
-              class="${classNames({
-                option: true,
-                focused: focusedIndex === 0,
-                highlighted: focusedIndex === 0,
-              })}"
-              @click="${onCustomValueClick}"
-              role="option"
-            >
-              Add "${inputValue}"
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
     return html`
       <div class="options-container" role="listbox">
+        ${searchable && onSearchInput
+          ? html`
+              <input
+                class="search-input"
+                type="text"
+                placeholder="${searchPlaceholder}"
+                .value="${searchTerm}"
+                @input="${onSearchInput}"
+                @click="${(e: Event) => e.stopPropagation()}"
+              />
+            `
+          : ''}
         <div class="options-list">
-          <div class="no-options">${noOptionsText}</div>
+          ${allowCustomValues && inputValue.trim() && onCustomValueClick
+            ? html`
+                <div
+                  class="${classNames({
+                    option: true,
+                    focused: focusedIndex === 0,
+                    highlighted: focusedIndex === 0,
+                  })}"
+                  @click="${onCustomValueClick}"
+                  role="option"
+                >
+                  Add "${inputValue}"
+                </div>
+              `
+            : html`<div class="no-options">${noOptionsText}</div>`}
         </div>
       </div>
     `;
@@ -84,6 +90,7 @@ export function renderDropdownOptions(
               .value="${searchTerm}"
               @input="${onSearchInput}"
               @click="${(e: Event) => e.stopPropagation()}"
+              @keydown="${(e: KeyboardEvent) => e.stopPropagation()}"
             />
           `
         : ''}
