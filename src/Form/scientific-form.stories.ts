@@ -509,6 +509,37 @@ export const LoadingStates: Story = {
 
 export const WithMessages: Story = {
   render: () => html`
+    <style>
+      .error-input {
+        padding: 12px;
+        border: 2px solid #fecaca;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+      
+      .error-input:focus {
+        border-color: #f87171;
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1);
+      }
+      
+      .success-input {
+        padding: 12px;
+        border: 2px solid #bbf7d0;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+      
+      .success-input:focus {
+        border-color: #34d399;
+        box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
+      }
+    </style>
     <div
       style="display: flex; flex-direction: column; gap: 24px; max-width: 800px;"
     >
@@ -522,12 +553,12 @@ export const WithMessages: Story = {
           <input
             type="email"
             placeholder="Email"
-            style="padding: 12px; border: 2px solid #fecaca; border-radius: 8px; width: 100%; box-sizing: border-box;"
+            class="error-input"
           />
           <input
             type="password"
             placeholder="Password"
-            style="padding: 12px; border: 2px solid #fecaca; border-radius: 8px; width: 100%; box-sizing: border-box;"
+            class="error-input"
           />
         </div>
       </scientific-form>
@@ -541,7 +572,7 @@ export const WithMessages: Story = {
         <input
           type="email"
           placeholder="Your email address"
-          style="padding: 12px; border: 2px solid #bbf7d0; border-radius: 8px; width: 100%; box-sizing: border-box;"
+          class="success-input"
         />
       </scientific-form>
     </div>
