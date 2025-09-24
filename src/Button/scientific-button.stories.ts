@@ -27,8 +27,6 @@ A **customizable**, **accessible** button component for scientific web apps with
 - \`size\` — Button size: small, medium, large
 - \`disabled\` — Disables the button
 - \`fullWidth\` — Makes button take full width
-- \`iconLeft\` — Icon on the left side
-- \`iconRight\` — Icon on the right side
 - \`type\` — Button type: button, submit, reset
 - \`form\` — Associates button with a form by ID
 - \`name\` — Name attribute for form submission
@@ -49,7 +47,6 @@ A **customizable**, **accessible** button component for scientific web apps with
 
 - **Multiple Variants**: Different visual styles for different contexts (primary, secondary, outline, ghost, danger, success)
 - **Size Options**: Small, medium, and large sizes with responsive behavior
-- **Icon Support**: Left and right icon placement with customizable sizing
 - **Loading States**: Animated spinner with accessible loading state and customizable text
 - **Link Mode**: Can render as a link with href and target attributes
 - **Form Integration**: Submit, reset, and button types with form association
@@ -173,8 +170,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --button-large-padding: 16px 24px;
       --button-large-min-height: 56px;
       
-      /* Icons & Loading */
-      --button-icon-size: 18px;
+      /* Loading */
       
       /* Mobile Responsive */
       --button-mobile-font-size: var(--scientific-text-base);
@@ -279,8 +275,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
     disabled: {control: 'boolean', description: 'Disabled state'},
     fullWidth: {control: 'boolean', description: 'Full width button'},
-    iconLeft: {control: 'text', description: 'Left icon'},
-    iconRight: {control: 'text', description: 'Right icon'},
     type: {
       control: 'select',
       options: ['button', 'submit', 'reset'],
@@ -310,8 +304,6 @@ export const Default: Story = {
     showSpinner: true,
     disabled: false,
     fullWidth: false,
-    iconLeft: '',
-    iconRight: '',
     type: 'button',
     form: '',
     name: '',
@@ -330,8 +322,6 @@ export const Default: Story = {
     showSpinner,
     disabled,
     fullWidth,
-    iconLeft,
-    iconRight,
     type,
     form,
     name,
@@ -350,8 +340,6 @@ export const Default: Story = {
       .showSpinner=${showSpinner}
       .disabled=${disabled}
       .fullWidth=${fullWidth}
-      .iconLeft=${iconLeft}
-      .iconRight=${iconRight}
       .type=${type}
       .form=${form}
       .name=${name}
@@ -390,56 +378,7 @@ export const Sizes: Story = {
   `,
 };
 
-export const WithIcons: Story = {
-  args: {
-    label: 'Save Document',
-    iconLeft: '💾',
-    variant: 'primary',
-  },
-  render: ({label, iconLeft, variant}) =>
-    html`<scientific-button
-      .label=${label}
-      .iconLeft=${iconLeft}
-      .variant=${variant}
-    ></scientific-button>`,
-};
 
-export const IconExamples: Story = {
-  render: () => html`
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-      <scientific-button
-        label="Download"
-        iconLeft="⬇️"
-        variant="outline"
-      ></scientific-button>
-      <scientific-button
-        label="Upload"
-        iconLeft="⬆️"
-        variant="outline"
-      ></scientific-button>
-      <scientific-button
-        label="Next"
-        iconRight="→"
-        variant="primary"
-      ></scientific-button>
-      <scientific-button
-        label="Previous"
-        iconLeft="←"
-        variant="secondary"
-      ></scientific-button>
-      <scientific-button
-        label="Refresh"
-        iconLeft="🔄"
-        variant="ghost"
-      ></scientific-button>
-      <scientific-button
-        label="Delete"
-        iconLeft="🗑️"
-        variant="danger"
-      ></scientific-button>
-    </div>
-  `,
-};
 
 export const LoadingStates: Story = {
   render: () => html`
@@ -504,24 +443,35 @@ export const LoadingModes: Story = {
   `,
 };
 
-export const Disabled: Story = {
+export const DisabledComparison: Story = {
   render: () => html`
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-      <scientific-button
-        label="Disabled Primary"
-        disabled
-        variant="primary"
-      ></scientific-button>
-      <scientific-button
-        label="Disabled Secondary"
-        disabled
-        variant="secondary"
-      ></scientific-button>
-      <scientific-button
-        label="Disabled Outline"
-        disabled
-        variant="outline"
-      ></scientific-button>
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <div>
+        <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">
+          Normal State
+        </h4>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button label="Primary" variant="primary"></scientific-button>
+          <scientific-button label="Secondary" variant="secondary"></scientific-button>
+          <scientific-button label="Outline" variant="outline"></scientific-button>
+          <scientific-button label="Ghost" variant="ghost"></scientific-button>
+          <scientific-button label="Danger" variant="danger"></scientific-button>
+          <scientific-button label="Success" variant="success"></scientific-button>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">
+          Disabled State
+        </h4>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <scientific-button label="Primary" variant="primary" disabled></scientific-button>
+          <scientific-button label="Secondary" variant="secondary" disabled></scientific-button>
+          <scientific-button label="Outline" variant="outline" disabled></scientific-button>
+          <scientific-button label="Ghost" variant="ghost" disabled></scientific-button>
+          <scientific-button label="Danger" variant="danger" disabled></scientific-button>
+          <scientific-button label="Success" variant="success" disabled></scientific-button>
+        </div>
+      </div>
     </div>
   `,
 };
@@ -551,7 +501,6 @@ export const AsLinks: Story = {
         label="Open Documentation"
         href="/docs"
         variant="primary"
-        iconRight="↗"
       >
       </scientific-button>
       <scientific-button
@@ -559,14 +508,12 @@ export const AsLinks: Story = {
         href="https://example.com"
         target="_blank"
         variant="outline"
-        iconRight="🔗"
       >
       </scientific-button>
       <scientific-button
         label="Download File"
         href="/download.pdf"
         variant="ghost"
-        iconLeft="⬇️"
       >
       </scientific-button>
     </div>
