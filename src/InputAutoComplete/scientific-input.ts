@@ -15,6 +15,7 @@ import {
   inputClearButtonStyles,
 } from '../shared/styles/input-styles.js';
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/controllers/dropdown-interaction-controller.js';
 import {renderIcon} from '../shared/icons/index.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
@@ -35,6 +36,7 @@ export class ScientificInput
   implements DropdownKeyboardHandler
 {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     inputThemeStyles,
@@ -47,9 +49,7 @@ export class ScientificInput
     inputClearButtonStyles,
     css`
       :host {
-        display: block;
         width: var(--input-width, 100%);
-        font-family: var(--scientific-font-family);
       }
 
       :host(.dropdown-open) {

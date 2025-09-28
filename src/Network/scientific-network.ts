@@ -1,5 +1,6 @@
 import {LitElement, html, css, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {renderIcon} from '../shared/icons/index.js';
 import cytoscape, {
   Core,
@@ -73,6 +74,7 @@ export class ScientificNetwork
   implements ExportableComponent
 {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     networkThemeStyles,
@@ -83,7 +85,6 @@ export class ScientificNetwork
     responsiveStyles,
     css`
       :host {
-        display: block;
         width: var(--network-width, 100%);
         height: var(--network-height, 400px);
         min-height: var(--network-min-height, 300px);

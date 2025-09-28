@@ -10,6 +10,7 @@ import {
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 
 export type ButtonTheme = ScientificTheme;
@@ -17,6 +18,7 @@ export type ButtonTheme = ScientificTheme;
 @customElement('scientific-button')
 export class ScientificButton extends LitElement {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     buttonThemeStyles,
@@ -26,7 +28,6 @@ export class ScientificButton extends LitElement {
     css`
       :host {
         display: inline-block;
-        font-family: var(--scientific-font-family);
       }
 
       :host([fullwidth]) {

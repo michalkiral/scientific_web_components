@@ -1,5 +1,6 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {renderIcon} from '../shared/icons/index.js';
 import {
   sharedVariables,
@@ -24,6 +25,7 @@ export type SliderTheme = ScientificTheme;
 @customElement('scientific-slider')
 export class ScientificSlider extends LitElement {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     sliderThemeStyles,
@@ -33,8 +35,6 @@ export class ScientificSlider extends LitElement {
     responsiveStyles,
     css`
       :host {
-        display: block;
-        font-family: var(--scientific-font-family);
         width: var(--slider-width, 100%);
         max-width: var(--slider-max-width, 100%);
       }

@@ -13,6 +13,7 @@ import {
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {formThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 
 type FormMethod = 'GET' | 'POST' | 'dialog';
 
@@ -22,6 +23,7 @@ import {classNames} from '../shared/utils/dom-utils.js';
 @customElement('scientific-form')
 export class ScientificForm extends LitElement {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     formThemeStyles,
@@ -31,11 +33,6 @@ export class ScientificForm extends LitElement {
     loadingSpinnerStyles,
     responsiveStyles,
     css`
-      :host {
-        display: block;
-        font-family: var(--scientific-font-family);
-      }
-
       .form-container {
         max-width: var(--form-max-width, 600px);
         width: var(--form-width, 100%);
