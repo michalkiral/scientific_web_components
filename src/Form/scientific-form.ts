@@ -13,6 +13,9 @@ import {
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {formThemeStyles} from '../shared/styles/component-theme-styles.js';
+
+type FormMethod = 'GET' | 'POST' | 'dialog';
+
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 
@@ -250,8 +253,31 @@ export class ScientificForm extends LitElement {
   @property({type: Boolean})
   autoFocus = false;
 
+  private _method: FormMethod = 'POST';
+
   @property({type: String})
-  method: 'get' | 'post' = 'post';
+  get method(): FormMethod {
+    return this._method;
+  }
+
+  set method(value: FormMethod | string) {
+    const nextValue = (value ?? 'POST').toString();
+    const lower = nextValue.toLowerCase();
+    let next: FormMethod;
+    if (lower === 'get') {
+      next = 'GET';
+    } else if (lower === 'dialog') {
+      next = 'dialog';
+    } else {
+      next = 'POST';
+    }
+    const old = this._method;
+    if (old !== next) {
+      this._method = next;
+      this.requestUpdate('method', old);
+    }
+  }
+
 
   @property({type: String})
   action = '';

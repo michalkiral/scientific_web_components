@@ -14,12 +14,11 @@ import {
   clearButtonStyles,
 } from '../shared/styles/dropdown-styles.js';
 import {dropdownThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {DropdownInteractionController} from '../shared/controllers/dropdown-interaction-controller.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
-  handleDropdownKeyboard,
   filterOptions,
-  createClickOutsideHandler,
   type DropdownOption,
   type DropdownKeyboardHandler,
 } from '../shared/utils/dropdown-utils.js';
@@ -92,6 +91,30 @@ export class ScientificDropdown
   @property({type: Number})
   focusedOptionIndex = -1;
 
+  private dropdownController = new DropdownInteractionController(this, {
+    onBeforeOpen: () => {
+      if (!this.isOpen) {
+        this.searchTerm = '';
+      }
+      return true;
+    },
+    onOpen: () => {
+      this.updateComplete.then(() => {
+        if (this.searchable) {
+          const searchInput = this.shadowRoot?.querySelector(
+            '.search-input'
+          ) as HTMLInputElement | null;
+          searchInput?.focus();
+        }
+        this.syncOptionsWidth();
+      });
+    },
+    keyboardConfig: () => ({
+      openOnNavigation: true,
+      allowCustomValues: false,
+    }),
+  });
+
   get focusedIndex(): number {
     return this.focusedOptionIndex;
   }
@@ -104,14 +127,9 @@ export class ScientificDropdown
     return this.getFilteredOptions();
   }
 
-  private toggleDropdown() {
-    if (this.disabled) return;
-    if (this.isOpen) {
-      this.closeDropdown();
-    } else {
-      this.openDropdown();
-    }
-  }
+  private toggleDropdown = () => {
+    this.dropdownController.toggle();
+  };
 
   private syncOptionsWidth() {
     const dropdownSelect = this.shadowRoot?.querySelector(
@@ -147,31 +165,11 @@ export class ScientificDropdown
   }
 
   closeDropdown() {
-    this.isOpen = false;
-    this.focusedOptionIndex = -1;
+    this.dropdownController.close();
   }
 
   openDropdown() {
-    if (this.disabled) {
-      return;
-    }
-    const wasOpen = this.isOpen;
-    this.isOpen = true;
-    this.focusedOptionIndex = -1;
-    
-    if (!wasOpen) {
-      this.searchTerm = '';
-    }
-    
-    this.updateComplete.then(() => {
-      if (this.searchable) {
-        const searchInput = this.shadowRoot?.querySelector(
-          '.search-input'
-        ) as HTMLInputElement;
-        searchInput?.focus();
-      }
-      this.syncOptionsWidth();
-    });
+    this.dropdownController.open();
   }
 
   private clearSelection() {
@@ -205,14 +203,12 @@ export class ScientificDropdown
     });
   }
 
-  private handleKeyDown(e: KeyboardEvent) {
-    if (this.disabled) return;
-
-    handleDropdownKeyboard.call(this, e, {
-      openOnNavigation: true,
-      allowCustomValues: false,
-    });
-  }
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (this.disabled) {
+      return;
+    }
+    this.dropdownController.handleKeyDown(e);
+  };
 
   private getFilteredOptions(): DropdownOption[] {
     return filterOptions(this.options, this.searchable ? this.searchTerm : '');
@@ -225,19 +221,6 @@ export class ScientificDropdown
     return selectedOption?.label || '';
   }
 
-  private handleClickOutside = createClickOutsideHandler(this, () => {
-    this.closeDropdown();
-  });
-
-  override connectedCallback() {
-    super.connectedCallback();
-    document.addEventListener('click', this.handleClickOutside);
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener('click', this.handleClickOutside);
-  }
 
   override render() {
     const selectedLabel = this.getSelectedLabel();
@@ -261,7 +244,7 @@ export class ScientificDropdown
           @click="${this.toggleDropdown}"
           role="combobox"
           aria-expanded="${this.isOpen}"
-          aria-haspopup="listbox"
+          aria-haspopup="true"
         >
           <span
             class="${classNames({

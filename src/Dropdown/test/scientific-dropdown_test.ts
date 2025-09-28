@@ -361,7 +361,7 @@ suite('ScientificDropdown', () => {
 
     assert.equal(select!.getAttribute('role'), 'combobox');
     assert.equal(select!.getAttribute('aria-expanded'), 'false');
-    assert.equal(select!.getAttribute('aria-haspopup'), 'listbox');
+    assert.equal(select!.getAttribute('aria-haspopup'), 'true');
     assert.equal(container!.getAttribute('tabindex'), '0');
   });
 });
