@@ -6,11 +6,11 @@ import {
   buttonStyles,
   loadingSpinnerStyles,
   responsiveStyles,
-  classNames,
   themeStyles,
   type ScientificTheme,
-} from '../shared/index.js';
+} from '../shared/styles/common-styles.js';
 import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {classNames} from '../shared/utils/dom-utils.js';
 
 export type ButtonTheme = ScientificTheme;
 
