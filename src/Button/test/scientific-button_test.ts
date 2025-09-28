@@ -157,7 +157,6 @@ suite('ScientificButton', () => {
     );
     const button = el.shadowRoot!.querySelector('button')!;
     assert.isTrue(button.disabled);
-    // Note: disabled doesn't add a CSS class, only the HTML disabled attribute
   });
 
   test('handles fullWidth property', async () => {

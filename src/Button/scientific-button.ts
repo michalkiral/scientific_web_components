@@ -12,6 +12,7 @@ import {
 import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
+import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 
 export type ButtonTheme = ScientificTheme;
 
@@ -164,20 +165,15 @@ export class ScientificButton extends LitElement {
     try {
       await this.action();
 
-      this.dispatchEvent(new CustomEvent('button-click-complete'));
-
-      this.dispatchEvent(new CustomEvent('success'));
+      dispatchMultipleEvents(this, [
+        {name: 'button-click-complete', detail: null, options: {bubbles: false, composed: false}},
+        {name: 'success', detail: null, options: {bubbles: false, composed: false}},
+      ]);
     } catch (error) {
-      this.dispatchEvent(
-        new CustomEvent('button-click-error', {
-          detail: {error},
-        })
-      );
-      this.dispatchEvent(
-        new CustomEvent('error', {
-          detail: {error},
-        })
-      );
+      dispatchMultipleEvents(this, [
+        {name: 'button-click-error', detail: {error}, options: {bubbles: false, composed: false}},
+        {name: 'error', detail: {error}, options: {bubbles: false, composed: false}},
+      ]);
     } finally {
       this.loading = false;
     }

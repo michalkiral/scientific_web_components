@@ -640,7 +640,6 @@ export const Minimal: Story = {
   },
 };
 
-// CSV loading example (would need actual CSV file)
 export const CSVLoading: Story = {
   args: {
     title: 'CSV Data Import',
