@@ -649,10 +649,8 @@ export class ScientificNetwork
   private _getLayoutOptions(): LayoutOptions {
     const baseOptions = {
       name: 'cose',
-      animate: true,
-      animationDuration: 500,
+      animate: false,
       fit: true,
-      padding: 30,
     };
 
     return baseOptions as LayoutOptions;
