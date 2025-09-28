@@ -15,14 +15,13 @@ import {
   inputClearButtonStyles,
 } from '../shared/styles/input-styles.js';
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {DropdownInteractionController} from '../shared/controllers/dropdown-interaction-controller.js';
 import {renderIcon} from '../shared/icons/index.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
-  handleDropdownKeyboard,
   filterOptions,
   generateAutocompleteHint,
-  createClickOutsideHandler,
   type DropdownOption,
   type DropdownKeyboardHandler,
 } from '../shared/utils/dropdown-utils.js';
@@ -133,6 +132,31 @@ export class ScientificInput
   @state()
   private autocompleteHint = '';
 
+  private dropdownController = new DropdownInteractionController(this, {
+    onBeforeOpen: () => {
+      this.filterOptions();
+      return (
+        this.filteredOptions.length > 0 || this.inputValue.trim().length > 0
+      );
+    },
+    onClose: () => {
+      this.autocompleteHint = '';
+    },
+    keyboardConfig: () => ({
+      openOnNavigation: true,
+      allowCustomValues: this.allowCustomValues,
+      onCustomValue: () => this.selectCustomValue(),
+      onAutocompleteHint: () => {
+        this.inputValue = this.autocompleteHint;
+        this.value = this.autocompleteHint;
+        this.autocompleteHint = '';
+        this.filterOptions();
+      },
+      autocompleteHint: this.autocompleteHint,
+      inputValue: this.inputValue,
+    }),
+  });
+
   get focusedIndex(): number {
     return this.highlightedIndex;
   }
@@ -172,14 +196,11 @@ export class ScientificInput
   }
 
   closeDropdown() {
-    this.isOpen = false;
-    this.highlightedIndex = -1;
+    this.dropdownController.close();
   }
 
   openDropdown() {
-    this.filterOptions();
-    this.isOpen =
-      this.filteredOptions.length > 0 || this.inputValue.trim().length > 0;
+    this.dropdownController.open();
   }
 
   private _debouncedFilter = debounce(() => {
@@ -190,17 +211,7 @@ export class ScientificInput
     super.connectedCallback();
     this.inputValue = this.value;
     this.filteredOptions = this.options;
-    document.addEventListener('click', this.handleClickOutside);
   }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener('click', this.handleClickOutside);
-  }
-
-  private handleClickOutside = createClickOutsideHandler(this, () => {
-    this.closeDropdown();
-  });
 
   private handleInput(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -241,21 +252,12 @@ export class ScientificInput
     );
   }
 
-  private handleKeyDown(e: KeyboardEvent) {
-    handleDropdownKeyboard.call(this, e, {
-      openOnNavigation: true,
-      allowCustomValues: this.allowCustomValues,
-      onCustomValue: () => this.selectCustomValue(),
-      onAutocompleteHint: () => {
-        this.inputValue = this.autocompleteHint;
-        this.value = this.autocompleteHint;
-        this.autocompleteHint = '';
-        this.filterOptions();
-      },
-      autocompleteHint: this.autocompleteHint,
-      inputValue: this.inputValue,
-    });
-  }
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (this.disabled) {
+      return;
+    }
+    this.dropdownController.handleKeyDown(e);
+  };
 
   private selectCustomValue() {
     const customValue = this.inputValue.trim();
