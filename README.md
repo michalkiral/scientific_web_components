@@ -82,3 +82,13 @@ npm run lint
 ---
 
 Adjust any sections according to the exact details of your repository! If you have specific components or features in mind, I can further personalize this README template.
+
+## Import conventions
+
+To keep bundles predictable and make tree-shaking reliable, prefer deep imports from the `src/shared` submodules instead of using the `shared` barrel. Examples:
+
+- Good: `import { sharedVariables } from '../shared/styles/common-styles.js';`
+- Good: `import { classNames } from '../shared/utils/dom-utils.js';`
+- Avoid: `import { sharedVariables, classNames } from '../shared/index.js';`
+
+An ESLint rule (`no-restricted-imports`) has been added to enforce this convention. The rule blocks imports from `../shared` and `../shared/index.js` and will show an error with guidance when violated.

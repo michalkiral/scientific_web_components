@@ -31,6 +31,22 @@
         "argsIgnorePattern": "^_"
       }
     ]
+    ,
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "../shared",
+            "message": "Import specific modules from ../shared/styles/* or ../shared/utils/* instead of the shared barrel to keep bundles predictable."
+          },
+          {
+            "name": "../shared/index.js",
+            "message": "Import specific modules from ../shared/styles/* or ../shared/utils/* instead of the shared barrel to keep bundles predictable."
+          }
+        ]
+      }
+    ]
   },
   "overrides": [
     {
