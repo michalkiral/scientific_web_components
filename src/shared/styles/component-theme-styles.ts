@@ -1,11 +1,5 @@
 import {css} from 'lit';
 
-/**
- * Component-specific theme styles
- * These styles provide theme variations for specific components
- * Previously these were in common-styles.ts but moved here for better organization
- */
-
 export const networkThemeStyles = css`
   /* Network specific styles */
   :host([theme='dark']) .network-toolbar,
