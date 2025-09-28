@@ -265,7 +265,7 @@ export class ScientificNetwork
   @property({type: String}) subtitle = '';
   @property({type: Object}) data: NetworkData = {nodes: [], edges: []};
   @property({type: Boolean}) directed = false;
-  @property({type: String}) theme: NetworkTheme = 'default';
+  @property({type: String, reflect: true}) theme: NetworkTheme = 'default';
   @property({type: Boolean}) interactive = true;
   @property({type: Boolean}) showToolbar = true;
   @property({type: Boolean}) showInfo = true;

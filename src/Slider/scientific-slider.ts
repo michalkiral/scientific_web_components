@@ -289,7 +289,7 @@ export class ScientificSlider extends LitElement {
   @property({type: String})
   description = '';
 
-  @property({type: String})
+  @property({type: String, reflect: true})
   theme: ScientificTheme = 'default';
 
   @property({type: Number})
