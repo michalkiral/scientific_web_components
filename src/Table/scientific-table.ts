@@ -4,6 +4,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {renderIcon} from '../shared/icons/index.js';
 import {
   containerStyles,
@@ -51,6 +52,7 @@ export type TableTheme = ScientificTheme;
 @customElement('scientific-table')
 export class ScientificTable extends LitElement {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     tableThemeStyles,
@@ -61,16 +63,8 @@ export class ScientificTable extends LitElement {
     responsiveStyles,
     css`
       :host {
-        display: block;
-        font-family: var(
-          --table-font-family,
-          system-ui,
-          -apple-system,
-          sans-serif
-        );
         width: var(--table-width, 100%);
         max-width: var(--table-max-width, 100%);
-        box-sizing: border-box;
       }
 
       .table-container {
@@ -82,7 +76,6 @@ export class ScientificTable extends LitElement {
         display: flex;
         flex-direction: column;
         gap: var(--table-gap, 0);
-        box-sizing: border-box;
         overflow: hidden;
       }
 

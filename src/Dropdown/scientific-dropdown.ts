@@ -1,4 +1,4 @@
-import {LitElement, html, css} from 'lit';
+import {LitElement, html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {
   sharedVariables,
@@ -14,6 +14,7 @@ import {
   clearButtonStyles,
 } from '../shared/styles/dropdown-styles.js';
 import {dropdownThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/controllers/dropdown-interaction-controller.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
@@ -32,6 +33,7 @@ export class ScientificDropdown
   implements DropdownKeyboardHandler
 {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     dropdownThemeStyles,
@@ -41,12 +43,6 @@ export class ScientificDropdown
     dropdownBaseStyles,
     dropdownContainerStyles,
     clearButtonStyles,
-    css`
-      :host {
-        display: block;
-        font-family: var(--scientific-font-family);
-      }
-    `,
   ];
 
   @property({type: String})
@@ -301,3 +297,5 @@ declare global {
     'scientific-dropdown': ScientificDropdown;
   }
 }
+
+

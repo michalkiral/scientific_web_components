@@ -3,6 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {renderIcon} from '../shared/icons/index.js';
 import {
   sharedVariables,
@@ -55,6 +56,7 @@ export type GraphTheme = ScientificTheme;
 @customElement('scientific-graph')
 export class ScientificGraph extends LitElement implements ExportableComponent {
   static override styles = [
+    baseComponentStyles,
     sharedVariables,
     themeStyles,
     graphThemeStyles,
@@ -64,11 +66,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
     loadingSpinnerStyles,
     responsiveStyles,
     css`
-      :host {
-        display: block;
-        font-family: var(--scientific-font-family);
-      }
-
       .graph-container {
         width: var(--graph-width, 100%);
         max-width: var(--graph-max-width, 100%);
