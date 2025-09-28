@@ -309,7 +309,7 @@ suite('ScientificForm', () => {
   test('handles form attributes correctly', async () => {
     const el = await fixture<ScientificForm>(html`
       <scientific-form
-        method="get"
+        method="GET"
         action="/submit"
         enctype="multipart/form-data"
         ?noValidate=${true}

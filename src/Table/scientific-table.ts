@@ -836,7 +836,6 @@ export class ScientificTable extends LitElement {
                           .placeholder=${this.searchPlaceholder}
                           .value=${this.searchTerm}
                           @input=${this._handleSearch}
-                          .size=${'medium'}
                           .clearable=${true}
                           .autoComplete=${false}
                         ></scientific-input>

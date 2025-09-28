@@ -118,7 +118,7 @@ export class ScientificButton extends LitElement {
   href = '';
 
   @property({type: String})
-  target = '';
+  target: '_self' | '_blank' | '_parent' | '_top' | '' = '';
 
   @property({type: Boolean})
   autoFocus = false;

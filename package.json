@@ -89,5 +89,9 @@
     "typescript": "^5.1.6",
     "vitest": "^3.2.4"
   },
-  "customElements": "custom-elements.json"
+  "customElements": "custom-elements.json",
+  "overrides": {
+    "web-component-analyzer": "1.1.6"
+  }
 }
+

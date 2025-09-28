@@ -401,7 +401,7 @@ export class ScientificInput
             autocomplete="off"
             role="combobox"
             aria-expanded="${this.isOpen}"
-            aria-haspopup="listbox"
+            aria-haspopup="true"
             aria-autocomplete="list"
           />
 

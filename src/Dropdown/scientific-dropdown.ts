@@ -244,7 +244,7 @@ export class ScientificDropdown
           @click="${this.toggleDropdown}"
           role="combobox"
           aria-expanded="${this.isOpen}"
-          aria-haspopup="listbox"
+          aria-haspopup="true"
         >
           <span
             class="${classNames({
