@@ -109,11 +109,7 @@ export class ScientificButton extends LitElement {
   @property({type: Boolean, reflect: true})
   fullWidth = false;
 
-  @property({type: String})
-  iconLeft = '';
 
-  @property({type: String})
-  iconRight = '';
 
   @property({type: String})
   type: 'button' | 'submit' | 'reset' = 'button';
@@ -197,17 +193,7 @@ export class ScientificButton extends LitElement {
     });
   }
 
-  private _renderIcon(iconName: string, position: 'left' | 'right') {
-    if (!iconName) {
-      return '';
-    }
 
-    // Can extend this to support different icon systems
-    // For now, it supports simple text icons or Unicode symbols
-    return html`<span class="button-icon button-icon-${position}"
-      >${iconName}</span
-    >`;
-  }
 
   private _renderContent() {
     const label = this.loading ? this.loadingLabel : this.label;
@@ -216,9 +202,9 @@ export class ScientificButton extends LitElement {
       ${this.loading && this.showSpinner
         ? html`<div class="loading-spinner"></div>`
         : ''}
-      ${this._renderIcon(this.iconLeft, 'left')}
-      <span class="button-text">${label}</span>
-      ${this._renderIcon(this.iconRight, 'right')}
+      <div class="button-content" style="${this.loading && this.showSpinner ? 'visibility: hidden;' : ''}">
+        <span class="button-text">${label}</span>
+      </div>
     `;
   }
 

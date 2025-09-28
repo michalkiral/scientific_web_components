@@ -52,6 +52,11 @@ export class ScientificInput
         width: var(--input-width, 100%);
         font-family: var(--scientific-font-family);
       }
+
+      :host(.dropdown-open) {
+        position: relative;
+        z-index: 10;
+      }
     `,
   ];
 
@@ -79,8 +84,7 @@ export class ScientificInput
   @property({type: Boolean})
   clearable = true;
 
-  @property({type: String, reflect: true})
-  size: 'small' | 'medium' | 'large' = 'medium';
+
 
   @property({type: String})
   state: 'default' | 'error' | 'success' = 'default';
@@ -100,8 +104,7 @@ export class ScientificInput
   @property({type: Boolean})
   allowCustomValues = false;
 
-  @property({type: Number})
-  minLength = 0;
+
 
   @property({type: Number})
   maxLength = -1;
@@ -332,7 +335,6 @@ export class ScientificInput
     return classNames(
       'input-field',
       'scientific-input',
-      this.size !== 'medium' && this.size,
       this.state !== 'default' && this.state
     );
   }
@@ -388,7 +390,7 @@ export class ScientificInput
             .placeholder="${this.placeholder}"
             .disabled="${this.disabled}"
             .required="${this.required}"
-            .minlength="${this.minLength}"
+
             maxlength="${this.maxLength > 0 ? this.maxLength : ''}"
             @input="${this.handleInput}"
             @keydown="${this.handleKeyDown}"

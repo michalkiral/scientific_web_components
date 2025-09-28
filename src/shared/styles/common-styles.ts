@@ -504,6 +504,59 @@ export const buttonStyles = css`
     background-color: var(--button-success-hover-bg-color, #218838);
   }
 
+  /* Disabled states for variants */
+  .scientific-button.secondary:disabled {
+    background-color: var(--button-disabled-bg-color, #e9ecef);
+    color: var(--button-disabled-color, #6c757d);
+    border-color: var(--button-disabled-border-color, #dee2e6);
+  }
+
+  .scientific-button.secondary:disabled:hover {
+    background-color: var(--button-disabled-bg-color, #e9ecef);
+  }
+
+  .scientific-button.outline:disabled {
+    background-color: var(--button-outline-disabled-bg-color, transparent);
+    color: var(--button-outline-disabled-color, #6c757d);
+    border-color: var(--button-outline-disabled-border-color, #dee2e6);
+  }
+
+  .scientific-button.outline:disabled:hover {
+    background-color: var(--button-outline-disabled-bg-color, transparent);
+    color: var(--button-outline-disabled-color, #6c757d);
+  }
+
+  .scientific-button.ghost:disabled {
+    background-color: var(--button-ghost-disabled-bg-color, transparent);
+    color: var(--button-ghost-disabled-color, #6c757d);
+    border-color: var(--button-ghost-disabled-border-color, transparent);
+  }
+
+  .scientific-button.ghost:disabled:hover {
+    background-color: var(--button-ghost-disabled-bg-color, transparent);
+    color: var(--button-ghost-disabled-color, #6c757d);
+  }
+
+  .scientific-button.danger:disabled {
+    background-color: var(--button-danger-disabled-bg-color, #e9ecef);
+    color: var(--button-danger-disabled-color, #6c757d);
+    border-color: var(--button-danger-disabled-border-color, #dee2e6);
+  }
+
+  .scientific-button.danger:disabled:hover {
+    background-color: var(--button-danger-disabled-bg-color, #e9ecef);
+  }
+
+  .scientific-button.success:disabled {
+    background-color: var(--button-success-disabled-bg-color, #e9ecef);
+    color: var(--button-success-disabled-color, #6c757d);
+    border-color: var(--button-success-disabled-border-color, #dee2e6);
+  }
+
+  .scientific-button.success:disabled:hover {
+    background-color: var(--button-success-disabled-bg-color, #e9ecef);
+  }
+
   .scientific-button.small {
     font-size: var(--button-small-font-size, var(--scientific-text-sm));
     padding: var(
@@ -523,11 +576,10 @@ export const buttonStyles = css`
   }
 
   .scientific-button.loading {
-    color: transparent;
     pointer-events: none;
   }
+  
   .scientific-button.loading-text-only {
-    color: inherit;
     pointer-events: none;
   }
 

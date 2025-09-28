@@ -27,14 +27,12 @@ A **highly customizable**, **accessible** autocomplete input component for scien
 - \`disabled\` — Whether the input is disabled
 - \`required\` — Whether the input is required (shows asterisk)
 - \`clearable\` — Whether to show a clear button when input has value
-- \`size\` — Input size: small, medium, large
 - \`state\` — Visual state: default, error, success
 - \`helperText\` — Helper text displayed below the input
 - \`errorMessage\` — Error message displayed when state is error
 - \`successMessage\` — Success message displayed when state is success
 - \`icon\` — Icon displayed on the right side (emoji or text)
 - \`allowCustomValues\` — Whether users can add custom values not in options
-- \`minLength\` — Minimum length of input value
 - \`maxLength\` — Maximum length of input value (-1 for unlimited)
 - \`noOptionsText\` — Text shown when no options match the search
 - \`autoComplete\` — Whether to enable autocomplete functionality
@@ -81,14 +79,13 @@ A **highly customizable**, **accessible** autocomplete input component for scien
 ## Features
 
 - **Autocomplete functionality** with customizable options
-- **Multiple size variants** (small, medium, large)
 - **State management** (default, error, success) with visual feedback
 - **Clearable input** with optional clear button
 - **Custom value support** allowing users to add new options
 - **Grouped options** for better organization
 - **Keyboard navigation** with arrow keys and Enter/Escape support
 - **Tab autocompletion** for quick selection
-- **Length validation** with min/max length constraints
+- **Length validation** with max length constraints
 - **Form integration** with proper form submission support
 - **Responsive design** that works on all devices
 - **Highly customizable** with CSS custom properties
@@ -229,14 +226,6 @@ scientific-input {
   --input-error-message-color: var(--scientific-danger-color);
   --input-success-message-color: var(--scientific-success-color);
   
-  /* Size Variants */
-  --input-small-padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
-  --input-small-font-size: var(--scientific-text-sm);
-  --input-small-min-height: 36px;
-  --input-large-padding: var(--scientific-spacing-lg) var(--scientific-spacing-xl);
-  --input-large-font-size: var(--scientific-text-lg);
-  --input-large-min-height: 56px;
-  
   /* Autocomplete Hint */
   --input-hint-color: #9ca3af;
   --input-hint-font-style: italic;
@@ -295,15 +284,6 @@ scientific-input {
       control: 'boolean',
       description: 'Whether to show a clear button when input has value',
     },
-    size: {
-      control: {type: 'select'},
-      options: ['small', 'medium', 'large'],
-      description: 'Size of the input field',
-      table: {
-        type: {summary: "'small' | 'medium' | 'large'"},
-        defaultValue: {summary: "'medium'"},
-      },
-    },
     state: {
       control: {type: 'select'},
       options: ['default', 'error', 'success'],
@@ -332,10 +312,6 @@ scientific-input {
     allowCustomValues: {
       control: 'boolean',
       description: 'Whether users can add custom values not in options',
-    },
-    minLength: {
-      control: 'number',
-      description: 'Minimum length of input value',
     },
     maxLength: {
       control: 'number',
@@ -382,7 +358,6 @@ export const Default: Story = {
     successMessage: '',
     icon: '',
     allowCustomValues: false,
-    minLength: 0,
     maxLength: -1,
     noOptionsText: 'No countries found',
     autoComplete: true,
@@ -396,14 +371,12 @@ export const Default: Story = {
     disabled,
     required,
     clearable,
-    size,
     state,
     helperText,
     errorMessage,
     successMessage,
     icon,
     allowCustomValues,
-    minLength,
     maxLength,
     noOptionsText,
     autoComplete,
@@ -417,14 +390,12 @@ export const Default: Story = {
       .disabled=${disabled}
       .required=${required}
       .clearable=${clearable}
-      .size=${size}
       .state=${state}
       .helperText=${helperText}
       .errorMessage=${errorMessage}
       .successMessage=${successMessage}
       .icon=${icon}
       .allowCustomValues=${allowCustomValues}
-      .minLength=${minLength}
       .maxLength=${maxLength}
       .noOptionsText=${noOptionsText}
       .autoComplete=${autoComplete}
@@ -475,50 +446,6 @@ export const States: Story = {
           {label: 'Apple', value: 'apple'},
           {label: 'Banana', value: 'banana'},
           {label: 'Cherry', value: 'cherry'},
-        ]}
-      ></scientific-input>
-    </div>
-  `,
-};
-
-export const Sizes: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; width: 400px;"
-    >
-      <h3 style="margin: 0;">Small Size</h3>
-      <scientific-input
-        label="Small Input"
-        placeholder="Small size input..."
-        size="small"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
-        ]}
-      ></scientific-input>
-
-      <h3 style="margin: 0;">Medium Size (Default)</h3>
-      <scientific-input
-        label="Medium Input"
-        placeholder="Medium size input..."
-        size="medium"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
-        ]}
-      ></scientific-input>
-
-      <h3 style="margin: 0;">Large Size</h3>
-      <scientific-input
-        label="Large Input"
-        placeholder="Large size input..."
-        size="large"
-        .options=${[
-          {label: 'Option 1', value: '1'},
-          {label: 'Option 2', value: '2'},
-          {label: 'Option 3', value: '3'},
         ]}
       ></scientific-input>
     </div>
@@ -661,32 +588,18 @@ export const DisabledAndRequired: Story = {
   `,
 };
 
-export const LengthLimits: Story = {
+export const MaxLength: Story = {
   render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; width: 400px;"
-    >
-      <scientific-input
-        label="Minimum Length (3 characters)"
-        placeholder="Must be at least 3 characters..."
-        minLength="3"
-        helperText="Minimum 3 characters required"
-        .options=${[
-          {label: 'Apple', value: 'apple'},
-          {label: 'Banana', value: 'banana'},
-          {label: 'Cherry', value: 'cherry'},
-        ]}
-      ></scientific-input>
-
+    <div style="width: 400px;">
       <scientific-input
         label="Maximum Length (10 characters)"
-        placeholder="Maximum 10 characters..."
+        placeholder="Try typing more than 10 characters..."
         maxLength="10"
-        helperText="Maximum 10 characters allowed"
+        helperText="Maximum 10 characters allowed - input will stop accepting characters after limit"
         .options=${[
           {label: 'Short', value: 'short'},
           {label: 'Medium', value: 'medium'},
-          {label: 'Long text', value: 'long'},
+          {label: 'Longer', value: 'longer'},
         ]}
       ></scientific-input>
     </div>
@@ -772,9 +685,52 @@ export const TabAutocompletion: Story = {
 
 export const ThemeComparison: Story = {
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 150px;">
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+    <style>
+      .theme-container {
+        padding: 24px;
+        border-radius: 12px;
+        border: 2px solid;
+        margin-bottom: 24px;
+        min-height: 200px;
+        transition: all 0.2s ease;
+      }
+      
+      .theme-container.default {
+        background: #ffffff;
+        border-color: #e5e7eb;
+        color: #374151;
+      }
+      
+      .theme-container.dark {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f3f4f6;
+      }
+      
+      .theme-container.scientific {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #1e293b;
+      }
+      
+      .default .theme-badge {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      
+      .dark .theme-badge {
+        background: #374151;
+        color: #9ca3af;
+      }
+      
+      .scientific .theme-badge {
+        background: #ecfdf5;
+        color: #059669;
+      }
+    </style>
+    <div style="display: flex; flex-direction: column; gap: 0;">
+      <div class="theme-container default">
+        <h3 class="theme-title">
           Default Theme
         </h3>
         <scientific-input
@@ -782,18 +738,18 @@ export const ThemeComparison: Story = {
           theme="default"
           placeholder="Enter text..."
           .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
+            {label: 'Apple', value: 'apple'},
+            {label: 'Banana', value: 'banana'},
+            {label: 'Cherry', value: 'cherry'},
           ]}
           clearable
           helperText="Standard theme with clean, modern styling"
-          style="--input-width: 300px;"
+          style="--input-width: 100%; max-width: 400px;"
         ></scientific-input>
       </div>
 
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+      <div class="theme-container dark">
+        <h3 class="theme-title">
           Dark Theme
         </h3>
         <scientific-input
@@ -801,18 +757,18 @@ export const ThemeComparison: Story = {
           theme="dark"
           placeholder="Enter text..."
           .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
+            {label: 'Apple', value: 'apple'},
+            {label: 'Banana', value: 'banana'},
+            {label: 'Cherry', value: 'cherry'},
           ]}
           clearable
           helperText="Dark theme optimized for low-light environments"
-          style="--input-width: 300px;"
+          style="--input-width: 100%; max-width: 400px;"
         ></scientific-input>
       </div>
 
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+      <div class="theme-container scientific">
+        <h3 class="theme-title">
           Scientific Theme
         </h3>
         <scientific-input
@@ -820,13 +776,13 @@ export const ThemeComparison: Story = {
           theme="scientific"
           placeholder="Enter text..."
           .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
+            {label: 'Apple', value: 'apple'},
+            {label: 'Banana', value: 'banana'},
+            {label: 'Cherry', value: 'cherry'},
           ]}
           clearable
           helperText="Professional theme for scientific applications"
-          style="--input-width: 300px;"
+          style="--input-width: 100%; max-width: 400px;"
         ></scientific-input>
       </div>
     </div>

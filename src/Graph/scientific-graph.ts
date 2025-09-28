@@ -27,6 +27,7 @@ import {
   type ExportableComponent,
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
+import {getChartThemeColors} from '../shared/utils/theme-utils.js';
 
 export interface GraphDataset {
   label: string;
@@ -122,7 +123,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         position: relative;
         flex: 1;
         min-height: var(--graph-canvas-min-height, 300px);
-        background-color: var(--graph-canvas-bg-color, #ffffff);
+        background-color: var(--graph-canvas-bg-color, var(--scientific-bg-primary, #ffffff));
         overflow: hidden;
       }
 
@@ -149,7 +150,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       .graph-stat-item {
         text-align: center;
         padding: var(--graph-stat-padding, var(--scientific-spacing-md));
-        background-color: var(--graph-stat-bg-color, #f9fafb);
+        background-color: var(--graph-stat-bg-color, var(--scientific-bg-tertiary, #f9fafb));
         border-radius: var(
           --graph-stat-border-radius,
           var(--scientific-border-radius)
@@ -160,7 +161,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       .graph-stat-label {
         font-size: var(--graph-stat-label-font-size, var(--scientific-text-xs));
         font-weight: var(--graph-stat-label-font-weight, 500);
-        color: var(--graph-stat-label-color, #6b7280);
+        color: var(--graph-stat-label-color, var(--scientific-text-muted, #6b7280));
         margin-bottom: var(--scientific-spacing-xs);
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -169,7 +170,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       .graph-stat-value {
         font-size: var(--graph-stat-value-font-size, var(--scientific-text-lg));
         font-weight: var(--graph-stat-value-font-weight, 600);
-        color: var(--graph-stat-value-color, #111827);
+        color: var(--graph-stat-value-color, var(--scientific-text-primary, #111827));
       }
 
       .graph-legend {
@@ -186,7 +187,7 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         align-items: center;
         gap: var(--scientific-spacing-sm);
         font-size: var(--graph-legend-font-size, var(--scientific-text-sm));
-        color: var(--graph-legend-color, #374151);
+        color: var(--graph-legend-color, var(--scientific-text-secondary, #374151));
       }
 
       .graph-legend-color {
@@ -350,7 +351,8 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       changedProperties.has('showGrid') ||
       changedProperties.has('showAxes') ||
       changedProperties.has('xAxisTitle') ||
-      changedProperties.has('yAxisTitle')
+      changedProperties.has('yAxisTitle') ||
+      changedProperties.has('theme')
     ) {
       this._recreateChart();
     }
@@ -419,6 +421,8 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
         }),
       };
 
+      const themeColors = getChartThemeColors(this);
+      
       const chartOptions: ChartOptions = {
         responsive: this.responsive,
         maintainAspectRatio: this.maintainAspectRatio,
@@ -435,15 +439,16 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
             labels: {
               padding: 20,
               usePointStyle: true,
+              color: themeColors.axisLabelColor,
             },
           },
           tooltip: {
             mode: 'index',
             intersect: false,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            titleColor: '#ffffff',
-            bodyColor: '#ffffff',
-            borderColor: '#007bff',
+            backgroundColor: themeColors.tooltipBackgroundColor,
+            titleColor: themeColors.tooltipTextColor,
+            bodyColor: themeColors.tooltipTextColor,
+            borderColor: themeColors.tooltipBorderColor,
             borderWidth: 1,
           },
         },
@@ -453,11 +458,15 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                 display: true,
                 grid: {
                   display: this.showGrid,
-                  color: 'rgba(0, 0, 0, 0.1)',
+                  color: themeColors.gridColor,
+                },
+                ticks: {
+                  color: themeColors.axisLabelColor,
                 },
                 title: {
                   display: !!this.xAxisTitle,
                   text: this.xAxisTitle,
+                  color: themeColors.axisTitleColor,
                   font: {
                     size: 14,
                     weight: 'bold',
@@ -468,11 +477,15 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
                 display: true,
                 grid: {
                   display: this.showGrid,
-                  color: 'rgba(0, 0, 0, 0.1)',
+                  color: themeColors.gridColor,
+                },
+                ticks: {
+                  color: themeColors.axisLabelColor,
                 },
                 title: {
                   display: !!this.yAxisTitle,
                   text: this.yAxisTitle,
+                  color: themeColors.axisTitleColor,
                   font: {
                     size: 14,
                     weight: 'bold',
@@ -515,6 +528,8 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
       this._createChart();
     }, 50);
   }
+
+
 
   private _calculateStatistics(): GraphStatistics | null {
     if (!this.datasets.length || !this.datasets[0]?.data.length) {

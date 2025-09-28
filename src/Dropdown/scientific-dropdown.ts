@@ -152,11 +152,18 @@ export class ScientificDropdown
   }
 
   openDropdown() {
-    if (this.disabled) return;
+    if (this.disabled) {
+      return;
+    }
+    const wasOpen = this.isOpen;
     this.isOpen = true;
     this.focusedOptionIndex = -1;
-    this.searchTerm = '';
-    setTimeout(() => {
+    
+    if (!wasOpen) {
+      this.searchTerm = '';
+    }
+    
+    this.updateComplete.then(() => {
       if (this.searchable) {
         const searchInput = this.shadowRoot?.querySelector(
           '.search-input'
@@ -164,7 +171,7 @@ export class ScientificDropdown
         searchInput?.focus();
       }
       this.syncOptionsWidth();
-    }, 0);
+    });
   }
 
   private clearSelection() {
@@ -183,8 +190,19 @@ export class ScientificDropdown
 
   private handleSearch(e: Event) {
     const target = e.target as HTMLInputElement;
+    const cursorPosition = target.selectionStart;
     this.searchTerm = target.value;
     this.focusedOptionIndex = -1;
+    
+    this.updateComplete.then(() => {
+      const searchInput = this.shadowRoot?.querySelector('.search-input') as HTMLInputElement;
+      if (searchInput && document.activeElement !== searchInput) {
+        searchInput.focus();
+        if (cursorPosition !== null) {
+          searchInput.setSelectionRange(cursorPosition, cursorPosition);
+        }
+      }
+    });
   }
 
   private handleKeyDown(e: KeyboardEvent) {

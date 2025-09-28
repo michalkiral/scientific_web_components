@@ -13,7 +13,6 @@ export const inputContainerStyles = css`
     position: relative;
     display: flex;
     align-items: center;
-    z-index: 1;
   }
 
   .input-field {
@@ -69,7 +68,6 @@ export const autocompleteStyles = css`
     font-size: var(--input-font-size, var(--scientific-text-base));
     font-family: inherit;
     pointer-events: none;
-    z-index: 1;
     white-space: nowrap;
     overflow: hidden;
   }

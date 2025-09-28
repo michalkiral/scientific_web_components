@@ -102,7 +102,7 @@ suite('scientific-slider', () => {
       ></scientific-slider>
     `);
 
-    const thumb = el.shadowRoot!.querySelector('.slider-thumb') as HTMLElement;
+    const thumb = el.shadowRoot!.querySelector('.slider-track-container') as HTMLElement;
 
     thumb.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assert.equal(el.value, 60, 'Arrow right should increase value by step');
