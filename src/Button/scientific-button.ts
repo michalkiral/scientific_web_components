@@ -194,8 +194,6 @@ export class ScientificButton extends LitElement {
     });
   }
 
-
-
   private _renderContent() {
     const label = this.loading ? this.loadingLabel : this.label;
 

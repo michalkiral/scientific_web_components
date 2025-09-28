@@ -1,115 +1,12 @@
+import {
+  sampleNetworkData,
+  proteinInteractionData,
+  createLargeNetworkData,
+} from './scientific-network.stories.data.js';
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-network.js';
-import type {ScientificNetwork, NetworkData} from './scientific-network.js';
-
-const sampleNetworkData: NetworkData = {
-  nodes: [
-    {id: 'node1', label: 'Protein A', data: {type: 'protein', mass: 25000}},
-    {id: 'node2', label: 'Protein B', data: {type: 'protein', mass: 30000}},
-    {
-      id: 'node3',
-      label: 'Compound X',
-      data: {type: 'compound', formula: 'C6H12O6'},
-    },
-    {id: 'node4', label: 'Gene Y', data: {type: 'gene', chromosome: 'chr1'}},
-    {
-      id: 'node5',
-      label: 'Metabolite Z',
-      data: {type: 'metabolite', mw: 180.16},
-    },
-    {id: 'node6', label: 'Enzyme E', data: {type: 'enzyme', ec: '1.1.1.1'}},
-  ],
-  edges: [
-    {id: 'edge1', source: 'node1', target: 'node2', label: 'interacts'},
-    {id: 'edge2', source: 'node2', target: 'node3', label: 'catalyzes'},
-    {id: 'edge3', source: 'node3', target: 'node4', label: 'regulates'},
-    {id: 'edge4', source: 'node4', target: 'node5', label: 'produces'},
-    {id: 'edge5', source: 'node5', target: 'node6', label: 'inhibits'},
-    {id: 'edge6', source: 'node6', target: 'node1', label: 'phosphorylates'},
-  ],
-};
-
-const largeNetworkData: NetworkData = {
-  nodes: Array.from({length: 20}, (_, i) => ({
-    id: `node${i + 1}`,
-    label: `Node ${i + 1}`,
-    data: {type: i % 4 === 0 ? 'hub' : 'regular', importance: Math.random()},
-  })),
-  edges: Array.from({length: 35}, (_, i) => {
-    const source = Math.floor(Math.random() * 20) + 1;
-    let target = Math.floor(Math.random() * 20) + 1;
-    while (target === source) {
-      target = Math.floor(Math.random() * 20) + 1;
-    }
-    return {
-      id: `edge${i + 1}`,
-      source: `node${source}`,
-      target: `node${target}`,
-      data: {weight: Math.random()},
-    };
-  }),
-};
-
-const proteinInteractionData: NetworkData = {
-  nodes: [
-    {
-      id: 'p53',
-      label: 'p53',
-      data: {type: 'tumor suppressor', function: 'DNA damage response'},
-    },
-    {
-      id: 'mdm2',
-      label: 'MDM2',
-      data: {type: 'ubiquitin ligase', function: 'p53 regulation'},
-    },
-    {
-      id: 'p21',
-      label: 'p21',
-      data: {type: 'cyclin inhibitor', function: 'cell cycle arrest'},
-    },
-    {
-      id: 'rb',
-      label: 'Rb',
-      data: {type: 'tumor suppressor', function: 'G1/S checkpoint'},
-    },
-    {
-      id: 'e2f1',
-      label: 'E2F1',
-      data: {type: 'transcription factor', function: 'S phase genes'},
-    },
-  ],
-  edges: [
-    {
-      id: 'e1',
-      source: 'p53',
-      target: 'p21',
-      label: 'activates',
-      data: {type: 'transcriptional'},
-    },
-    {
-      id: 'e2',
-      source: 'mdm2',
-      target: 'p53',
-      label: 'degrades',
-      data: {type: 'post-translational'},
-    },
-    {
-      id: 'e3',
-      source: 'p21',
-      target: 'rb',
-      label: 'stabilizes',
-      data: {type: 'protein-protein'},
-    },
-    {
-      id: 'e4',
-      source: 'rb',
-      target: 'e2f1',
-      label: 'inhibits',
-      data: {type: 'protein-protein'},
-    },
-  ],
-};
+import type {ScientificNetwork} from './scientific-network.js';
 
 const meta: Meta<ScientificNetwork> = {
    title: 'Scientific/Network',
@@ -334,7 +231,7 @@ export const LargeNetwork: Story = {
   args: {
     title: 'Large Network Visualization',
     subtitle: 'Performance demonstration with 20 nodes',
-    data: largeNetworkData,
+    data: createLargeNetworkData(),
     theme: 'scientific',
     interactive: true,
     showToolbar: true,
