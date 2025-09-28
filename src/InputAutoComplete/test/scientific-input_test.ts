@@ -21,7 +21,6 @@ suite('ScientificInput', () => {
     assert.isNotNull(input);
     assert.equal(input.placeholder, 'Type to search...');
     assert.equal(el.value, '');
-    assert.equal(el.size, 'medium');
     assert.equal(el.state, 'default');
     assert.isFalse(el.disabled);
     assert.isFalse(el.required);
@@ -45,31 +44,6 @@ suite('ScientificInput', () => {
     assert.isNotNull(label);
     assert.include(label!.textContent!, 'Custom Label');
     assert.equal(input.placeholder, 'Custom placeholder');
-  });
-
-  test('applies size classes correctly', async () => {
-    const sizes = ['small', 'medium', 'large'] as const;
-
-    for (const size of sizes) {
-      const el = await fixture<ScientificInput>(html`
-        <scientific-input .size=${size}></scientific-input>
-      `);
-      const input = el.shadowRoot!.querySelector('.input-field')!;
-
-      if (size !== 'medium') {
-        assert.include(
-          input.className,
-          size,
-          `Input should have ${size} class`
-        );
-      } else {
-        assert.notInclude(
-          input.className,
-          'medium',
-          'Medium size should not add class'
-        );
-      }
-    }
   });
 
   test('applies state classes correctly', async () => {

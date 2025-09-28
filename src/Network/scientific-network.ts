@@ -476,6 +476,17 @@ export class ScientificNetwork
     }
 
     try {
+      const canvasRect = canvasElement.getBoundingClientRect();
+      if (!canvasRect || (canvasRect.width === 0 && canvasRect.height === 0)) {
+        window.setTimeout(() => this._initializeCytoscape(), 250);
+        return;
+      }
+    } catch (e) {
+      window.setTimeout(() => this._initializeCytoscape(), 250);
+      return;
+    }
+
+    try {
       const elements = this._convertDataToCytoscapeElements();
 
       this.cy = cytoscape({
