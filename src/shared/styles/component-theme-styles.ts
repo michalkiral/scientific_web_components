@@ -37,62 +37,51 @@ export const networkThemeStyles = css`
 `;
 
 export const sliderThemeStyles = css`
-  .slider-value-display {
-    background-color: var(--scientific-bg-secondary);
-    color: var(--scientific-text-primary);
-    border-color: var(--scientific-border-color);
+  :host {
+    --slider-value-bg-color: var(--scientific-bg-secondary);
+    --slider-value-color: var(--scientific-text-primary);
+    --slider-track-color: var(--scientific-bg-tertiary);
+    --slider-mark-tick-color: var(--scientific-text-muted);
+    --slider-mark-label-color: var(--scientific-text-muted);
+    --slider-tooltip-bg-color: var(--scientific-bg-tertiary);
+    --slider-tooltip-color: var(--scientific-text-primary);
   }
 
-  .slider-track {
-    background-color: var(--scientific-bg-tertiary);
+  :host(:not([theme])) {
+    --slider-tooltip-bg-color: #374151;
+    --slider-tooltip-color: #ffffff;
   }
-
-  .slider-mark-tick {
-    background-color: var(--scientific-text-muted);
-  }
-
-  .slider-mark-label {
-    color: var(--scientific-text-muted);
-  }
-
-  .slider-range-labels {
-    color: var(--scientific-text-tertiary);
-  }
-
-  .slider-tooltip {
-    background-color: var(--scientific-bg-tertiary);
-    color: var(--scientific-text-primary);
-    box-shadow: var(--scientific-shadow-lg);
-  }
-
-  .slider-tooltip::after {
-    border-top-color: var(--scientific-bg-tertiary);
-  }
-
-  :host(:not([theme])) .slider-tooltip,
-  :host([theme='default']) .slider-tooltip {
-    background-color: #374151;
-    color: #ffffff;
-  }
-
-  :host(:not([theme])) .slider-tooltip::after,
-  :host([theme='default']) .slider-tooltip::after {
-    border-top-color: #374151;
+  
+  :host([theme='default']) {
+    --slider-tooltip-bg-color: #374151;
+    --slider-tooltip-color: #ffffff;
   }
 `;
 
 export const tableThemeStyles = css`
+  :host {
+    --table-bg-color: var(--scientific-bg-primary);
+    --table-header-bg-color: var(--scientific-bg-secondary);
+    --table-title-color: var(--scientific-text-primary);
+    --table-description-color: var(--scientific-text-secondary);
+    --table-content-bg-color: var(--scientific-bg-primary);
+    --table-head-bg-color: var(--scientific-bg-secondary);
+    --table-header-cell-color: var(--scientific-text-primary);
+    --table-header-cell-hover-bg-color: var(--scientific-bg-tertiary);
+    --table-sort-indicator-color: var(--scientific-text-muted);
+    --table-sort-indicator-active-color: var(--scientific-primary-color);
+    --table-row-hover-bg-color: var(--scientific-bg-secondary);
+    --table-row-selected-bg-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
+    --table-cell-color: var(--scientific-text-primary);
+    --table-footer-bg-color: var(--scientific-bg-secondary);
+    --table-info-color: var(--scientific-text-secondary);
+    --table-empty-color: var(--scientific-text-muted);
+    --table-empty-title-color: var(--scientific-text-secondary);
+    --table-empty-description-color: var(--scientific-text-muted);
+  }
+
   .table-row.selected {
-    background-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
     border-color: var(--scientific-primary-color);
-  }
-
-  .sort-indicator {
-    color: var(--scientific-text-muted);
-  }
-
-  .sort-indicator.active {
-    color: var(--scientific-primary-color);
   }
 
   .pagination-button.active {
@@ -142,8 +131,8 @@ export const dropdownThemeStyles = css`
 `;
 
 export const buttonThemeStyles = css`
-  .scientific-button.ghost:hover {
-    background-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
+  :host {
+    --button-ghost-hover-bg-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
   }
 
   :host([theme='scientific']) .scientific-button:hover {
@@ -156,29 +145,17 @@ export const buttonThemeStyles = css`
 `;
 
 export const inputThemeStyles = css`
-  .input-field.error {
-    border-color: var(--scientific-danger-color);
-    background-color: color-mix(in srgb, var(--scientific-danger-color) 5%, transparent);
-  }
-
-  .input-field.success {
-    border-color: var(--scientific-success-color);
-    background-color: color-mix(in srgb, var(--scientific-success-color) 5%, transparent);
-  }
-
-  .autocomplete-hint {
-    color: color-mix(in srgb, var(--scientific-text-muted) 40%, transparent);
-  }
-
-  .option.disabled {
-    color: var(--scientific-text-muted);
-    background-color: var(--scientific-bg-tertiary);
-  }
-
-  .group-header {
-    background-color: var(--scientific-bg-secondary);
-    color: var(--scientific-text-tertiary);
-    border-color: var(--scientific-border-color);
+  :host {
+    --input-error-border-color: var(--scientific-danger-color);
+    --input-error-bg-color: color-mix(in srgb, var(--scientific-danger-color) 5%, transparent);
+    --input-success-border-color: var(--scientific-success-color);
+    --input-success-bg-color: color-mix(in srgb, var(--scientific-success-color) 5%, transparent);
+    --input-hint-color: color-mix(in srgb, var(--scientific-text-muted) 40%, transparent);
+    --input-option-disabled-color: var(--scientific-text-muted);
+    --input-option-disabled-bg-color: var(--scientific-bg-tertiary);
+    --input-group-header-bg-color: var(--scientific-bg-secondary);
+    --input-group-header-color: var(--scientific-text-tertiary);
+    --input-group-header-border-color: var(--scientific-border-color);
   }
 
   :host([theme='scientific']) .autocomplete-hint {
@@ -195,8 +172,8 @@ export const inputThemeStyles = css`
 `;
 
 export const formThemeStyles = css`
-  .form-progress-bar {
-    background-color: var(--scientific-primary-color);
+  :host {
+    --form-progress-bar-bg-color: var(--scientific-primary-color);
   }
 
   :host([theme='scientific']) .form-error {
@@ -221,17 +198,11 @@ export const formThemeStyles = css`
 `;
 
 export const graphThemeStyles = css`
-  .graph-stat-item {
-    background-color: var(--scientific-bg-secondary);
-    border-color: var(--scientific-border-color);
-  }
-
-  .graph-stat-label {
-    color: var(--scientific-text-muted);
-  }
-
-  .graph-stat-value {
-    color: var(--scientific-text-primary);
+  :host {
+    --graph-stat-label-color: var(--scientific-text-secondary);
+    --graph-stat-item-bg-color: var(--scientific-bg-secondary);
+    --graph-stat-item-border-color: var(--scientific-border-color);
+    --graph-stat-value-color: var(--scientific-text-primary);
   }
 
   :host([theme='scientific']) .graph-error {

@@ -6,7 +6,7 @@ import cytoscape, {
   StylesheetStyle,
 } from 'cytoscape';
 import {NetworkData} from '../../Network/scientific-network.js';
-import {NetworkMetricsCalculator, NetworkMetrics} from '../network/network-metrics-calculator.js';
+import {NetworkMetricsCalculator, NetworkMetrics} from './network-metrics-calculator.js';
 import {getThemeColors, ScientificThemeColors, DATA_VISUALIZATION_PALETTE, createColorVariants} from '../utils/theme-utils.js';
 
 export interface NetworkGraphControllerHost extends ReactiveControllerHost {
