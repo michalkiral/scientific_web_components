@@ -1,10 +1,10 @@
-import {LitElement, html, css} from 'lit';
+import {html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/icons/index.js';
+import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {
   sharedVariables,
   themeStyles,
@@ -13,14 +13,13 @@ import {
   messageStyles,
   loadingSpinnerStyles,
   responsiveStyles,
-  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {graphThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
   formatValue,
   roundToDecimals,
-  getContainerClasses,
+  classNames,
 } from '../shared/utils/dom-utils.js';
 import {getDefaultColor} from '../shared/utils/color-utils.js';
 import {
@@ -51,10 +50,8 @@ export interface GraphStatistics {
   variance: number;
 }
 
-export type GraphTheme = ScientificTheme;
-
 @customElement('scientific-graph')
-export class ScientificGraph extends LitElement implements ExportableComponent {
+export class ScientificGraph extends ScientificSurfaceBase implements ExportableComponent {
   static override styles = [
     baseComponentStyles,
     sharedVariables,
@@ -218,15 +215,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
   ];
 
   @property({type: String})
-  override title = 'Scientific Graph';
-
-  @property({type: String, reflect: true})
-  theme: ScientificTheme = 'default';
-
-  @property({type: String})
-  subtitle = '';
-
-  @property({type: String})
   type: ChartType = 'line';
 
   @property({type: Boolean})
@@ -254,16 +242,10 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
   showLegend = true;
 
   @property({type: Boolean})
-  showToolbar = true;
-
-  @property({type: Boolean})
   showExportButtons = false;
 
   @property({type: Array})
   exportFormats: ('png' | 'jpg' | 'pdf')[] = ['png', 'jpg', 'pdf'];
-
-  @property({type: Boolean})
-  isLoading = false;
 
   @property({type: Boolean})
   responsive = true;
@@ -285,9 +267,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
 
   @property({type: Boolean})
   animateOnLoad = true;
-
-  @property({type: String})
-  errorMessage = '';
 
   @property({type: String})
   xAxisTitle = '';
@@ -653,16 +632,6 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
     };
   };
 
-  private _getContainerClasses() {
-    return getContainerClasses(
-      'scientific-container graph-container',
-      undefined,
-      undefined,
-      false,
-      this.isLoading ? 'loading' : undefined
-    );
-  }
-
   private _renderStatistics() {
     if (!this.showStatistics) return '';
 
@@ -740,129 +709,102 @@ export class ScientificGraph extends LitElement implements ExportableComponent {
     return this.chart?.canvas || null;
   }
 
-  override render() {
+  protected override getContainerClasses(additionalClasses?: string): string {
+    return super.getContainerClasses(
+      classNames(
+        'graph-wrapper',
+        this.theme && `graph-theme-${this.theme}`,
+        additionalClasses
+      )
+    );
+  }
+
+  protected override renderToolbar() {
     return html`
-      <div class="${this._getContainerClasses()}">
-        ${this.isLoading
-          ? html`
-              <div class="loading-overlay">
-                <div class="loading-spinner"></div>
-              </div>
-            `
-          : ''}
-        ${this.title || this.subtitle
-          ? html`
-              <div class="scientific-header graph-header">
-                <slot name="header">
-                  ${this.title
-                    ? html`<h2 class="scientific-title graph-title">
-                        ${this.title}
-                      </h2>`
-                    : ''}
-                  ${this.subtitle
-                    ? html`<p class="scientific-subtitle graph-subtitle">
-                        ${this.subtitle}
-                      </p>`
-                    : ''}
-                </slot>
-              </div>
-            `
-          : ''}
-        ${this.showToolbar
-          ? html`
-              <div class="graph-toolbar">
-                <div class="graph-controls">
-                  <scientific-dropdown
-                    .label=${'Chart Type'}
-                    .options=${this.chartTypeOptions}
-                    .selectedValue=${this.isAreaChart ? 'area' : this.type}
-                    .disabled=${this.isLoading}
-                    .placeholder=${'Select chart type'}
-                    .theme=${this.theme}
-                    @option-selected=${this._handleTypeChange}
-                  ></scientific-dropdown>
-                </div>
-
-                <div class="graph-actions">
-                  ${this.showExportButtons
-                    ? html`
-                        ${this.exportFormats.includes('png')
-                          ? html`
-                              <scientific-button
-                                .label=${'PNG'}
-                                .variant=${'outline'}
-                                .size=${'small'}
-                                .disabled=${this.isLoading || !this.chart}
-                                .action=${this._handleExport('png')}
-                                .theme=${this.theme}
-                                title="Export chart as PNG image"
-                              ></scientific-button>
-                            `
-                          : ''}
-                        ${this.exportFormats.includes('jpg')
-                          ? html`
-                              <scientific-button
-                                .label=${'JPG'}
-                                .variant=${'outline'}
-                                .size=${'small'}
-                                .disabled=${this.isLoading || !this.chart}
-                                .action=${this._handleExport('jpg')}
-                                .theme=${this.theme}
-                                title="Export chart as JPG image"
-                              ></scientific-button>
-                            `
-                          : ''}
-                        ${this.exportFormats.includes('pdf')
-                          ? html`
-                              <scientific-button
-                                .label=${'PDF'}
-                                .variant=${'outline'}
-                                .size=${'small'}
-                                .disabled=${this.isLoading || !this.chart}
-                                .action=${this._handleExport('pdf')}
-                                .theme=${this.theme}
-                                title="Export chart as PDF document"
-                              ></scientific-button>
-                            `
-                          : ''}
-                      `
-                    : ''}
-                  <scientific-button
-                    .label=${'Refresh'}
-                    .variant=${'outline'}
-                    .size=${'small'}
-                    .disabled=${this.isLoading}
-                    .action=${this._handleDataRefresh()}
-                    .theme=${this.theme}
-                    title="Refresh Chart"
-                  ></scientific-button>
-
-                  <slot name="actions"></slot>
-                </div>
-              </div>
-            `
-          : ''}
-        ${this.errorMessage
-          ? html`
-              <div class="scientific-message scientific-message--error graph-error" role="alert">
-                <div class="message-icon">
-                  ${renderIcon('warning', {size: 16})}
-                </div>
-                <div class="message-content">
-                  <span>${this.errorMessage}</span>
-                </div>
-              </div>
-            `
-          : ''}
-
-        <div class="graph-canvas-container">
-          <canvas></canvas>
+      <div class="graph-toolbar">
+        <div class="graph-controls">
+          <scientific-dropdown
+            .label=${'Chart Type'}
+            .options=${this.chartTypeOptions}
+            .selectedValue=${this.isAreaChart ? 'area' : this.type}
+            .disabled=${this.isLoading}
+            .placeholder=${'Select chart type'}
+            .theme=${this.theme}
+            @option-selected=${this._handleTypeChange}
+          ></scientific-dropdown>
         </div>
 
-        ${this._renderStatistics()} ${this._renderLegend()}
+        <div class="graph-actions">
+          ${this.showExportButtons
+            ? html`
+                ${this.exportFormats.includes('png')
+                  ? html`
+                      <scientific-button
+                        .label=${'PNG'}
+                        .variant=${'outline'}
+                        .size=${'small'}
+                        .disabled=${this.isLoading || !this.chart}
+                        .action=${this._handleExport('png')}
+                        .theme=${this.theme}
+                        title="Export chart as PNG image"
+                      ></scientific-button>
+                    `
+                  : ''}
+                ${this.exportFormats.includes('jpg')
+                  ? html`
+                      <scientific-button
+                        .label=${'JPG'}
+                        .variant=${'outline'}
+                        .size=${'small'}
+                        .disabled=${this.isLoading || !this.chart}
+                        .action=${this._handleExport('jpg')}
+                        .theme=${this.theme}
+                        title="Export chart as JPG image"
+                      ></scientific-button>
+                    `
+                  : ''}
+                ${this.exportFormats.includes('pdf')
+                  ? html`
+                      <scientific-button
+                        .label=${'PDF'}
+                        .variant=${'outline'}
+                        .size=${'small'}
+                        .disabled=${this.isLoading || !this.chart}
+                        .action=${this._handleExport('pdf')}
+                        .theme=${this.theme}
+                        title="Export chart as PDF document"
+                      ></scientific-button>
+                    `
+                  : ''}
+              `
+            : ''}
+          <scientific-button
+            .label=${'Refresh'}
+            .variant=${'outline'}
+            .size=${'small'}
+            .disabled=${this.isLoading}
+            .action=${this._handleDataRefresh()}
+            .theme=${this.theme}
+            title="Refresh Chart"
+          ></scientific-button>
+
+          <slot name="actions"></slot>
+        </div>
       </div>
     `;
   }
+
+  protected override renderContent() {
+    return html`
+      ${this.renderLoading()}
+      <div class="graph-canvas-container">
+        <canvas></canvas>
+      </div>
+
+      ${this._renderStatistics()} ${this._renderLegend()}
+    `;
+  }
+
 }
 
 declare global {

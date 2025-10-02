@@ -1,4 +1,4 @@
-import {temperatureData, experimentData, problematicDatasets} from './scientific-graph.stories.data.js';
+import {temperatureData, experimentData} from './scientific-graph.stories.data.js';
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-graph.js';
@@ -541,27 +541,39 @@ export const LoadingState: Story = {
 export const ErrorState: Story = {
   args: {
     title: 'Error State Graph',
-    subtitle: 'Demonstrating error handling when chart fails to render',
+    subtitle: 'Demonstrating error handling via errorMessage property',
+    errorMessage: 'Failed to load chart data. Please check your data source and try again.',
     type: 'line',
-    labels: ['A', 'B', 'C', 'D'],
-    datasets: problematicDatasets,
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Sample Data',
+        data: [12, 19, 3, 5, 2, 3],
+        borderColor: '#dc3545',
+        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+        borderWidth: 2,
+      },
+    ],
     showToolbar: true,
     showStatistics: true,
   },
   render: ({
     title,
     subtitle,
+    errorMessage,
     type,
     labels,
+    datasets,
     showToolbar,
     showStatistics,
   }) => {
     return html`<scientific-graph
       .title=${title}
       .subtitle=${subtitle}
+      .errorMessage=${errorMessage}
       .type=${type}
       .labels=${labels}
-      .datasets=${problematicDatasets}
+      .datasets=${datasets}
       .showToolbar=${showToolbar}
       .showStatistics=${showStatistics}
       style="width: 100%; max-width: 880px;"

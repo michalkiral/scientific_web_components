@@ -1,7 +1,8 @@
-import {LitElement, html, css} from 'lit';
+import {html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import '../Button/scientific-button';
+import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {
   sharedVariables,
   containerStyles,
@@ -10,7 +11,6 @@ import {
   loadingSpinnerStyles,
   responsiveStyles,
   themeStyles,
-  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {formThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
@@ -21,7 +21,7 @@ import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 
 @customElement('scientific-form')
-export class ScientificForm extends LitElement {
+export class ScientificForm extends ScientificSurfaceBase {
   static override styles = [
     baseComponentStyles,
     sharedVariables,
@@ -184,15 +184,6 @@ export class ScientificForm extends LitElement {
   ];
 
   @property({type: String})
-  override title = '';
-
-  @property({type: String, reflect: true})
-  theme: ScientificTheme = 'default';
-
-  @property({type: String})
-  subtitle = '';
-
-  @property({type: String})
   variant: 'default' | 'compact' | 'elevated' = 'default';
 
   @property({type: String})
@@ -223,9 +214,6 @@ export class ScientificForm extends LitElement {
     | 'success' = 'outline';
 
   @property({type: Boolean})
-  isLoading = false;
-
-  @property({type: Boolean})
   disabled = false;
 
   @property({type: Boolean})
@@ -236,9 +224,6 @@ export class ScientificForm extends LitElement {
 
   @property({type: Number})
   progress = 0;
-
-  @property({type: String})
-  errorMessage = '';
 
   @property({type: String})
   successMessage = '';
@@ -300,10 +285,14 @@ export class ScientificForm extends LitElement {
   private async _handleSubmit(e?: Event) {
     e?.preventDefault();
 
-    if (this.isLoading || this.disabled) return;
+    if (this.isLoading || this.disabled) {
+      return;
+    }
 
     const form = this.shadowRoot?.querySelector('form') as HTMLFormElement;
-    if (!form) return;
+    if (!form) {
+      return;
+    }
 
     if (!this.noValidate && !form.checkValidity()) {
       form.reportValidity();
@@ -346,7 +335,9 @@ export class ScientificForm extends LitElement {
   }
 
   private _handleCancel() {
-    if (this.isLoading) return;
+    if (this.isLoading) {
+      return;
+    }
 
     dispatchCustomEvent(this, 'form-cancel', {
       timestamp: new Date().toISOString(),
@@ -355,7 +346,9 @@ export class ScientificForm extends LitElement {
   }
 
   private _handleReset() {
-    if (this.isLoading) return;
+    if (this.isLoading) {
+      return;
+    }
 
     const form = this.shadowRoot?.querySelector('form') as HTMLFormElement;
     form?.reset();
@@ -396,6 +389,10 @@ export class ScientificForm extends LitElement {
     }
   }
 
+  protected override renderContent() {
+    return html``;
+  }
+
   override render() {
     return html`
       <form
@@ -409,31 +406,9 @@ export class ScientificForm extends LitElement {
         role="form"
         aria-busy="${this.isLoading}"
       >
-        ${this.isLoading
-          ? html`
-              <div class="loading-overlay">
-                <div class="loading-spinner"></div>
-              </div>
-            `
-          : ''}
-        ${this.title || this.subtitle
-          ? html`
-              <div class="scientific-header form-header">
-                <slot name="header">
-                  ${this.title
-                    ? html`<h2 class="scientific-title form-title">
-                        ${this.title}
-                      </h2>`
-                    : ''}
-                  ${this.subtitle
-                    ? html`<p class="scientific-subtitle form-subtitle">
-                        ${this.subtitle}
-                      </p>`
-                    : ''}
-                </slot>
-              </div>
-            `
-          : ''}
+        ${this.renderLoading()}
+        ${this.renderHeader()}
+        ${this.renderError()}
         ${this.showProgress
           ? html`
               <div class="form-progress">
@@ -445,13 +420,6 @@ export class ScientificForm extends LitElement {
                   aria-valuemin="0"
                   aria-valuemax="100"
                 ></div>
-              </div>
-            `
-          : ''}
-        ${this.errorMessage
-          ? html`
-              <div class="scientific-error form-error" role="alert">
-                <span>${this.errorMessage}</span>
               </div>
             `
           : ''}
