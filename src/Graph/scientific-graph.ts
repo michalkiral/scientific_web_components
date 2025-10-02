@@ -21,7 +21,7 @@ import {
   roundToDecimals,
   classNames,
 } from '../shared/utils/dom-utils.js';
-import {getDefaultColor} from '../shared/utils/color-utils.js';
+import {getPaletteColor} from '../shared/utils/theme-utils.js';
 import {
   createExportHandler,
   type ExportableComponent,
@@ -381,8 +381,8 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
       const chartData = {
         labels: this.labels,
         datasets: this.datasets.map((dataset, index) => {
-          const defaultBorderColor = getDefaultColor(index, 1);
-          const defaultBackgroundColor = getDefaultColor(
+          const defaultBorderColor = getPaletteColor(index, 1);
+          const defaultBackgroundColor = getPaletteColor(
             index,
             this.isAreaChart ? 0.3 : 0.2
           );
@@ -691,7 +691,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
               <div
                 class="graph-legend-color"
                 style="background-color: ${dataset.borderColor ||
-                getDefaultColor(index, 1)}"
+                getPaletteColor(index, 1)}"
               ></div>
               <span>${dataset.label}</span>
             </div>

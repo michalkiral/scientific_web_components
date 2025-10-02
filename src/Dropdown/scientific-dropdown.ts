@@ -25,8 +25,6 @@ import {
 } from '../shared/utils/dropdown-utils.js';
 import {renderDropdownOptions} from '../shared/utils/dropdown-render.js';
 
-export type DropdownTheme = ScientificTheme;
-
 @customElement('scientific-dropdown')
 export class ScientificDropdown
   extends LitElement

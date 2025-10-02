@@ -106,6 +106,7 @@ export const dropdownContainerStyles = css`
     animation: slideDown 0.15s ease-out;
     display: flex;
     flex-direction: column;
+    z-index: 1000;
   }
 
   @keyframes slideDown {
