@@ -16,12 +16,15 @@ export const inputContainerStyles = css`
   }
 
   .input-field {
+    position: relative;
     padding: var(
       --input-padding,
       var(--scientific-spacing-md) var(--scientific-spacing-lg)
     );
     font-size: var(--input-font-size, var(--scientific-text-base));
     min-height: var(--input-min-height, 20px);
+    background: transparent;
+    z-index: 2;
   }
 
   :host(.dropdown-open) .input-field {
@@ -34,12 +37,12 @@ export const inputContainerStyles = css`
     display: block;
     font-size: var(--scientific-text-sm);
     font-weight: 500;
-    color: var(--input-label-color, #374151);
+    color: var(--input-label-color, var(--scientific-text-primary));
   }
 
   .input-label.required::after {
     content: ' *';
-    color: var(--scientific-danger-color, #ef4444);
+    color: var(--scientific-danger-color, var(--scientific-danger-color));
   }
 
   .input-icon {
@@ -60,11 +63,10 @@ export const autocompleteStyles = css`
       --input-padding,
       var(--scientific-spacing-md) var(--scientific-spacing-lg)
     );
-    left: 2px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--scientific-border-radius);
     background: transparent;
-    color: var(--input-hint-color, rgba(0, 0, 0, 0.3));
+    color: color-mix(in srgb, var(--scientific-text-muted) 50%, transparent);
     font-size: var(--input-font-size, var(--scientific-text-base));
     font-family: inherit;
     pointer-events: none;
@@ -94,7 +96,7 @@ export const inputClearButtonStyles = css`
   }
 
   .clear-button:hover {
-    background-color: var(--scientific-bg-muted);
+    background-color: var(--scientific-bg-tertiary);
     color: var(--scientific-text-secondary);
     transform: scale(1.1);
   }

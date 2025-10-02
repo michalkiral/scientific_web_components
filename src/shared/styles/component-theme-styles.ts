@@ -21,16 +21,6 @@ export const networkThemeStyles = css`
     color: var(--scientific-text-tertiary);
   }
 
-  .network-toolbar scientific-dropdown {
-    --dropdown-bg-color: var(--scientific-bg-primary);
-    --dropdown-color: var(--scientific-text-primary);
-    --dropdown-border-color: var(--scientific-border-color);
-    --dropdown-options-bg-color: var(--scientific-bg-primary);
-    --dropdown-option-color: var(--scientific-text-primary);
-    --dropdown-option-hover-bg-color: var(--scientific-bg-tertiary);
-    --dropdown-placeholder-color: var(--scientific-text-muted);
-  }
-
   .network-toolbar scientific-button {
     --button-bg-color: var(--scientific-bg-secondary);
     --button-color: var(--scientific-text-secondary);
@@ -113,6 +103,22 @@ export const tableThemeStyles = css`
 `;
 
 export const dropdownThemeStyles = css`
+  :host {
+    --dropdown-placeholder-color: var(--scientific-text-muted);
+    --dropdown-border-color: var(--scientific-border-color);
+    --dropdown-bg-color: var(--scientific-bg-primary);
+    --dropdown-color: var(--scientific-text-primary);
+    --dropdown-options-bg-color: var(--scientific-bg-primary);
+    --dropdown-option-color: var(--scientific-text-primary);
+    --dropdown-option-border-color: var(--scientific-border-color);
+    --dropdown-option-hover-bg-color: var(--scientific-bg-tertiary);
+    --dropdown-group-bg-color: var(--scientific-bg-secondary);
+    --dropdown-group-color: var(--scientific-text-tertiary);
+    --dropdown-search-border-color: var(--scientific-border-color);
+    --dropdown-search-bg-color: var(--scientific-bg-secondary);
+    --dropdown-search-color: var(--scientific-text-primary);
+  }
+
   .dropdown-arrow {
     border-top-color: var(--scientific-text-muted);
   }
@@ -132,10 +138,6 @@ export const dropdownThemeStyles = css`
 
   .clear-button:hover {
     color: var(--scientific-danger-color);
-  }
-
-  :host {
-    --dropdown-placeholder-color: var(--scientific-text-muted);
   }
 `;
 
@@ -165,7 +167,7 @@ export const inputThemeStyles = css`
   }
 
   .autocomplete-hint {
-    color: var(--scientific-text-muted);
+    color: color-mix(in srgb, var(--scientific-text-muted) 40%, transparent);
   }
 
   .option.disabled {
