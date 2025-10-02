@@ -1,7 +1,7 @@
-import {LitElement, html, css, nothing} from 'lit';
+import {html, css, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/icons/index.js';
+import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import cytoscape, {
   Core,
   ElementDefinition,
@@ -18,7 +18,6 @@ import {
   messageStyles,
   loadingSpinnerStyles,
   responsiveStyles,
-  type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {networkThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
@@ -66,11 +65,9 @@ export interface NetworkMetrics {
   connectedComponents: number;
 }
 
-export type NetworkTheme = ScientificTheme;
-
 @customElement('scientific-network')
 export class ScientificNetwork
-  extends LitElement
+  extends ScientificSurfaceBase
   implements ExportableComponent
 {
   static override styles = [
@@ -263,16 +260,11 @@ export class ScientificNetwork
   ];
 
   @property({type: String}) override title = '';
-  @property({type: String}) subtitle = '';
   @property({type: Object}) data: NetworkData = {nodes: [], edges: []};
   @property({type: Boolean}) directed = false;
-  @property({type: String, reflect: true}) theme: NetworkTheme = 'default';
   @property({type: Boolean}) interactive = true;
-  @property({type: Boolean}) showToolbar = true;
   @property({type: Boolean}) showInfo = true;
   @property({type: Boolean}) showMetrics = false;
-  @property({type: Boolean}) isLoading = false;
-  @property({type: String}) errorMessage = '';
   @property({type: Boolean}) enableZoom = true;
   @property({type: Boolean}) enablePan = true;
   @property({type: Boolean}) enableSelection = true;
@@ -1560,51 +1552,25 @@ export class ScientificNetwork
     }
   }
 
-  override render() {
-    return html`
-      <div class="${this._getContainerClasses()}">
-        ${this._renderHeader()}
-        ${this.errorMessage ? this._renderError() : nothing}
-        ${this._renderNetwork()}
-        ${this.tooltip.visible ? this._renderTooltip() : nothing}
-      </div>
-    `;
-  }
-
-  private _getContainerClasses() {
-    return classNames(
-      'scientific-container',
-      'network-wrapper',
-      this.theme && `network-theme-${this.theme}`
+  protected override getContainerClasses(additionalClasses?: string): string {
+    return super.getContainerClasses(
+      classNames(
+        'network-wrapper',
+        this.theme && `network-theme-${this.theme}`,
+        additionalClasses
+      )
     );
   }
 
-  private _renderHeader() {
-    return html`
-      <div class="scientific-header">
-        <div class="header-content">
-          ${this.title
-            ? html`<h2 class="scientific-title">${this.title}</h2>`
-            : nothing}
-          ${this.subtitle
-            ? html`<p class="scientific-subtitle">${this.subtitle}</p>`
-            : nothing}
-        </div>
-        ${this.showToolbar ? this._renderToolbar() : nothing}
-      </div>
-    `;
+  protected override renderToolbar() {
+    return this._renderToolbar();
   }
 
-  private _renderError() {
+  protected override renderContent() {
     return html`
-      <div class="scientific-message scientific-message--error" role="alert">
-        <div class="message-icon">
-          ${renderIcon('warning', {size: 16})}
-        </div>
-        <div class="message-content">
-          <span>${this.errorMessage}</span>
-        </div>
-      </div>
+      ${this.renderLoading()}
+      ${this._renderNetwork()}
+      ${this.tooltip.visible ? this._renderTooltip() : nothing}
     `;
   }
 
@@ -1619,18 +1585,8 @@ export class ScientificNetwork
 
     return html`
       <div class="network-container">
-        ${this.isLoading ? this._renderLoading() : nothing}
         <div class="${canvasClasses}"></div>
         ${this.showInfo ? this._renderInfo() : nothing}
-      </div>
-    `;
-  }
-
-  private _renderLoading() {
-    return html`
-      <div class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <div>Loading network...</div>
       </div>
     `;
   }
