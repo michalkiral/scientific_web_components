@@ -263,11 +263,6 @@ export class ScientificNetwork
   get enableRemoval() { return this.controls.enableRemoval; }
   get showTooltips() { return this.controls.showTooltips; }
 
-  get currentZoom(): number {
-    const cy = this.graphController.getCytoscapeInstance();
-    return cy ? Math.round(cy.zoom() * 100) : 100;
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     
@@ -357,8 +352,19 @@ export class ScientificNetwork
         return;
       }
 
-      this.selectedNodes = [node.id()];
-      this.selectedEdges = [];
+      const isMultiSelect = event.originalEvent?.ctrlKey || event.originalEvent?.metaKey;
+      
+      if (isMultiSelect) {
+        const nodeId = node.id();
+        if (this.selectedNodes.includes(nodeId)) {
+          this.selectedNodes = this.selectedNodes.filter(id => id !== nodeId);
+        } else {
+          this.selectedNodes = [...this.selectedNodes, nodeId];
+        }
+      } else {
+        this.selectedNodes = [node.id()];
+        this.selectedEdges = [];
+      }
 
       if (this.onNodeClick) {
         this.onNodeClick(nodeData, event);
@@ -370,6 +376,44 @@ export class ScientificNetwork
       });
 
       this._highlightNeighbors(node);
+    });
+
+    cy.on('tap', 'edge', (event: cytoscape.EventObject) => {
+      const edge = event.target;
+      const edgeData = this._cytoscapeEdgeToNetworkEdge(edge);
+
+      if (this.isRemoving) {
+        this._handleRemovalClick(edge.id(), 'edge');
+        return;
+      }
+
+      if (this.isRenaming) {
+        this._startRenaming(edge.id(), 'edge', event);
+        return;
+      }
+
+      const isMultiSelect = event.originalEvent?.ctrlKey || event.originalEvent?.metaKey;
+      
+      if (isMultiSelect) {
+        const edgeId = edge.id();
+        if (this.selectedEdges.includes(edgeId)) {
+          this.selectedEdges = this.selectedEdges.filter(id => id !== edgeId);
+        } else {
+          this.selectedEdges = [...this.selectedEdges, edgeId];
+        }
+      } else {
+        this.selectedEdges = [edge.id()];
+        this.selectedNodes = [];
+      }
+
+      if (this.onEdgeClick) {
+        this.onEdgeClick(edgeData, event);
+      }
+
+      dispatchCustomEvent(this, 'edge-selected', {
+        edge: edgeData,
+        cytoscapeEvent: event,
+      });
     });
 
     cy.on('tap', (event: cytoscape.EventObject) => {
@@ -409,6 +453,17 @@ export class ScientificNetwork
       data: cyNode.data(),
       position: cyNode.position(),
       classes: cyNode.classes().join(' '),
+    };
+  }
+
+  private _cytoscapeEdgeToNetworkEdge(cyEdge: cytoscape.EdgeSingular): NetworkEdge {
+    return {
+      id: cyEdge.id(),
+      source: cyEdge.source().id(),
+      target: cyEdge.target().id(),
+      label: cyEdge.data('label'),
+      data: cyEdge.data(),
+      classes: cyEdge.classes().join(' '),
     };
   }
 
@@ -646,7 +701,7 @@ export class ScientificNetwork
 
       element.remove();
 
-      this.graphController.calculateMetrics();
+      this._updateMetrics();
 
       dispatchCustomEvent(this, `${elementType}-removed`, {
         elementId,
@@ -887,6 +942,8 @@ export class ScientificNetwork
       node: newNode,
     });
 
+    this._updateMetrics();
+
     this.isCreatingNode = false;
     if (cy) {
       cy.autoungrabify(false);
@@ -919,6 +976,8 @@ export class ScientificNetwork
     dispatchCustomEvent(this, 'edge-added', {
       edge: newEdge,
     });
+
+    this._updateMetrics();
 
     this.edgeCreationSource = null;
     this.isCreatingEdge = false;
@@ -1233,14 +1292,6 @@ export class ScientificNetwork
               <div class="info-row">
                 <span>Selected Edges:</span>
                 <span>${this.selectedEdges.length}</span>
-              </div>
-            `
-          : nothing}
-        ${this.enableZoom
-          ? html`
-              <div class="info-row">
-                <span>Zoom:</span>
-                <span>${this.currentZoom}%</span>
               </div>
             `
           : nothing}

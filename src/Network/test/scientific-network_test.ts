@@ -178,7 +178,6 @@ suite('ScientificNetwork', () => {
 
     assert.isTrue(el.enableZoom);
     assert.isTrue(el.enablePan);
-    assert.equal((el as any).currentZoom, 100);
   });
 
   test('handles error states', async () => {
