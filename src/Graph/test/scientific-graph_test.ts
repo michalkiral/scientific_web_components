@@ -21,12 +21,12 @@ suite('ScientificGraph', () => {
 
   test('renders with default values', async () => {
     const el = await fixture(html`<scientific-graph></scientific-graph>`);
-    const container = el.shadowRoot!.querySelector('.graph-container');
-    const toolbar = el.shadowRoot!.querySelector('.graph-toolbar');
+    const container = el.shadowRoot!.querySelector('.scientific-container');
+    const canvasContainer = el.shadowRoot!.querySelector('.graph-canvas-container');
     // const canvas = el.shadowRoot!.querySelector('#myChart');
 
     assert.isNotNull(container);
-    assert.isNotNull(toolbar);
+    assert.isNotNull(canvasContainer);
     // assert.isNotNull(canvas);
   });
 
@@ -62,7 +62,10 @@ suite('ScientificGraph', () => {
       html`<scientific-graph></scientific-graph>`
     );
 
-    const dropdown = el.shadowRoot!.querySelector('scientific-dropdown');
+    const toolbar = el.shadowRoot!.querySelector('scientific-toolbar');
+    assert.isNotNull(toolbar);
+
+    const dropdown = toolbar!.shadowRoot!.querySelector('scientific-dropdown');
     assert.isNotNull(dropdown);
 
     // assert.equal(el.type, 'line');
@@ -77,7 +80,10 @@ suite('ScientificGraph', () => {
       html`<scientific-graph></scientific-graph>`
     );
 
-    const dropdown = el.shadowRoot!.querySelector('scientific-dropdown') as any;
+    const toolbar = el.shadowRoot!.querySelector('scientific-toolbar');
+    assert.isNotNull(toolbar);
+
+    const dropdown = toolbar!.shadowRoot!.querySelector('scientific-dropdown') as any;
     assert.isNotNull(dropdown);
 
     const changeEvent = new CustomEvent('dropdown-change', {
@@ -94,11 +100,15 @@ suite('ScientificGraph', () => {
       html`<scientific-graph></scientific-graph>`
     );
 
-    const dropdown = el.shadowRoot!.querySelector(
+    const toolbar = el.shadowRoot!.querySelector('scientific-toolbar');
+    assert.isNotNull(toolbar);
+
+    const dropdown = toolbar!.shadowRoot!.querySelector(
       'scientific-dropdown'
     ) as HTMLElement;
-    const computedStyle = getComputedStyle(dropdown);
+    assert.isNotNull(dropdown);
 
+    const computedStyle = getComputedStyle(dropdown);
     assert.isNotNull(computedStyle.width);
     assert.isNotNull(computedStyle.maxWidth);
   });
@@ -109,11 +119,14 @@ suite('ScientificGraph', () => {
     );
 
     const toolbar = el.shadowRoot!.querySelector(
-      '.graph-toolbar'
+      'scientific-toolbar'
     ) as HTMLElement;
-    const controls = el.shadowRoot!.querySelector(
+    assert.isNotNull(toolbar);
+
+    const controls = toolbar!.shadowRoot!.querySelector(
       '.graph-controls'
     ) as HTMLElement;
+    assert.isNotNull(controls);
 
     const toolbarStyle = getComputedStyle(toolbar);
     const controlsStyle = getComputedStyle(controls);
@@ -147,7 +160,7 @@ suite('ScientificGraph', () => {
     `);
 
     const container = el.shadowRoot!.querySelector(
-      '.graph-container'
+      '.scientific-container'
     ) as HTMLElement;
     assert.isNotNull(container);
 
@@ -165,7 +178,7 @@ suite('ScientificGraph', () => {
     `);
 
     const container = el.shadowRoot!.querySelector(
-      '.graph-container'
+      '.scientific-container'
     ) as HTMLElement;
     assert.isNotNull(container);
 
@@ -178,7 +191,10 @@ suite('ScientificGraph', () => {
       html`<scientific-graph></scientific-graph>`
     );
 
-    const dropdown = el.shadowRoot!.querySelector('scientific-dropdown') as any;
+    const toolbar = el.shadowRoot!.querySelector('scientific-toolbar');
+    assert.isNotNull(toolbar);
+
+    const dropdown = toolbar!.shadowRoot!.querySelector('scientific-dropdown') as any;
     assert.isNotNull(dropdown);
 
     if (dropdown.options) {

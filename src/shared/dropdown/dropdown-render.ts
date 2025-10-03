@@ -1,5 +1,5 @@
 import {html, TemplateResult} from 'lit';
-import {classNames} from './dom-utils.js';
+import {classNames} from '../utils/dom-utils.js';
 import {DropdownOption, groupOptions} from './dropdown-utils.js';
 
 export interface DropdownRenderConfig {

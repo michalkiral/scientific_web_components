@@ -1,6 +1,19 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-dropdown.js';
+import {
+  dropdownThemes,
+  defaultDropdownArgs,
+  preselectedExample,
+  searchableExample,
+  searchableWithClearExample,
+  disabledExample,
+  emptyStateExample,
+  customStyleThemes,
+  dynamicThemeOptions,
+  widthComparisonExamples,
+  themeComparisonExamples,
+} from './scientific-dropdown.stories.data.js';
 
 const meta: Meta = {
   title: 'Scientific/Dropdown',
@@ -190,7 +203,7 @@ All CSS custom properties available for customization with their default values:
   argTypes: {
     theme: {
       control: {type: 'select'},
-      options: ['default', 'dark', 'scientific'],
+      options: dropdownThemes,
       description: 'Dropdown theme variant',
       table: {
         type: {summary: "'default' | 'dark' | 'scientific'"},
@@ -214,23 +227,7 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {
-  args: {
-    label: 'Select an option',
-    theme: 'default',
-    options: [
-      {label: 'Option 1', value: '1'},
-      {label: 'Option 2', value: '2'},
-      {label: 'Option 3', value: '3'},
-    ],
-    selectedValue: '',
-    isOpen: false,
-    disabled: false,
-    searchable: false,
-    clearable: false,
-    placeholder: 'Choose an option...',
-    noOptionsText: 'No options available',
-    searchPlaceholder: 'Search options...',
-  },
+  args: defaultDropdownArgs,
   render: ({
     label,
     options,
@@ -259,18 +256,7 @@ export const Default: Story = {
 };
 
 export const WithPreselected: Story = {
-  args: {
-    label: 'Choose a fruit',
-    options: [
-      {label: 'Apple', value: 'apple'},
-      {label: 'Banana', value: 'banana'},
-      {label: 'Cherry', value: 'cherry'},
-      {label: 'Orange', value: 'orange'},
-      {label: 'Grape', value: 'grape'},
-    ],
-    selectedValue: 'banana',
-    clearable: true,
-  },
+  args: preselectedExample,
   render: ({label, options, selectedValue, clearable}) =>
     html`<scientific-dropdown
       .label=${label}
@@ -282,24 +268,7 @@ export const WithPreselected: Story = {
 };
 
 export const Searchable: Story = {
-  args: {
-    label: 'Search for a country',
-    searchable: true,
-    placeholder: 'Type to search...',
-    searchPlaceholder: 'Search countries...',
-    options: [
-      {label: 'United States', value: 'us'},
-      {label: 'United Kingdom', value: 'uk'},
-      {label: 'Germany', value: 'de'},
-      {label: 'France', value: 'fr'},
-      {label: 'Spain', value: 'es'},
-      {label: 'Italy', value: 'it'},
-      {label: 'Netherlands', value: 'nl'},
-      {label: 'Belgium', value: 'be'},
-      {label: 'Austria', value: 'at'},
-      {label: 'Switzerland', value: 'ch'},
-    ],
-  },
+  args: searchableExample,
   render: ({label, options, searchable, placeholder, searchPlaceholder}) =>
     html`<scientific-dropdown
       .label=${label}
@@ -312,22 +281,7 @@ export const Searchable: Story = {
 };
 
 export const SearchableWithClear: Story = {
-  args: {
-    label: 'Programming Languages',
-    searchable: true,
-    clearable: true,
-    selectedValue: 'js',
-    options: [
-      {label: 'JavaScript', value: 'js'},
-      {label: 'TypeScript', value: 'ts'},
-      {label: 'Python', value: 'py'},
-      {label: 'Java', value: 'java'},
-      {label: 'C++', value: 'cpp'},
-      {label: 'C#', value: 'cs'},
-      {label: 'Go', value: 'go'},
-      {label: 'Rust', value: 'rust'},
-    ],
-  },
+  args: searchableWithClearExample,
   render: ({label, options, searchable, clearable, selectedValue}) =>
     html`<scientific-dropdown
       .label=${label}
@@ -340,15 +294,7 @@ export const SearchableWithClear: Story = {
 };
 
 export const Disabled: Story = {
-  args: {
-    label: 'Disabled Dropdown',
-    disabled: true,
-    selectedValue: 'option1',
-    options: [
-      {label: 'Option 1', value: 'option1'},
-      {label: 'Option 2', value: 'option2'},
-    ],
-  },
+  args: disabledExample,
   render: ({label, options, disabled, selectedValue}) =>
     html`<scientific-dropdown
       .label=${label}
@@ -360,19 +306,14 @@ export const Disabled: Story = {
 };
 
 export const EmptyState: Story = {
-  args: {
-    label: 'No Options Available',
-    searchable: true,
-    noOptionsText: 'No items found. Try a different search.',
-    options: [],
-  },
-  render: ({label, options, searchable, noOptionsText}) =>
+  args: emptyStateExample,
+  render: ({label, options, searchable, noOptionsText, isOpen}) =>
     html`<scientific-dropdown
       .label=${label}
       .options=${options}
       .searchable=${searchable}
       .noOptionsText=${noOptionsText}
-      .isOpen=${true}
+      .isOpen=${isOpen}
       style="--dropdown-width: 300px;"
     ></scientific-dropdown>`,
 };
@@ -385,28 +326,7 @@ export const CustomStyles: Story = {
       selectedTheme = e.detail.value;
       const dropdown = e.target as HTMLElement;
       
-      const styles = {
-        red: {
-          '--dropdown-focus-border-color': '#dc2626',
-          '--dropdown-option-selected-bg-color': '#fef2f2',
-          '--dropdown-option-selected-color': '#dc2626',
-          '--dropdown-open-border-color': '#dc2626',
-        },
-        blue: {
-          '--dropdown-focus-border-color': '#2563eb',
-          '--dropdown-option-selected-bg-color': '#eff6ff',
-          '--dropdown-option-selected-color': '#2563eb',
-          '--dropdown-open-border-color': '#2563eb',
-        },
-        green: {
-          '--dropdown-focus-border-color': '#16a34a',
-          '--dropdown-option-selected-bg-color': '#f0fdf4',
-          '--dropdown-option-selected-color': '#16a34a',
-          '--dropdown-open-border-color': '#16a34a',
-        },
-      };
-
-      const themeStyles = styles[selectedTheme as keyof typeof styles];
+      const themeStyles = customStyleThemes[selectedTheme as keyof typeof customStyleThemes];
       if (themeStyles) {
         Object.entries(themeStyles).forEach(([property, value]) => {
           dropdown.style.setProperty(property, value);
@@ -418,11 +338,7 @@ export const CustomStyles: Story = {
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <scientific-dropdown
           label="Dynamic Theme Dropdown"
-          .options=${[
-            {label: 'Red Theme', value: 'red'},
-            {label: 'Blue Theme', value: 'blue'},
-            {label: 'Green Theme', value: 'green'},
-          ]}
+          .options=${dynamicThemeOptions}
           .clearable=${true}
           @change=${handleThemeChange}
           style="
@@ -444,34 +360,23 @@ export const WidthSynchronization: Story = {
   render: () => html`
     <div style="display: flex; gap: 24px; align-items: flex-start;">
       <div style="flex: 1;">
-        <h4 style="margin-top: 0;">Standard Width</h4>
+        <h4 style="margin-top: 0;">${widthComparisonExamples[0].title}</h4>
         <scientific-dropdown
-          label="Standard Dropdown"
-          .options=${[
-            {label: 'Short', value: 'short'},
-            {label: 'Medium Length Option', value: 'medium'},
-            {
-              label: 'Very Long Option Name That Extends Beyond Normal Width',
-              value: 'long',
-            },
-          ]}
-          searchable
-          clearable
+          label=${widthComparisonExamples[0].label}
+          .options=${widthComparisonExamples[0].options}
+          .searchable=${widthComparisonExamples[0].searchable}
+          .clearable=${widthComparisonExamples[0].clearable}
         ></scientific-dropdown>
       </div>
 
       <div style="flex: 1;">
-        <h4 style="margin-top: 0;">Custom Width (300px)</h4>
+        <h4 style="margin-top: 0;">${widthComparisonExamples[1].title}</h4>
         <scientific-dropdown
-          label="Custom Width Dropdown"
-          .options=${[
-            {label: 'Option A', value: 'a'},
-            {label: 'Option B with longer text', value: 'b'},
-            {label: 'Option C that is quite long indeed', value: 'c'},
-          ]}
-          searchable
-          clearable
-          style="--dropdown-width: 300px;"
+          label=${widthComparisonExamples[1].label}
+          .options=${widthComparisonExamples[1].options}
+          .searchable=${widthComparisonExamples[1].searchable}
+          .clearable=${widthComparisonExamples[1].clearable}
+          style=${widthComparisonExamples[1].style}
         ></scientific-dropdown>
       </div>
     </div>
@@ -486,59 +391,23 @@ export const WidthSynchronization: Story = {
 export const ThemeComparison: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 25px;">
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
-          Default Theme
-        </h3>
-        <scientific-dropdown
-          label="Default Theme Dropdown"
-          theme="default"
-          .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
-          ]}
-          placeholder="Select an option..."
-          clearable
-          style="--dropdown-width: 300px;"
-        ></scientific-dropdown>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
-          Dark Theme
-        </h3>
-        <scientific-dropdown
-          label="Dark Theme Dropdown"
-          theme="dark"
-          .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
-          ]}
-          placeholder="Select an option..."
-          clearable
-          style="--dropdown-width: 300px;"
-        ></scientific-dropdown>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
-          Scientific Theme
-        </h3>
-        <scientific-dropdown
-          label="Scientific Theme Dropdown"
-          theme="scientific"
-          .options=${[
-            {label: 'Option 1', value: '1'},
-            {label: 'Option 2', value: '2'},
-            {label: 'Option 3', value: '3'},
-          ]}
-          placeholder="Select an option..."
-          clearable
-          style="--dropdown-width: 300px;"
-        ></scientific-dropdown>
-      </div>
+      ${themeComparisonExamples.map(
+        (example) => html`
+          <div>
+            <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">
+              ${example.title}
+            </h3>
+            <scientific-dropdown
+              label=${example.label}
+              theme=${example.theme}
+              .options=${example.options}
+              placeholder=${example.placeholder}
+              .clearable=${example.clearable}
+              style=${example.style}
+            ></scientific-dropdown>
+          </div>
+        `
+      )}
     </div>
   `,
   parameters: {

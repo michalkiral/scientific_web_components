@@ -7,25 +7,8 @@ export const sharedVariables = css`
     --scientific-font-family: system-ui, -apple-system, BlinkMacSystemFont,
       'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-    --scientific-primary-color: #007bff;
-    --scientific-primary-hover: #0056b3;
-    --scientific-secondary-color: #6c757d;
-    --scientific-success-color: #28a745;
-    --scientific-danger-color: #dc3545;
-    --scientific-warning-color: #ffc107;
-    --scientific-info-color: #17a2b8;
-
     --scientific-border-radius: 8px;
     --scientific-border-radius-lg: 12px;
-    --scientific-border: 2px solid #e5e7eb;
-    --scientific-border-color: #e5e7eb;
-    --scientific-border-hover: #d1d5db;
-    --scientific-border-focus: #007bff;
-
-    --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --scientific-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --scientific-shadow-lg: 0 8px 12px rgba(0, 0, 0, 0.15);
-    --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
 
     --scientific-spacing-xs: 4px;
     --scientific-spacing-sm: 8px;
@@ -48,7 +31,56 @@ export const sharedVariables = css`
 `;
 
 export const themeStyles = css`
+  :host(:not([theme])),
+  :host([theme='default']) {
+    --scientific-primary-color: #007bff;
+    --scientific-primary-hover: #0056b3;
+    --scientific-secondary-color: #6c757d;
+    --scientific-success-color: #28a745;
+    --scientific-danger-color: #dc3545;
+    --scientific-warning-color: #ffc107;
+    --scientific-info-color: #17a2b8;
+
+    --container-bg-color: #ffffff;
+    --scientific-bg-primary: #ffffff;
+    --scientific-bg-secondary: #f8f9fa;
+    --scientific-bg-tertiary: #e9ecef;
+
+    --scientific-border: 1px solid #e5e7eb;
+    --scientific-border-color: #e5e7eb;
+    --scientific-border-hover: #d1d5db;
+    --scientific-border-focus: #007bff;
+
+    --scientific-text-primary: #212529;
+    --scientific-text-secondary: #495057;
+    --scientific-text-tertiary: #6c757d;
+    --scientific-text-muted: #adb5bd;
+    --title-color: #212529;
+    --subtitle-color: #6c757d;
+
+    --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --scientific-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --scientific-shadow-lg: 0 8px 12px rgba(0, 0, 0, 0.15);
+    --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
+
+    --loading-overlay-bg: rgba(255, 255, 255, 0.8);
+    --loading-spinner-color: #e5e7eb;
+    --loading-spinner-active-color: #007bff;
+
+    --error-bg-color: #fef2f2;
+    --error-border: 1px solid #fecaca;
+    --error-color: #dc3545;
+  }
+
   :host([theme='dark']) {
+    --scientific-primary-color: #60a5fa;
+    --scientific-primary-hover: #3b82f6;
+    --scientific-secondary-color: #6b7280;
+    --scientific-success-color: #10b981;
+    --scientific-danger-color: #ef4444;
+    --scientific-warning-color: #f59e0b;
+    --scientific-info-color: #60a5fa;
+
     --container-bg-color: #1f2937;
     --scientific-bg-primary: #1f2937;
     --scientific-bg-secondary: #374151;
@@ -56,7 +88,6 @@ export const themeStyles = css`
 
     --scientific-border: 1px solid #374151;
     --scientific-border-color: #374151;
-    --border-color: #4b5563;
     --scientific-border-hover: #6b7280;
     --scientific-border-focus: #60a5fa;
 
@@ -68,33 +99,14 @@ export const themeStyles = css`
     --subtitle-color: #d1d5db;
     color: var(--scientific-text-secondary);
 
-    --scientific-primary-color: #60a5fa;
-    --scientific-primary-hover: #3b82f6;
-    --scientific-secondary-color: #374151;
-    --scientific-secondary-hover: #4b5563;
-
-    --scientific-success-color: #10b981;
-    --scientific-warning-color: #f59e0b;
-    --scientific-danger-color: #ef4444;
-    --scientific-info-color: #60a5fa;
-
-    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
-      0 4px 6px -2px rgba(0, 0, 0, 0.2);
     --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
     --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
 
     --loading-overlay-bg: rgba(31, 41, 55, 0.8);
     --loading-spinner-color: #4b5563;
     --loading-spinner-active-color: #60a5fa;
-
-    --button-bg-color: #374151;
-    --button-color: #d1d5db;
-    --button-border: 1px solid #4b5563;
-    --button-hover-bg-color: #4b5563;
-    --button-hover-border-color: #6b7280;
-    --button-focus-border-color: #60a5fa;
 
     --error-bg-color: rgba(239, 68, 68, 0.1);
     --error-border: 1px solid #ef4444;
@@ -102,6 +114,14 @@ export const themeStyles = css`
   }
 
   :host([theme='scientific']) {
+    --scientific-primary-color: #3b82f6;
+    --scientific-primary-hover: #2563eb;
+    --scientific-secondary-color: #64748b;
+    --scientific-success-color: #059669;
+    --scientific-danger-color: #dc2626;
+    --scientific-warning-color: #d97706;
+    --scientific-info-color: #0284c7;
+
     --container-bg-color: #f8fafc;
     --scientific-bg-primary: #f8fafc;
     --scientific-bg-secondary: #f1f5f9;
@@ -109,7 +129,6 @@ export const themeStyles = css`
 
     --scientific-border: 2px solid #e2e8f0;
     --scientific-border-color: #e2e8f0;
-    --border-color: #cbd5e1;
     --scientific-border-hover: #94a3b8;
     --scientific-border-focus: #3b82f6;
 
@@ -121,21 +140,9 @@ export const themeStyles = css`
     --subtitle-color: #64748b;
     color: var(--scientific-text-secondary);
 
-    --scientific-primary-color: #3b82f6;
-    --scientific-primary-hover: #2563eb;
-    --scientific-secondary-color: #f1f5f9;
-    --scientific-secondary-hover: #e2e8f0;
-
-    --scientific-success-color: #059669;
-    --scientific-warning-color: #d97706;
-    --scientific-danger-color: #dc2626;
-    --scientific-info-color: #0284c7;
-
-    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-      0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+    --scientific-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --scientific-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.08);
 
     --scientific-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -264,7 +271,7 @@ export const headerStyles = css`
   .scientific-title {
     font-size: var(--title-font-size, var(--scientific-text-2xl));
     font-weight: var(--title-font-weight, 600);
-    color: var(--title-color, var(--scientific-text-primary, #111827));
+    color: var(--title-color, var(--scientific-text-primary));
     margin: 0;
     line-height: var(--title-line-height, 1.2);
   }
@@ -272,7 +279,7 @@ export const headerStyles = css`
   .scientific-subtitle {
     font-size: var(--subtitle-font-size, var(--scientific-text-base));
     font-weight: var(--subtitle-font-weight, 400);
-    color: var(--subtitle-color, var(--scientific-text-tertiary, #6b7280));
+    color: var(--subtitle-color, var(--scientific-text-tertiary));
     margin: 0;
     line-height: var(--subtitle-line-height, 1.4);
   }
@@ -287,8 +294,8 @@ export const inputStyles = css`
     );
     border: var(--input-border, var(--scientific-border));
     border-radius: var(--input-border-radius, var(--scientific-border-radius));
-    background-color: var(--input-bg-color, #ffffff);
-    color: var(--input-color, #374151);
+    background-color: var(--input-bg-color, var(--scientific-bg-primary));
+    color: var(--input-color, var(--scientific-text-secondary));
     font-size: var(--input-font-size, var(--scientific-text-base));
     font-family: inherit;
     transition: var(--input-transition, var(--scientific-transition));
@@ -307,13 +314,13 @@ export const inputStyles = css`
       --input-focus-border-color,
       var(--scientific-border-focus)
     );
-    box-shadow: var(--input-focus-shadow, 0 0 0 3px rgba(0, 123, 255, 0.1));
+    box-shadow: var(--input-focus-shadow, 0 0 0 3px color-mix(in srgb, var(--scientific-primary-color) 10%, transparent));
   }
 
   .scientific-input:disabled {
-    background-color: var(--input-disabled-bg-color, #f9fafb);
-    border-color: var(--input-disabled-border-color, #e5e7eb);
-    color: var(--input-disabled-color, #9ca3af);
+    background-color: var(--input-disabled-bg-color, var(--scientific-bg-tertiary));
+    border-color: var(--input-disabled-border-color, var(--scientific-border-color));
+    color: var(--input-disabled-color, var(--scientific-text-muted));
     cursor: not-allowed;
   }
 `;
@@ -345,26 +352,26 @@ export const messageStyles = css`
   }
 
   .scientific-message--error {
-    background-color: var(--error-bg-color, #fef2f2);
-    border: var(--error-border, 1px solid #fecaca);
+    background-color: var(--error-bg-color, color-mix(in srgb, var(--scientific-danger-color) 5%, transparent));
+    border: var(--error-border, 1px solid color-mix(in srgb, var(--scientific-danger-color) 20%, transparent));
     color: var(--error-color, var(--scientific-danger-color));
   }
 
   .scientific-message--success {
-    background-color: var(--success-bg-color, #f0fdf4);
-    border: var(--success-border, 1px solid #bbf7d0);
+    background-color: var(--success-bg-color, color-mix(in srgb, var(--scientific-success-color) 5%, transparent));
+    border: var(--success-border, 1px solid color-mix(in srgb, var(--scientific-success-color) 20%, transparent));
     color: var(--success-color, var(--scientific-success-color));
   }
 
   .scientific-message--warning {
-    background-color: var(--warning-bg-color, #fffbeb);
-    border: var(--warning-border, 1px solid #fde68a);
+    background-color: var(--warning-bg-color, color-mix(in srgb, var(--scientific-warning-color) 5%, transparent));
+    border: var(--warning-border, 1px solid color-mix(in srgb, var(--scientific-warning-color) 20%, transparent));
     color: var(--warning-color, var(--scientific-warning-color));
   }
 
   .scientific-message--info {
-    background-color: var(--info-bg-color, #eff6ff);
-    border: var(--info-border, 1px solid #bfdbfe);
+    background-color: var(--info-bg-color, color-mix(in srgb, var(--scientific-info-color) 5%, transparent));
+    border: var(--info-border, 1px solid color-mix(in srgb, var(--scientific-info-color) 20%, transparent));
     color: var(--info-color, var(--scientific-info-color));
   }
 `;
@@ -423,16 +430,16 @@ export const buttonStyles = css`
   }
 
   .scientific-button:disabled {
-    background-color: var(--button-disabled-bg-color, #e9ecef);
-    color: var(--button-disabled-color, #6c757d);
-    border-color: var(--button-disabled-border-color, #dee2e6);
+    background-color: var(--button-disabled-bg-color, var(--scientific-bg-tertiary));
+    color: var(--button-disabled-color, var(--scientific-text-muted));
+    border-color: var(--button-disabled-border-color, var(--scientific-border-color));
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
   }
 
   .scientific-button:disabled:hover {
-    background-color: var(--button-disabled-bg-color, #e9ecef);
+    background-color: var(--button-disabled-bg-color, var(--scientific-bg-tertiary));
     box-shadow: none;
     transform: none;
   }
@@ -442,11 +449,11 @@ export const buttonStyles = css`
       --button-secondary-bg-color,
       var(--scientific-secondary-color)
     );
-    color: var(--button-secondary-color, #ffffff);
+    color: var(--button-secondary-color, var(--scientific-text-primary));
   }
 
   .scientific-button.secondary:hover {
-    background-color: var(--button-secondary-hover-bg-color, #545b62);
+    background-color: var(--button-secondary-hover-bg-color, var(--scientific-bg-secondary));
   }
 
   .scientific-button.outline {
@@ -463,7 +470,7 @@ export const buttonStyles = css`
       --button-outline-hover-bg-color,
       var(--scientific-primary-color)
     );
-    color: var(--button-outline-hover-color, #ffffff);
+    color: var(--button-outline-hover-color, var(--scientific-bg-primary));
   }
 
   .scientific-button.ghost {
@@ -476,7 +483,7 @@ export const buttonStyles = css`
   .scientific-button.ghost:hover {
     background-color: var(
       --button-ghost-hover-bg-color,
-      rgba(0, 123, 255, 0.1)
+      color-mix(in srgb, var(--scientific-primary-color) 10%, transparent)
     );
   }
 
@@ -485,11 +492,11 @@ export const buttonStyles = css`
       --button-danger-bg-color,
       var(--scientific-danger-color)
     );
-    color: var(--button-danger-color, #ffffff);
+    color: var(--button-danger-color, var(--scientific-bg-primary));
   }
 
   .scientific-button.danger:hover {
-    background-color: var(--button-danger-hover-bg-color, #c82333);
+    background-color: var(--button-danger-hover-bg-color, color-mix(in srgb, var(--scientific-danger-color) 90%, black));
   }
 
   .scientific-button.success {
@@ -497,64 +504,64 @@ export const buttonStyles = css`
       --button-success-bg-color,
       var(--scientific-success-color)
     );
-    color: var(--button-success-color, #ffffff);
+    color: var(--button-success-color, var(--scientific-bg-primary));
   }
 
   .scientific-button.success:hover {
-    background-color: var(--button-success-hover-bg-color, #218838);
+    background-color: var(--button-success-hover-bg-color, color-mix(in srgb, var(--scientific-success-color) 90%, black));
   }
 
   /* Disabled states for variants */
   .scientific-button.secondary:disabled {
-    background-color: var(--button-disabled-bg-color, #e9ecef);
-    color: var(--button-disabled-color, #6c757d);
-    border-color: var(--button-disabled-border-color, #dee2e6);
+    background-color: var(--button-disabled-bg-color, var(--scientific-bg-tertiary));
+    color: var(--button-disabled-color, var(--scientific-text-muted));
+    border-color: var(--button-disabled-border-color, var(--scientific-border-color));
   }
 
   .scientific-button.secondary:disabled:hover {
-    background-color: var(--button-disabled-bg-color, #e9ecef);
+    background-color: var(--button-disabled-bg-color, var(--scientific-bg-tertiary));
   }
 
   .scientific-button.outline:disabled {
     background-color: var(--button-outline-disabled-bg-color, transparent);
-    color: var(--button-outline-disabled-color, #6c757d);
-    border-color: var(--button-outline-disabled-border-color, #dee2e6);
+    color: var(--button-outline-disabled-color, var(--scientific-text-muted));
+    border-color: var(--button-outline-disabled-border-color, var(--scientific-border-color));
   }
 
   .scientific-button.outline:disabled:hover {
     background-color: var(--button-outline-disabled-bg-color, transparent);
-    color: var(--button-outline-disabled-color, #6c757d);
+    color: var(--button-outline-disabled-color, var(--scientific-text-muted));
   }
 
   .scientific-button.ghost:disabled {
     background-color: var(--button-ghost-disabled-bg-color, transparent);
-    color: var(--button-ghost-disabled-color, #6c757d);
+    color: var(--button-ghost-disabled-color, var(--scientific-text-muted));
     border-color: var(--button-ghost-disabled-border-color, transparent);
   }
 
   .scientific-button.ghost:disabled:hover {
     background-color: var(--button-ghost-disabled-bg-color, transparent);
-    color: var(--button-ghost-disabled-color, #6c757d);
+    color: var(--button-ghost-disabled-color, var(--scientific-text-muted));
   }
 
   .scientific-button.danger:disabled {
-    background-color: var(--button-danger-disabled-bg-color, #e9ecef);
-    color: var(--button-danger-disabled-color, #6c757d);
-    border-color: var(--button-danger-disabled-border-color, #dee2e6);
+    background-color: var(--button-danger-disabled-bg-color, var(--scientific-bg-tertiary));
+    color: var(--button-danger-disabled-color, var(--scientific-text-muted));
+    border-color: var(--button-danger-disabled-border-color, var(--scientific-border-color));
   }
 
   .scientific-button.danger:disabled:hover {
-    background-color: var(--button-danger-disabled-bg-color, #e9ecef);
+    background-color: var(--button-danger-disabled-bg-color, var(--scientific-bg-tertiary));
   }
 
   .scientific-button.success:disabled {
-    background-color: var(--button-success-disabled-bg-color, #e9ecef);
-    color: var(--button-success-disabled-color, #6c757d);
-    border-color: var(--button-success-disabled-border-color, #dee2e6);
+    background-color: var(--button-success-disabled-bg-color, var(--scientific-bg-tertiary));
+    color: var(--button-success-disabled-color, var(--scientific-text-muted));
+    border-color: var(--button-success-disabled-border-color, var(--scientific-border-color));
   }
 
   .scientific-button.success:disabled:hover {
-    background-color: var(--button-success-disabled-bg-color, #e9ecef);
+    background-color: var(--button-success-disabled-bg-color, var(--scientific-bg-tertiary));
   }
 
   .scientific-button.small {

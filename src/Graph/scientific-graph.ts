@@ -3,6 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import '../shared/components/ScientificToolbar/scientific-toolbar.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {
@@ -21,13 +22,17 @@ import {
   roundToDecimals,
   classNames,
 } from '../shared/utils/dom-utils.js';
-import {getDefaultColor} from '../shared/utils/color-utils.js';
+import {getPaletteColor} from '../shared/utils/theme-utils.js';
 import {
   createExportHandler,
   type ExportableComponent,
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
 import {getChartThemeColors} from '../shared/utils/theme-utils.js';
+import {
+  type ToolbarSection,
+  type ToolbarButtonDescriptor,
+} from '../shared/components/ScientificToolbar/scientific-toolbar.js';
 
 export interface GraphDataset {
   label: string;
@@ -83,34 +88,6 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
 
       .graph-subtitle {
         font-size: var(--graph-subtitle-font-size, var(--scientific-text-base));
-      }
-
-      .graph-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--graph-toolbar-gap, var(--scientific-spacing-md));
-        padding: var(--graph-toolbar-padding, var(--scientific-spacing-md) 0);
-        flex-wrap: wrap;
-      }
-
-      .graph-controls {
-        display: flex;
-        gap: var(--graph-controls-gap, var(--scientific-spacing-sm));
-        align-items: center;
-        flex-wrap: wrap;
-        position: relative;
-      }
-
-      .graph-controls scientific-dropdown {
-        width: 180px;
-        display: block;
-      }
-
-      .graph-actions {
-        display: flex;
-        gap: var(--graph-actions-gap, var(--scientific-spacing-sm));
-        align-items: center;
       }
 
       .graph-canvas-container {
@@ -194,16 +171,6 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
       @media (max-width: 768px) {
         .graph-container {
           min-height: var(--graph-mobile-min-height, 300px);
-        }
-
-        .graph-toolbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .graph-controls,
-        .graph-actions {
-          justify-content: center;
         }
 
         .graph-statistics {
@@ -381,8 +348,8 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
       const chartData = {
         labels: this.labels,
         datasets: this.datasets.map((dataset, index) => {
-          const defaultBorderColor = getDefaultColor(index, 1);
-          const defaultBackgroundColor = getDefaultColor(
+          const defaultBorderColor = getPaletteColor(index, 1);
+          const defaultBackgroundColor = getPaletteColor(
             index,
             this.isAreaChart ? 0.3 : 0.2
           );
@@ -691,7 +658,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
               <div
                 class="graph-legend-color"
                 style="background-color: ${dataset.borderColor ||
-                getDefaultColor(index, 1)}"
+                getPaletteColor(index, 1)}"
               ></div>
               <span>${dataset.label}</span>
             </div>
@@ -719,78 +686,91 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
     );
   }
 
+  private _getToolbarSections(): ToolbarSection[] {
+    const sections: ToolbarSection[] = [];
+
+    sections.push({
+      id: 'chart-type',
+      title: 'Chart Type',
+      className: 'graph-controls',
+      dropdowns: [
+        {
+          id: 'chart-type-selector',
+          label: '',
+          options: this.chartTypeOptions,
+          selectedValue: this.isAreaChart ? 'area' : this.type,
+          placeholder: 'Select chart type',
+          disabled: this.isLoading,
+          handler: (event: CustomEvent) => this._handleTypeChange(event),
+          style: '--dropdown-width: 180px; --dropdown-min-width: 160px;',
+        },
+      ],
+    });
+
+    const actionButtons: ToolbarButtonDescriptor[] = [];
+
+    if (this.showExportButtons) {
+      if (this.exportFormats.includes('png')) {
+        actionButtons.push({
+          id: 'export-png',
+          label: 'PNG',
+          variant: 'outline',
+          title: 'Export chart as PNG image',
+          disabled: this.isLoading || !this.chart,
+          handler: () => this._handleExport('png'),
+        });
+      }
+      if (this.exportFormats.includes('jpg')) {
+        actionButtons.push({
+          id: 'export-jpg',
+          label: 'JPG',
+          variant: 'outline',
+          title: 'Export chart as JPG image',
+          disabled: this.isLoading || !this.chart,
+          handler: () => this._handleExport('jpg'),
+        });
+      }
+      if (this.exportFormats.includes('pdf')) {
+        actionButtons.push({
+          id: 'export-pdf',
+          label: 'PDF',
+          variant: 'outline',
+          title: 'Export chart as PDF document',
+          disabled: this.isLoading || !this.chart,
+          handler: () => this._handleExport('pdf'),
+        });
+      }
+    }
+
+    actionButtons.push({
+      id: 'refresh',
+      label: 'Refresh',
+      variant: 'outline',
+      title: 'Refresh Chart',
+      disabled: this.isLoading,
+      handler: () => this._handleDataRefresh(),
+    });
+
+    if (actionButtons.length > 0) {
+      sections.push({
+        id: 'actions',
+        title: 'Actions',
+        className: 'graph-actions',
+        buttons: actionButtons,
+      });
+    }
+
+    return sections;
+  }
+
   protected override renderToolbar() {
+    const sections = this._getToolbarSections();
     return html`
-      <div class="graph-toolbar">
-        <div class="graph-controls">
-          <scientific-dropdown
-            .label=${'Chart Type'}
-            .options=${this.chartTypeOptions}
-            .selectedValue=${this.isAreaChart ? 'area' : this.type}
-            .disabled=${this.isLoading}
-            .placeholder=${'Select chart type'}
-            .theme=${this.theme}
-            @option-selected=${this._handleTypeChange}
-          ></scientific-dropdown>
-        </div>
-
-        <div class="graph-actions">
-          ${this.showExportButtons
-            ? html`
-                ${this.exportFormats.includes('png')
-                  ? html`
-                      <scientific-button
-                        .label=${'PNG'}
-                        .variant=${'outline'}
-                        .size=${'small'}
-                        .disabled=${this.isLoading || !this.chart}
-                        .action=${this._handleExport('png')}
-                        .theme=${this.theme}
-                        title="Export chart as PNG image"
-                      ></scientific-button>
-                    `
-                  : ''}
-                ${this.exportFormats.includes('jpg')
-                  ? html`
-                      <scientific-button
-                        .label=${'JPG'}
-                        .variant=${'outline'}
-                        .size=${'small'}
-                        .disabled=${this.isLoading || !this.chart}
-                        .action=${this._handleExport('jpg')}
-                        .theme=${this.theme}
-                        title="Export chart as JPG image"
-                      ></scientific-button>
-                    `
-                  : ''}
-                ${this.exportFormats.includes('pdf')
-                  ? html`
-                      <scientific-button
-                        .label=${'PDF'}
-                        .variant=${'outline'}
-                        .size=${'small'}
-                        .disabled=${this.isLoading || !this.chart}
-                        .action=${this._handleExport('pdf')}
-                        .theme=${this.theme}
-                        title="Export chart as PDF document"
-                      ></scientific-button>
-                    `
-                  : ''}
-              `
-            : ''}
-          <scientific-button
-            .label=${'Refresh'}
-            .variant=${'outline'}
-            .size=${'small'}
-            .disabled=${this.isLoading}
-            .action=${this._handleDataRefresh()}
-            .theme=${this.theme}
-            title="Refresh Chart"
-          ></scientific-button>
-
-          <slot name="actions"></slot>
-        </div>
-      </div>
+      <scientific-toolbar 
+        .sections="${sections}"
+        .theme="${this.theme}"
+        layout="grid-2"
+      ></scientific-toolbar>
     `;
   }
 

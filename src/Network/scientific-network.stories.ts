@@ -294,14 +294,16 @@ export const WithEventHandlers: Story = {
       ?showMetrics=${args.showMetrics}
       ?isLoading=${args.isLoading}
       errorMessage=${args.errorMessage}
-      ?enableZoom=${args.enableZoom}
-      ?enablePan=${args.enablePan}
-      ?enableSelection=${args.enableSelection}
-      ?showTooltips=${args.showTooltips}
-      ?enableNodeCreation=${args.enableNodeCreation}
-      ?enableEdgeCreation=${args.enableEdgeCreation}
-      ?enableRenaming=${args.enableRenaming}
-      ?enableRemoval=${args.enableRemoval}
+      .controls=${{
+        enableZoom: args.enableZoom,
+        enablePan: args.enablePan,
+        enableSelection: args.enableSelection,
+        showTooltips: args.showTooltips,
+        enableNodeCreation: args.enableNodeCreation,
+        enableEdgeCreation: args.enableEdgeCreation,
+        enableRenaming: args.enableRenaming,
+        enableRemoval: args.enableRemoval,
+      }}
       .onNodeClick=${args.onNodeClick}
       .onEdgeClick=${args.onEdgeClick}
       @nodeClick=${(e: CustomEvent) => {
@@ -395,10 +397,16 @@ export const InteractiveNodeCreation: Story = {
       theme=${args.theme}
       ?interactive=${args.interactive}
       ?showToolbar=${args.showToolbar}
-      ?enableNodeCreation=${args.enableNodeCreation}
-      ?enableEdgeCreation=${args.enableEdgeCreation}
-      ?enableRenaming=${args.enableRenaming}
-      ?enableRemoval=${args.enableRemoval}
+      .controls=${{
+        enableZoom: true,
+        enablePan: true,
+        enableSelection: true,
+        showTooltips: true,
+        enableNodeCreation: args.enableNodeCreation,
+        enableEdgeCreation: args.enableEdgeCreation,
+        enableRenaming: args.enableRenaming,
+        enableRemoval: args.enableRemoval,
+      }}
       style="height: 500px;"
     ></scientific-network>
   `,

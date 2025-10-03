@@ -2,6 +2,20 @@ import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import {html} from 'lit';
 import './scientific-slider.js';
 import type {ScientificSlider} from './scientific-slider.js';
+import {
+  sliderThemes,
+  sliderVariants,
+  sliderStates,
+  defaultSliderArgs,
+  variantExamples,
+  markExamples,
+  stateExamples,
+  customFormattingExamples,
+  scientificUseCaseExamples,
+  interactiveDemoExample,
+  themeComparisonExamples,
+  customStylingExample,
+} from './scientific-slider.stories.data.js';
 
 const meta: Meta<ScientificSlider> = {
   title: 'Scientific/Slider',
@@ -270,7 +284,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
     theme: {
       control: {type: 'select'},
-      options: ['default', 'dark', 'scientific'],
+      options: sliderThemes,
       description: 'Theme variant for the slider component',
     },
     min: {
@@ -299,7 +313,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
     variant: {
       control: {type: 'select'},
-      options: ['default', 'compact'],
+      options: sliderVariants,
       description: 'Visual variant of the slider',
     },
     showTooltip: {
@@ -332,7 +346,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
     state: {
       control: {type: 'select'},
-      options: ['default', 'error'],
+      options: sliderStates,
       description: 'Visual state of the slider',
     },
     formatValue: {
@@ -350,26 +364,7 @@ export default meta;
 type Story = StoryObj<ScientificSlider>;
 
 export const Default: Story = {
-  args: {
-    label: 'Volume Control',
-    description: 'Adjust the volume level',
-    theme: 'default',
-    min: 0,
-    max: 100,
-    step: 1,
-    value: 50,
-    disabled: false,
-    required: false,
-    variant: 'default',
-    showTooltip: true,
-    showValue: true,
-    showRangeLabels: true,
-    marks: [],
-    unit: '%',
-    helperText: 'Use arrow keys for precise control',
-    errorMessage: '',
-    state: 'default',
-  },
+  args: defaultSliderArgs,
   render: ({
     label,
     description,
@@ -417,35 +412,26 @@ export const Variants: Story = {
     <div
       style="display: flex; flex-direction: column; gap: 32px; width: 500px;"
     >
-      <div>
-        <h3 style="margin: 0 0 16px 0;">Default Variant</h3>
-        <scientific-slider
-          label="Temperature"
-          description="Set the target temperature for the experiment"
-          min="0"
-          max="100"
-          step="0.5"
-          value="37.5"
-          unit="°C"
-          showValue
-          helperText="Normal room temperature is around 20-25°C"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 16px 0;">Compact Variant</h3>
-        <scientific-slider
-          label="Opacity"
-          variant="compact"
-          min="0"
-          max="1"
-          step="0.01"
-          value="0.75"
-          unit=""
-          showValue
-          .formatValue=${(value: number) => `${Math.round(value * 100)}%`}
-        ></scientific-slider>
-      </div>
+      ${variantExamples.map(
+        (example) => html`
+          <div>
+            <h3 style="margin: 0 0 16px 0;">${example.title}</h3>
+            <scientific-slider
+              .label=${example.label}
+              .description=${'description' in example ? example.description : ''}
+              .variant=${'variant' in example ? example.variant : 'default'}
+              .min=${example.min}
+              .max=${example.max}
+              .step=${example.step}
+              .value=${example.value}
+              .unit=${example.unit}
+              .showValue=${example.showValue}
+              .formatValue=${'formatValue' in example ? example.formatValue : undefined}
+              .helperText=${'helperText' in example ? example.helperText : ''}
+            ></scientific-slider>
+          </div>
+        `
+      )}
     </div>
   `,
 };
@@ -455,67 +441,25 @@ export const WithMarks: Story = {
     <div
       style="display: flex; flex-direction: column; gap: 32px; width: 500px;"
     >
-      <div>
-        <h3 style="margin: 0 0 16px 0;">Simple Marks</h3>
-        <scientific-slider
-          label="Performance Level"
-          min="0"
-          max="100"
-          step="5"
-          value="60"
-          unit="%"
-          showValue
-          .marks=${[
-            {value: 0},
-            {value: 25},
-            {value: 50},
-            {value: 75},
-            {value: 100},
-          ]}
-          helperText="Marks show key reference points"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 16px 0;">Labeled Marks</h3>
-        <scientific-slider
-          label="Quality Setting"
-          min="0"
-          max="4"
-          step="1"
-          value="2"
-          showValue
-          .marks=${[
-            {value: 0, label: 'Low'},
-            {value: 1, label: 'Medium'},
-            {value: 2, label: 'High'},
-            {value: 3, label: 'Ultra'},
-            {value: 4, label: 'Max'},
-          ]}
-          .formatValue=${(value: number) => {
-            const labels = ['Low', 'Medium', 'High', 'Ultra', 'Max'];
-            return labels[value] || value.toString();
-          }}
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 16px 0;">Scientific Marks</h3>
-        <scientific-slider
-          label="pH Level"
-          min="0"
-          max="14"
-          step="0.1"
-          value="7.0"
-          showValue
-          .marks=${[
-            {value: 0, label: 'Acid'},
-            {value: 7, label: 'Neutral'},
-            {value: 14, label: 'Base'},
-          ]}
-          helperText="pH scale from acidic to basic"
-        ></scientific-slider>
-      </div>
+      ${markExamples.map(
+        (example) => html`
+          <div>
+            <h3 style="margin: 0 0 16px 0;">${example.title}</h3>
+            <scientific-slider
+              .label=${example.label}
+              .min=${example.min}
+              .max=${example.max}
+              .step=${example.step}
+              .value=${example.value}
+              .unit=${'unit' in example ? example.unit : ''}
+              .showValue=${example.showValue}
+              .marks=${example.marks}
+              .formatValue=${'formatValue' in example ? example.formatValue : undefined}
+              .helperText=${'helperText' in example ? example.helperText : ''}
+            ></scientific-slider>
+          </div>
+        `
+      )}
     </div>
   `,
 };
@@ -525,63 +469,27 @@ export const States: Story = {
     <div
       style="display: flex; flex-direction: column; gap: 24px; width: 500px;"
     >
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Default State</h3>
-        <scientific-slider
-          label="Normal Slider"
-          min="0"
-          max="100"
-          step="1"
-          value="50"
-          unit="%"
-          showValue
-          helperText="This is a helper text"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Required Field</h3>
-        <scientific-slider
-          label="Required Setting"
-          required
-          min="1"
-          max="10"
-          step="1"
-          value="5"
-          showValue
-          helperText="This field is required"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Error State</h3>
-        <scientific-slider
-          label="Invalid Range"
-          state="error"
-          min="0"
-          max="100"
-          step="1"
-          value="150"
-          unit="%"
-          showValue
-          errorMessage="Value exceeds maximum allowed range"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Disabled State</h3>
-        <scientific-slider
-          label="Disabled Slider"
-          disabled
-          min="0"
-          max="100"
-          step="1"
-          value="30"
-          unit="%"
-          showValue
-          helperText="This slider is disabled"
-        ></scientific-slider>
-      </div>
+      ${stateExamples.map(
+        (example) => html`
+          <div>
+            <h3 style="margin: 0 0 12px 0;">${example.title}</h3>
+            <scientific-slider
+              .label=${example.label}
+              .required=${'required' in example ? example.required : false}
+              .state=${'state' in example ? example.state : 'default'}
+              .disabled=${'disabled' in example ? example.disabled : false}
+              .min=${example.min}
+              .max=${example.max}
+              .step=${example.step}
+              .value=${example.value}
+              .unit=${'unit' in example ? example.unit : ''}
+              .showValue=${example.showValue}
+              .helperText=${'helperText' in example ? example.helperText : ''}
+              .errorMessage=${'errorMessage' in example ? example.errorMessage : ''}
+            ></scientific-slider>
+          </div>
+        `
+      )}
     </div>
   `,
 };
@@ -591,68 +499,23 @@ export const CustomFormatting: Story = {
     <div
       style="display: flex; flex-direction: column; gap: 24px; width: 500px;"
     >
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Currency Formatting</h3>
-        <scientific-slider
-          label="Budget Allocation"
-          min="0"
-          max="10000"
-          step="100"
-          value="2500"
-          showValue
-          .formatValue=${(value: number) => `$${value.toLocaleString()}`}
-          helperText="Budget in USD"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Time Formatting</h3>
-        <scientific-slider
-          label="Duration"
-          min="0"
-          max="3600"
-          step="60"
-          value="1800"
-          showValue
-          .formatValue=${(value: number) => {
-            const hours = Math.floor(value / 3600);
-            const minutes = Math.floor((value % 3600) / 60);
-            const seconds = value % 60;
-            if (hours > 0) return `${hours}h ${minutes}m`;
-            if (minutes > 0) return `${minutes}m ${seconds}s`;
-            return `${seconds}s`;
-          }}
-          helperText="Duration in seconds"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Scientific Notation</h3>
-        <scientific-slider
-          label="Concentration"
-          min="0.000001"
-          max="0.001"
-          step="0.000001"
-          value="0.0005"
-          showValue
-          .formatValue=${(value: number) => `${value.toExponential(2)} mol/L`}
-          helperText="Molecular concentration"
-        ></scientific-slider>
-      </div>
-
-      <div>
-        <h3 style="margin: 0 0 12px 0;">Percentage with Precision</h3>
-        <scientific-slider
-          label="Success Rate"
-          min="0"
-          max="1"
-          step="0.001"
-          value="0.856"
-          showValue
-          .formatValue=${(value: number) => `${(value * 100).toFixed(1)}%`}
-          helperText="Precision to one decimal place"
-        ></scientific-slider>
-      </div>
+      ${customFormattingExamples.map(
+        (example) => html`
+          <div>
+            <h3 style="margin: 0 0 12px 0;">${example.title}</h3>
+            <scientific-slider
+              .label=${example.label}
+              .min=${example.min}
+              .max=${example.max}
+              .step=${example.step}
+              .value=${example.value}
+              .showValue=${example.showValue}
+              .formatValue=${example.formatValue}
+              .helperText=${example.helperText}
+            ></scientific-slider>
+          </div>
+        `
+      )}
     </div>
   `,
 };
@@ -666,69 +529,23 @@ export const ScientificUseCase: Story = {
         <h3 style="margin: 0 0 16px 0;">Experiment Parameters</h3>
 
         <div style="display: flex; flex-direction: column; gap: 16px;">
-          <scientific-slider
-            label="Temperature"
-            description="Reaction temperature in Celsius"
-            min="-50"
-            max="150"
-            step="0.5"
-            value="25"
-            unit="°C"
-            showValue
-            .marks=${[
-              {value: -50, label: 'Min'},
-              {value: 0, label: 'Freeze'},
-              {value: 25, label: 'Room'},
-              {value: 100, label: 'Boil'},
-              {value: 150, label: 'Max'},
-            ]}
-            helperText="Optimal range: 20-30°C"
-          ></scientific-slider>
-
-          <scientific-slider
-            label="Pressure"
-            description="System pressure in atmospheres"
-            min="0.1"
-            max="10"
-            step="0.1"
-            value="1.0"
-            showValue
-            .formatValue=${(value: number) => `${value.toFixed(1)} atm`}
-            .marks=${[
-              {value: 0.1, label: 'Vacuum'},
-              {value: 1.0, label: 'STP'},
-              {value: 10, label: 'High'},
-            ]}
-            helperText="Standard temperature and pressure = 1.0 atm"
-          ></scientific-slider>
-
-          <scientific-slider
-            label="pH Level"
-            description="Solution acidity/basicity"
-            min="0"
-            max="14"
-            step="0.1"
-            value="7.0"
-            showValue
-            .marks=${[
-              {value: 0, label: 'Acid'},
-              {value: 7, label: 'Neutral'},
-              {value: 14, label: 'Base'},
-            ]}
-            helperText="7.0 is neutral, <7 acidic, >7 basic"
-          ></scientific-slider>
-
-          <scientific-slider
-            label="Concentration"
-            description="Reagent concentration"
-            min="0.001"
-            max="1"
-            step="0.001"
-            value="0.1"
-            showValue
-            .formatValue=${(value: number) => `${value.toFixed(3)} M`}
-            helperText="Molarity in mol/L"
-          ></scientific-slider>
+          ${scientificUseCaseExamples.map(
+            (example) => html`
+              <scientific-slider
+                .label=${example.label}
+                .description=${example.description}
+                .min=${example.min}
+                .max=${example.max}
+                .step=${example.step}
+                .value=${example.value}
+                .unit=${'unit' in example ? example.unit : ''}
+                .showValue=${example.showValue}
+                .marks=${'marks' in example ? example.marks : []}
+                .formatValue=${'formatValue' in example ? example.formatValue : undefined}
+                .helperText=${example.helperText}
+              ></scientific-slider>
+            `
+          )}
         </div>
       </div>
     </div>
@@ -739,23 +556,17 @@ export const InteractiveDemo: Story = {
   render: () => html`
     <div style="width: 500px;">
       <scientific-slider
-        label="Interactive Demo"
-        description="Try dragging, clicking, or using keyboard navigation"
-        min="0"
-        max="100"
-        step="1"
-        value="25"
-        unit="%"
-        showValue
-        showTooltip
-        .marks=${[
-          {value: 0, label: 'Min'},
-          {value: 25, label: 'Low'},
-          {value: 50, label: 'Mid'},
-          {value: 75, label: 'High'},
-          {value: 100, label: 'Max'},
-        ]}
-        helperText="Use arrow keys, click on track, or drag the thumb"
+        .label=${interactiveDemoExample.label}
+        .description=${interactiveDemoExample.description}
+        .min=${interactiveDemoExample.min}
+        .max=${interactiveDemoExample.max}
+        .step=${interactiveDemoExample.step}
+        .value=${interactiveDemoExample.value}
+        .unit=${interactiveDemoExample.unit}
+        .showValue=${interactiveDemoExample.showValue}
+        .showTooltip=${interactiveDemoExample.showTooltip}
+        .marks=${interactiveDemoExample.marks}
+        .helperText=${interactiveDemoExample.helperText}
         @value-changed=${(e: CustomEvent) => {
           console.log('Value changed:', e.detail.value);
         }}
@@ -798,21 +609,17 @@ export const CustomStyling: Story = {
     <div style="width: 500px;">
       <scientific-slider
         class="custom-slider"
-        label="Custom Styled Slider"
-        description="Beautifully customized with CSS variables"
-        min="0"
-        max="100"
-        step="5"
-        value="60"
-        unit="%"
-        showValue
-        showTooltip
-        .marks=${[
-          {value: 0, label: 'Start'},
-          {value: 50, label: 'Middle'},
-          {value: 100, label: 'End'},
-        ]}
-        helperText="Custom blue theme with enhanced shadows"
+        .label=${customStylingExample.label}
+        .description=${customStylingExample.description}
+        .min=${customStylingExample.min}
+        .max=${customStylingExample.max}
+        .step=${customStylingExample.step}
+        .value=${customStylingExample.value}
+        .unit=${customStylingExample.unit}
+        .showValue=${customStylingExample.showValue}
+        .showTooltip=${customStylingExample.showTooltip}
+        .marks=${customStylingExample.marks}
+        .helperText=${customStylingExample.helperText}
       ></scientific-slider>
     </div>
   `,
@@ -851,77 +658,32 @@ export const ThemeComparison: Story = {
       }
     </style>
     <div class="theme-grid">
-      <div class="theme-card">
-        <h3 class="theme-title">Default Theme</h3>
-        <scientific-slider
-          theme="default"
-          label="Temperature"
-          description="Ambient temperature reading"
-          min="0"
-          max="100"
-          step="1"
-          value="23"
-          unit="°C"
-          showValue
-          showTooltip
-          .marks=${[
-            {value: 0, label: 'Min'},
-            {value: 25, label: 'Room'},
-            {value: 50, label: 'Warm'},
-            {value: 75, label: 'Hot'},
-            {value: 100, label: 'Max'},
-          ]}
-          helperText="Standard theme with default colors"
-        ></scientific-slider>
-      </div>
-
-      <div class="theme-card dark">
-        <h3 class="theme-title">Dark Theme</h3>
-        <scientific-slider
-          theme="dark"
-          label="Temperature"
-          description="Ambient temperature reading"
-          min="0"
-          max="100"
-          step="1"
-          value="23"
-          unit="°C"
-          showValue
-          showTooltip
-          .marks=${[
-            {value: 0, label: 'Min'},
-            {value: 25, label: 'Room'},
-            {value: 50, label: 'Warm'},
-            {value: 75, label: 'Hot'},
-            {value: 100, label: 'Max'},
-          ]}
-          helperText="Dark theme optimized for low-light environments"
-        ></scientific-slider>
-      </div>
-
-      <div class="theme-card scientific">
-        <h3 class="theme-title">Scientific Theme</h3>
-        <scientific-slider
-          theme="scientific"
-          label="Temperature"
-          description="Ambient temperature reading"
-          min="0"
-          max="100"
-          step="1"
-          value="23"
-          unit="°C"
-          showValue
-          showTooltip
-          .marks=${[
-            {value: 0, label: 'Min'},
-            {value: 25, label: 'Room'},
-            {value: 50, label: 'Warm'},
-            {value: 75, label: 'Hot'},
-            {value: 100, label: 'Max'},
-          ]}
-          helperText="Enhanced theme with professional styling and better contrast"
-        ></scientific-slider>
-      </div>
+      ${themeComparisonExamples.map(
+        (example) => html`
+          <div class="theme-card ${example.theme}">
+            <h3 class="theme-title">${example.title}</h3>
+            <scientific-slider
+              .theme=${example.theme}
+              .label=${example.label}
+              .min=${example.min}
+              .max=${example.max}
+              .step=${example.step}
+              .value=${example.value}
+              .unit=${example.unit}
+              .showValue=${example.showValue}
+              .showTooltip=${true}
+              .marks=${[
+                {value: 0, label: 'Min'},
+                {value: 25, label: 'Room'},
+                {value: 50, label: 'Warm'},
+                {value: 75, label: 'Hot'},
+                {value: 100, label: 'Max'},
+              ]}
+              .helperText=${example.helperText}
+            ></scientific-slider>
+          </div>
+        `
+      )}
     </div>
   `,
   parameters: {
