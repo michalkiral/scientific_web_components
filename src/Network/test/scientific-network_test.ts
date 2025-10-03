@@ -163,8 +163,16 @@ suite('ScientificNetwork', () => {
   test('handles zoom and pan controls', async () => {
     const el = await fixture<ScientificNetwork>(html`
       <scientific-network
-        ?enableZoom=${true}
-        ?enablePan=${true}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: true,
+          showTooltips: true,
+          enableNodeCreation: false,
+          enableEdgeCreation: false,
+          enableRenaming: false,
+          enableRemoval: false,
+        }}
       ></scientific-network>
     `);
 
@@ -213,8 +221,16 @@ suite('ScientificNetwork', () => {
   test('handles node and edge creation modes', async () => {
     const el = await fixture<ScientificNetwork>(html`
       <scientific-network
-        ?enableNodeCreation=${true}
-        ?enableEdgeCreation=${true}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: true,
+          showTooltips: true,
+          enableNodeCreation: true,
+          enableEdgeCreation: true,
+          enableRenaming: false,
+          enableRemoval: false,
+        }}
       ></scientific-network>
     `);
 
@@ -234,8 +250,16 @@ suite('ScientificNetwork', () => {
   test('handles renaming and removal modes', async () => {
     const el = await fixture<ScientificNetwork>(html`
       <scientific-network
-        ?enableRenaming=${true}
-        ?enableRemoval=${true}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: true,
+          showTooltips: true,
+          enableNodeCreation: false,
+          enableEdgeCreation: false,
+          enableRenaming: true,
+          enableRemoval: true,
+        }}
       ></scientific-network>
     `);
 
@@ -253,7 +277,16 @@ suite('ScientificNetwork', () => {
 
   test('handles tooltip visibility', async () => {
     const el = await fixture<ScientificNetwork>(html`
-      <scientific-network ?showTooltips=${true}></scientific-network>
+      <scientific-network .controls=${{ 
+        enableZoom: true,
+        enablePan: true,
+        enableSelection: true,
+        showTooltips: true,
+        enableNodeCreation: false,
+        enableEdgeCreation: false,
+        enableRenaming: false,
+        enableRemoval: false,
+      }}></scientific-network>
     `);
 
     assert.isTrue(el.showTooltips);

@@ -11,7 +11,7 @@ import '../../../Dropdown/scientific-dropdown.js';
 export interface ToolbarButtonDescriptor {
   id: string;
   label: string;
-  variant: 'primary' | 'outline' | 'danger' | 'success' | 'warning';
+  variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
   title: string;
   handler: () => void;
   icon?: string;
