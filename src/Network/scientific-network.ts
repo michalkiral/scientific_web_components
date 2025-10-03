@@ -270,10 +270,26 @@ export class ScientificNetwork
       NetworkShortcutsController.createDefaultNetworkShortcuts()
     );
     
-    this.addEventListener('shortcut-createNode', () => this._activateNodeCreation());
-    this.addEventListener('shortcut-createEdge', () => this._activateEdgeCreation());
-    this.addEventListener('shortcut-toggleRename', () => this._toggleRenaming());
-    this.addEventListener('shortcut-toggleRemoval', () => this._toggleRemoval());
+    this.addEventListener('shortcut-createNode', () => {
+      if (this.enableNodeCreation) {
+        this._activateNodeCreation();
+      }
+    });
+    this.addEventListener('shortcut-createEdge', () => {
+      if (this.enableEdgeCreation) {
+        this._activateEdgeCreation();
+      }
+    });
+    this.addEventListener('shortcut-toggleRename', () => {
+      if (this.enableRenaming) {
+        this._toggleRenaming();
+      }
+    });
+    this.addEventListener('shortcut-toggleRemoval', () => {
+      if (this.enableRemoval) {
+        this._toggleRemoval();
+      }
+    });
   }
 
   override disconnectedCallback() {
