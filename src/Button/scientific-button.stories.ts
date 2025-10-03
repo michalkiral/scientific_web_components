@@ -480,7 +480,7 @@ export const AsLinks: Story = {
           <scientific-button
             label=${example.label}
             href=${example.href}
-            .target=${example.target}
+            .target=${'target' in example ? example.target : ''}
             variant=${example.variant}
           ></scientific-button>
         `
@@ -519,7 +519,7 @@ export const StyleCustomization: Story = {
               <scientific-button
                 label=${example.label}
                 variant=${example.variant}
-                .size=${example.size}
+                .size=${'size' in example ? example.size : 'medium'}
                 style=${example.style}
               ></scientific-button>
             `
@@ -581,9 +581,9 @@ export const ThemeVariantGrid: Story = {
                     label=${example.label}
                     theme=${example.theme}
                     variant=${example.variant}
-                    .size=${example.size}
-                    .loading=${example.loading}
-                    .disabled=${example.disabled}
+                    .size=${'size' in example ? example.size : 'medium'}
+                    .loading=${'loading' in example ? example.loading : false}
+                    .disabled=${'disabled' in example ? example.disabled : false}
                   ></scientific-button>
                 `
               )}

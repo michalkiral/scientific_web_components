@@ -9,7 +9,7 @@ export const countryOptions = [
   {label: 'France', value: 'fr'},
   {label: 'Japan', value: 'jp'},
   {label: 'Australia', value: 'au'},
-] as const;
+];
 
 export const fruitOptions = [
   {label: 'Apple', value: 'apple'},
@@ -54,7 +54,7 @@ export const tagOptions = [
   {label: 'Vue', value: 'vue'},
   {label: 'Angular', value: 'angular'},
   {label: 'Svelte', value: 'svelte'},
-] as const;
+];
 
 export const defaultInputArgs = {
   label: 'Search Countries',

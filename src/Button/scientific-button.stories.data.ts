@@ -49,7 +49,7 @@ export const loadingExamples = [
     title: 'With Spinner',
     label: 'Save',
     loading: true,
-    loadingLabel: undefined,
+    loadingLabel: 'Saving...',
     showSpinner: true,
     variant: 'primary' as const,
   },
@@ -93,19 +93,17 @@ export const linkExamples = [
   {
     label: 'Open Documentation',
     href: '/docs',
-    target: undefined,
     variant: 'primary' as const,
   },
   {
     label: 'External Link',
     href: 'https://example.com',
-    target: '_blank',
+    target: '_blank' as const,
     variant: 'outline' as const,
   },
   {
     label: 'Download File',
     href: '/download.pdf',
-    target: undefined,
     variant: 'ghost' as const,
   },
 ] as const;
@@ -114,7 +112,6 @@ export const customStyleExamples = [
   {
     label: 'Custom',
     variant: 'primary' as const,
-    size: undefined,
     style: `
       --button-bg-color: #667eea;
       --button-hover-bg-color: #5a6fd8;
@@ -124,7 +121,6 @@ export const customStyleExamples = [
   {
     label: 'Neon Effect',
     variant: 'ghost' as const,
-    size: undefined,
     style: `
       --button-color: #00ff88;
       --button-border: 2px solid #00ff88;
@@ -149,7 +145,7 @@ export const loadingModeExamples = [
   {
     label: 'Spinner Only',
     loading: true,
-    loadingLabel: undefined,
+    loadingLabel: 'Loading...',
     showSpinner: true,
     variant: 'primary' as const,
   },
@@ -170,25 +166,19 @@ export const themeVariantExamples = [
         label: 'Loading Default',
         theme: 'default' as const,
         variant: 'primary' as const,
-        size: undefined,
         loading: true,
-        disabled: undefined,
       },
       {
         label: 'Loading Dark',
         theme: 'dark' as const,
         variant: 'primary' as const,
-        size: undefined,
         loading: true,
-        disabled: undefined,
       },
       {
         label: 'Loading Scientific',
         theme: 'scientific' as const,
         variant: 'primary' as const,
-        size: undefined,
         loading: true,
-        disabled: undefined,
       },
     ],
   },
@@ -199,24 +189,18 @@ export const themeVariantExamples = [
         label: 'Disabled Default',
         theme: 'default' as const,
         variant: 'primary' as const,
-        size: undefined,
-        loading: undefined,
         disabled: true,
       },
       {
         label: 'Disabled Dark',
         theme: 'dark' as const,
         variant: 'primary' as const,
-        size: undefined,
-        loading: undefined,
         disabled: true,
       },
       {
         label: 'Disabled Scientific',
         theme: 'scientific' as const,
         variant: 'primary' as const,
-        size: undefined,
-        loading: undefined,
         disabled: true,
       },
     ],
