@@ -1,5 +1,5 @@
 import {html, css, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, state, query} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {EventObject} from 'cytoscape';
@@ -230,6 +230,8 @@ export class ScientificNetwork
     data: string
   ) => void;
 
+  @query('.network-container') private networkContainer!: HTMLElement;
+
   @state() private selectedNodes: string[] = [];
   @state() private selectedEdges: string[] = [];
   @state() private metrics: NetworkMetrics | null = null;
@@ -240,6 +242,7 @@ export class ScientificNetwork
   @state() private isRemoving = false;
   @state() private removalCandidate: string | null = null;
   @state() private removalCandidateType: 'node' | 'edge' | null = null;
+  @state() private removalTimeout: number | null = null;
   @state() private renamingElementId: string | null = null;
   @state() private renamingElementType: 'node' | 'edge' | null = null;
   @state() private tooltip: {
@@ -294,9 +297,15 @@ export class ScientificNetwork
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    
+    if (this.removalTimeout !== null) {
+      clearTimeout(this.removalTimeout);
+      this.removalTimeout = null;
+    }
   }
 
-  override firstUpdated() {
+  override async firstUpdated() {
+    await this.updateComplete;
     this._initializeNetwork();
   }
 
@@ -320,8 +329,8 @@ export class ScientificNetwork
 
   private async _initializeNetwork() {
     const canvasElement = this.shadowRoot?.querySelector('.network-canvas') as HTMLElement;
-    if (!canvasElement) {
-      console.error('Canvas element not found');
+    if (!canvasElement || !this.networkContainer) {
+      console.error('Canvas element or network container not found');
       return;
     }
 
@@ -678,10 +687,15 @@ export class ScientificNetwork
       element.addClass('removing-element');
     }
 
-    setTimeout(() => {
+    if (this.removalTimeout !== null) {
+      clearTimeout(this.removalTimeout);
+    }
+
+    this.removalTimeout = window.setTimeout(() => {
       if (this.removalCandidate === elementId) {
         this._clearRemovalCandidate();
       }
+      this.removalTimeout = null;
     }, 3000);
   }
 
@@ -690,6 +704,11 @@ export class ScientificNetwork
     if (this.removalCandidate && cy) {
       const element = cy.getElementById(this.removalCandidate);
       element.removeClass('removing-element');
+    }
+
+    if (this.removalTimeout !== null) {
+      clearTimeout(this.removalTimeout);
+      this.removalTimeout = null;
     }
 
     this.removalCandidate = null;
@@ -806,8 +825,7 @@ export class ScientificNetwork
     input.style.left = `${x - 50}px`;
     input.style.top = `${y - 15}px`;
 
-    const networkContainer =
-      this.shadowRoot?.querySelector('.network-container');
+    const networkContainer = this.networkContainer;
     if (!networkContainer) return;
 
     networkContainer.appendChild(input);
@@ -896,8 +914,7 @@ export class ScientificNetwork
     const element = cy.getElementById(this.renamingElementId);
     element.removeClass('renaming-element');
 
-    const networkContainer =
-      this.shadowRoot?.querySelector('.network-container');
+    const networkContainer = this.networkContainer;
     const existingInput = networkContainer?.querySelector('.rename-input');
     if (existingInput && networkContainer) {
       networkContainer.removeChild(existingInput);
