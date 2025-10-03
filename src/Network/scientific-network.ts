@@ -1,4 +1,4 @@
-import {html, css, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {customElement, property, state, query} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
@@ -16,6 +16,7 @@ import {
   responsiveStyles,
 } from '../shared/styles/common-styles.js';
 import {networkThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {networkStyles} from '../shared/styles/network-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
@@ -27,6 +28,12 @@ import {
   type ToolbarSection,
   type ToolbarButtonDescriptor,
 } from '../shared/components/ScientificToolbar/scientific-toolbar.js';
+import {
+  exportFormatOptions,
+  networkTypeOptions,
+  interactionModeButtons,
+  controlButtons,
+} from './scientific-network.stories.data.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import '../shared/components/ScientificToolbar/scientific-toolbar.js';
@@ -73,128 +80,7 @@ export class ScientificNetwork
     messageStyles,
     loadingSpinnerStyles,
     responsiveStyles,
-    css`
-      :host {
-        width: var(--network-width, 100%);
-        height: var(--network-height, 400px);
-        min-height: var(--network-min-height, 300px);
-      }
-
-      .network-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        min-height: var(--network-container-min-height, 400px);
-        border: var(--scientific-border);
-        border-radius: var(--scientific-border-radius-lg);
-        background: var(--container-bg-color, #ffffff);
-        overflow: hidden;
-      }
-
-      .network-canvas {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        min-height: var(--network-canvas-min-height, 350px);
-      }
-
-      .network-info {
-        position: absolute;
-        bottom: var(--scientific-spacing-md);
-        left: var(--scientific-spacing-md);
-        background: color-mix(in srgb, var(--scientific-bg-primary) 95%, transparent);
-        border: var(--scientific-border);
-        border-radius: var(--scientific-border-radius);
-        padding: var(--scientific-spacing-md);
-        font-size: var(--scientific-text-sm);
-        color: var(--scientific-text-secondary);
-        box-shadow: var(--scientific-shadow);
-        max-width: 250px;
-        z-index: 10;
-        backdrop-filter: blur(8px);
-      }
-
-      .info-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: var(--scientific-spacing-xs);
-        font-weight: 500;
-      }
-
-      .info-row:last-child {
-        margin-bottom: 0;
-      }
-
-      .info-row span:first-child {
-        color: var(--scientific-text-tertiary);
-      }
-
-      .node-tooltip {
-        position: absolute;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
-        border-radius: var(--scientific-border-radius);
-        font-size: var(--scientific-text-sm);
-        pointer-events: none;
-        z-index: 20;
-        max-width: 200px;
-        word-wrap: break-word;
-        backdrop-filter: blur(4px);
-      }
-
-      .creating-nodes {
-        cursor: crosshair !important;
-      }
-
-      .creating-edges {
-        cursor: copy !important;
-      }
-
-      .renaming {
-        cursor: text !important;
-      }
-
-      .removing {
-        cursor: not-allowed !important;
-      }
-
-      .network-canvas.creating-nodes,
-      .network-canvas.creating-edges,
-      .network-canvas.renaming,
-      .network-canvas.removing {
-        cursor: inherit;
-      }
-
-      .renaming-element {
-        border: 2px dashed var(--scientific-primary-color, #007bff) !important;
-        background-color: rgba(0, 123, 255, 0.1) !important;
-      }
-
-      .removing-element {
-        border: 2px dashed var(--scientific-danger-color, #dc3545) !important;
-        background-color: rgba(220, 53, 69, 0.1) !important;
-        opacity: 0.7 !important;
-      }
-
-      .rename-input {
-        position: absolute;
-        background: var(--scientific-bg-primary);
-        color: var(--scientific-text-primary);
-        border: 2px solid var(--scientific-primary-color, #007bff);
-        border-radius: 4px;
-        padding: 4px 8px;
-        font-size: 12px;
-        z-index: 1000;
-        box-shadow: var(--scientific-shadow);
-        outline: none;
-      }
-
-      .rename-input:focus {
-        border-color: var(--scientific-primary-color, #007bff);
-        box-shadow: 0 0 0 2px color-mix(in srgb, var(--scientific-primary-color) 25%, transparent);
-      }
-    `,
+    ...networkStyles,
   ];
 
   @property({type: String}) override title = '';
@@ -1140,21 +1026,17 @@ export class ScientificNetwork
       className: 'network-type-section',
       buttons: [
         {
-          id: 'undirected',
-          label: 'Undirected',
+          ...networkTypeOptions.undirected,
           variant: (!this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-          title: 'Set network to undirected mode',
           handler: () => this._handleDirectedChange(
-            new CustomEvent('change', {detail: {value: 'false'}})
+            new CustomEvent('change', {detail: {value: networkTypeOptions.undirected.value}})
           ),
         },
         {
-          id: 'directed',
-          label: 'Directed',
+          ...networkTypeOptions.directed,
           variant: (this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-          title: 'Set network to directed mode',
           handler: () => this._handleDirectedChange(
-            new CustomEvent('change', {detail: {value: 'true'}})
+            new CustomEvent('change', {detail: {value: networkTypeOptions.directed.value}})
           ),
         },
       ],
@@ -1162,34 +1044,26 @@ export class ScientificNetwork
 
     const interactiveButtons: ToolbarButtonDescriptor[] = [
       {
-        id: 'create-node',
-        label: '+ Node',
+        ...interactionModeButtons.createNode,
         variant: (this.isCreatingNode ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Add Node (Press 1 and click on canvas)',
         handler: () => this._toggleNodeCreation(),
         visible: this.enableNodeCreation,
       },
       {
-        id: 'create-edge',
-        label: '+ Edge',
+        ...interactionModeButtons.createEdge,
         variant: (this.isCreatingEdge ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Add Edge (Press 2 and click on two nodes)',
         handler: () => this._toggleEdgeCreation(),
         visible: this.enableEdgeCreation,
       },
       {
-        id: 'rename',
-        label: 'Rename',
+        ...interactionModeButtons.rename,
         variant: (this.isRenaming ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Rename elements (Press 3 and click element)',
         handler: () => this._toggleRenaming(),
         visible: this.enableRenaming,
       },
       {
-        id: 'remove',
-        label: 'Remove',
+        ...interactionModeButtons.remove,
         variant: (this.isRemoving ? 'danger' : 'outline') as 'danger' | 'outline',
-        title: 'Remove elements (Press 4 and double-click element to confirm)',
         handler: () => this._toggleRemoval(),
         visible: this.enableRemoval,
       },
@@ -1204,45 +1078,37 @@ export class ScientificNetwork
       });
     }
 
-    const controlButtons: ToolbarButtonDescriptor[] = [
+    const controlButtonsConfig: ToolbarButtonDescriptor[] = [
       {
-        id: 'zoom-in',
-        label: '+',
-        icon: 'zoom-in',
+        ...controlButtons.zoomIn,
         variant: 'outline' as const,
-        title: 'Zoom In',
         handler: () => this._handleZoomIn(),
         visible: this.enableZoom,
       },
       {
-        id: 'zoom-out',
-        label: '−',
-        icon: 'zoom-out', 
+        ...controlButtons.zoomOut,
         variant: 'outline' as const,
-        title: 'Zoom Out',
         handler: () => this._handleZoomOut(),
         visible: this.enableZoom,
       },
       {
-        id: 'zoom-fit',
-        label: '⌂',
-        icon: 'fit-screen',
+        ...controlButtons.zoomFit,
         variant: 'outline' as const,
-        title: 'Fit to Screen',
         handler: () => this._handleZoomFit(),
         visible: this.enableZoom,
       },
     ].filter(button => button.visible);
 
-    if (controlButtons.length > 0) {
+    if (controlButtonsConfig.length > 0) {
       sections.push({
         id: 'controls',
         title: 'Controls',
         className: 'controls-section',
-        buttons: controlButtons,
+        buttons: controlButtonsConfig,
       });
     }
 
+    // Export Setion
     sections.push({
       id: 'export',
       title: 'Export',
@@ -1251,12 +1117,7 @@ export class ScientificNetwork
         {
           id: 'export-format',
           label: '',
-          options: [
-            {value: 'png', label: 'PNG'},
-            {value: 'jpg', label: 'JPG'},
-            {value: 'pdf', label: 'PDF'},
-            {value: 'json', label: 'JSON'},
-          ],
+          options: exportFormatOptions,
           placeholder: 'Select an export format',
           handler: (event: CustomEvent) => this._handleExportChange(event),
         },

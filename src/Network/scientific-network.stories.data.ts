@@ -1,5 +1,71 @@
 import type {NetworkData} from './scientific-network';
 
+export const exportFormatOptions: Array<{value: string; label: string}> = [
+  {value: 'png', label: 'PNG'},
+  {value: 'jpg', label: 'JPG'},
+  {value: 'pdf', label: 'PDF'},
+  {value: 'json', label: 'JSON'},
+];
+
+export const networkTypeOptions = {
+  undirected: {
+    id: 'undirected',
+    label: 'Undirected',
+    title: 'Set network to undirected mode',
+    value: 'false',
+  },
+  directed: {
+    id: 'directed',
+    label: 'Directed',
+    title: 'Set network to directed mode',
+    value: 'true',
+  },
+} as const;
+
+export const interactionModeButtons = {
+  createNode: {
+    id: 'create-node',
+    label: '+ Node',
+    title: 'Add Node (Press 1 and click on canvas)',
+  },
+  createEdge: {
+    id: 'create-edge',
+    label: '+ Edge',
+    title: 'Add Edge (Press 2 and click on two nodes)',
+  },
+  rename: {
+    id: 'rename',
+    label: 'Rename',
+    title: 'Rename elements (Press 3 and click element)',
+  },
+  remove: {
+    id: 'remove',
+    label: 'Remove',
+    title: 'Remove elements (Press 4 and double-click element to confirm)',
+  },
+} as const;
+
+export const controlButtons = {
+  zoomIn: {
+    id: 'zoom-in',
+    label: '+',
+    icon: 'zoom-in',
+    title: 'Zoom In',
+  },
+  zoomOut: {
+    id: 'zoom-out',
+    label: '−',
+    icon: 'zoom-out',
+    title: 'Zoom Out',
+  },
+  zoomFit: {
+    id: 'zoom-fit',
+    label: '⌂',
+    icon: 'fit-screen',
+    title: 'Fit to Screen',
+  },
+} as const;
+
 export const sampleNetworkData: NetworkData = {
   nodes: [
     {id: 'node1', label: 'Protein A', data: {type: 'protein', mass: 25000}},
