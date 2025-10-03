@@ -31,8 +31,8 @@ suite('ScientificForm', () => {
       ></scientific-form>
     `);
 
-    const title = el.shadowRoot!.querySelector('.form-title');
-    const subtitle = el.shadowRoot!.querySelector('.form-subtitle');
+    const title = el.shadowRoot!.querySelector('.scientific-title');
+    const subtitle = el.shadowRoot!.querySelector('.scientific-subtitle');
 
     assert.isNotNull(title);
     assert.isNotNull(subtitle);
@@ -293,7 +293,7 @@ suite('ScientificForm', () => {
     el.errorMessage = 'Something went wrong';
     await el.updateComplete;
 
-    const errorElement = el.shadowRoot!.querySelector('.form-error');
+    const errorElement = el.shadowRoot!.querySelector('.scientific-message--error');
     assert.isNotNull(errorElement);
     assert.include(errorElement!.textContent!, 'Something went wrong');
 
@@ -301,7 +301,7 @@ suite('ScientificForm', () => {
     el.successMessage = 'Form submitted successfully';
     await el.updateComplete;
 
-    const successElement = el.shadowRoot!.querySelector('.form-success');
+    const successElement = el.shadowRoot!.querySelector('.scientific-success');
     assert.isNotNull(successElement);
     assert.include(successElement!.textContent!, 'Form submitted successfully');
   });

@@ -100,10 +100,16 @@ suite('ScientificNetwork', () => {
   test('enables/disables interactive features', async () => {
     const el = await fixture<ScientificNetwork>(html`
       <scientific-network
-        ?enableNodeCreation=${true}
-        ?enableEdgeCreation=${true}
-        ?enableRenaming=${true}
-        ?enableRemoval=${true}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: true,
+          showTooltips: true,
+          enableNodeCreation: true,
+          enableEdgeCreation: true,
+          enableRenaming: true,
+          enableRemoval: true,
+        }}
       ></scientific-network>
     `);
 
@@ -116,24 +122,30 @@ suite('ScientificNetwork', () => {
   test('handles keyboard shortcuts configuration', async () => {
     const el = await fixture<ScientificNetwork>(html`
       <scientific-network
-        ?enableNodeCreation=${true}
-        ?enableEdgeCreation=${true}
-        ?enableRenaming=${true}
-        ?enableRemoval=${true}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: true,
+          showTooltips: true,
+          enableNodeCreation: true,
+          enableEdgeCreation: true,
+          enableRenaming: true,
+          enableRemoval: true,
+        }}
       ></scientific-network>
     `);
 
-    const shortcuts = (el as any).keyboardShortcuts;
+    const shortcuts = (el as any).shortcutsController;
 
-    assert.isTrue(shortcuts.has('1'));
-    assert.isTrue(shortcuts.has('2'));
-    assert.isTrue(shortcuts.has('3'));
-    assert.isTrue(shortcuts.has('4'));
+    assert.isTrue(shortcuts.hasShortcut('1'));
+    assert.isTrue(shortcuts.hasShortcut('2'));
+    assert.isTrue(shortcuts.hasShortcut('3'));
+    assert.isTrue(shortcuts.hasShortcut('4'));
 
-    assert.equal(shortcuts.get('1').action, 'createNode');
-    assert.equal(shortcuts.get('2').action, 'createEdge');
-    assert.equal(shortcuts.get('3').action, 'toggleRename');
-    assert.equal(shortcuts.get('4').action, 'toggleRemoval');
+    assert.equal(shortcuts.getShortcut('1').action, 'createNode');
+    assert.equal(shortcuts.getShortcut('2').action, 'createEdge');
+    assert.equal(shortcuts.getShortcut('3').action, 'toggleRename');
+    assert.equal(shortcuts.getShortcut('4').action, 'toggleRemoval');
   });
 
   test('handles theme changes', async () => {
