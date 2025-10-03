@@ -140,7 +140,7 @@ suite('scientific-table', () => {
       <scientific-table
         .columns=${testColumns}
         .data=${[]}
-        .loading=${true}
+        .isLoading=${true}
       ></scientific-table>
     `);
 
@@ -271,15 +271,15 @@ suite('scientific-table', () => {
         .columns=${testColumns}
         .data=${testData}
         .title=${'Test Table'}
-        .description=${'A table for testing'}
+        .subtitle=${'A table for testing'}
       ></scientific-table>
     `);
 
-    const title = el.shadowRoot!.querySelector('.table-title');
+    const title = el.shadowRoot!.querySelector('.scientific-title');
     assert.exists(title, 'Title should be displayed');
     assert.equal(title!.textContent, 'Test Table', 'Title should match');
 
-    const description = el.shadowRoot!.querySelector('.table-description');
+    const description = el.shadowRoot!.querySelector('.scientific-subtitle');
     assert.exists(description, 'Description should be displayed');
     assert.equal(
       description!.textContent,

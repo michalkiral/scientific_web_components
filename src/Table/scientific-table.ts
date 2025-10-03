@@ -1,10 +1,11 @@
 /* eslint-disable no-constant-condition */
-import {LitElement, html, css, TemplateResult} from 'lit';
+import {html, css, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
+import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {renderIcon} from '../shared/utils/icon-utils.js';
 import {
   containerStyles,
@@ -50,7 +51,7 @@ export interface TableFilter {
 export type TableTheme = ScientificTheme;
 
 @customElement('scientific-table')
-export class ScientificTable extends LitElement {
+export class ScientificTable extends ScientificSurfaceBase {
   static override styles = [
     baseComponentStyles,
     sharedVariables,
@@ -325,9 +326,6 @@ export class ScientificTable extends LitElement {
   @property({type: String})
   description = '';
 
-  @property({type: String, reflect: true})
-  theme: ScientificTheme = 'default';
-
   @property({type: Array})
   columns: TableColumn[] = [];
 
@@ -336,9 +334,6 @@ export class ScientificTable extends LitElement {
 
   @property({type: String})
   csvPath: string | null = null;
-
-  @property({type: Boolean})
-  loading = false;
 
   @property({type: Boolean})
   sortable = true;
@@ -450,7 +445,7 @@ export class ScientificTable extends LitElement {
   }
 
   async _fetchCSV() {
-    this.loading = true;
+    this.isLoading = true;
     try {
       const response = await fetch(this.csvPath!);
       if (!response.ok) {
@@ -465,7 +460,7 @@ export class ScientificTable extends LitElement {
       this._parseCSVStreaming(reader);
     } catch (error) {
       console.error('Error loading CSV:', error);
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -485,10 +480,10 @@ export class ScientificTable extends LitElement {
       }));
 
       this.data = result.data;
-      this.loading = false;
+      this.isLoading = false;
     } catch (error) {
       console.error('Error parsing CSV:', error);
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -797,183 +792,200 @@ export class ScientificTable extends LitElement {
   }
 
   override render() {
+    return html`
+      <div class="table-container">
+        ${this.renderLoading()}
+        ${this.renderHeader()}
+        ${this.renderContent()}
+      </div>
+    `;
+  }
+
+  protected override renderContent() {
     const displayData =
       this.paginatedData.length > 0 ? this.paginatedData : this.processedData;
     const hasData = displayData.length > 0;
 
     return html`
-      <div class="table-container">
-        ${this.loading
-          ? html`
-              <div class="loading-overlay">
-                <div class="loading-spinner"></div>
+      ${this.showSearch
+        ? html`
+            <div class="table-header">
+              <div class="table-controls">
+                <scientific-input
+                  .placeholder=${this.searchPlaceholder}
+                  .value=${this.searchTerm}
+                  @input=${this._handleSearch}
+                  .clearable=${true}
+                  .autoComplete=${false}
+                ></scientific-input>
               </div>
-            `
-          : ''}
-        ${this.title || this.description || this.showSearch
-          ? html`
-              <div class="table-header">
-                <div class="table-title-section">
-                  ${this.title
-                    ? html`<h2 class="table-title">${this.title}</h2>`
-                    : ''}
-                  ${this.description
-                    ? html`<p class="table-description">${this.description}</p>`
-                    : ''}
-                </div>
+            </div>
+          `
+        : ''}
 
-                ${this.showSearch
-                  ? html`
-                      <div class="table-controls">
-                        <scientific-input
-                          .placeholder=${this.searchPlaceholder}
-                          .value=${this.searchTerm}
-                          @input=${this._handleSearch}
-                          .clearable=${true}
-                          .autoComplete=${false}
-                        ></scientific-input>
-                      </div>
-                    `
-                  : ''}
-              </div>
-            `
-          : ''}
-        ${hasData
-          ? html`
-              <div class="table-wrapper">
-                <table class="table">
-                  <thead class="table-head">
-                    <tr>
-                      ${this.selectable
-                        ? html`
-                            <th class="table-header-cell">
-                              <input type="checkbox" class="table-checkbox" />
-                            </th>
-                          `
-                        : ''}
-                      ${this.columns.map(
-                        (column) => html`
-                          <th
-                            class="${this._getHeaderClasses(column)}"
-                            style="${column.width
-                              ? `width: ${column.width}`
-                              : ''}"
-                            @click=${() => this._sortData(column.key)}
-                          >
-                            ${column.label}
-                            ${column.sortable !== false && this.sortable
-                              ? html`
-                                  <span
-                                    class="sort-indicator ${this
-                                      .sortedColumn === column.key
-                                      ? 'active'
-                                      : ''}"
-                                  >
-                                    ${this.sortedColumn === column.key
-                                      ? this.sortDirection === 'asc'
-                                        ? renderIcon('chevron-up', {size: 12})
-                                        : renderIcon('chevron-down', {size: 12})
-                                      : renderIcon('sort', {size: 12})}
-                                  </span>
-                                `
-                              : ''}
+      ${hasData
+        ? html`
+            <div class="table-wrapper">
+              <table class="table">
+                <thead class="table-head">
+                  <tr>
+                    ${this.selectable
+                      ? html`
+                          <th class="table-header-cell">
+                            <input
+                              type="checkbox"
+                              class="table-checkbox"
+                              .checked=${this.allSelected}
+                              @change=${this._toggleSelectAll}
+                            />
                           </th>
                         `
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${displayData.map(
-                      (row, index) => html`
-                        <tr
-                          class="table-row ${this.selectedRows.has(
-                            row._id as string
-                          )
-                            ? 'selected'
+                      : ''}
+                    ${this.columns.map(
+                      (column) => html`
+                        <th
+                          class="${this._getHeaderClasses(column)}"
+                          style="${column.width
+                            ? `width: ${column.width}`
                             : ''}"
-                          @click=${() => this._handleRowClick(row, index)}
+                          @click=${() => this._sortData(column.key)}
                         >
-                          ${this.selectable
+                          ${column.label}
+                          ${column.sortable !== false && this.sortable
                             ? html`
-                                <td class="table-cell">
-                                  <input
-                                    type="checkbox"
-                                    class="table-checkbox"
-                                    .checked=${this.selectedRows.has(
-                                      row._id as string
-                                    )}
-                                    @click=${(e: Event) => e.stopPropagation()}
-                                    @change=${() =>
-                                      this._toggleRowSelection(row)}
-                                  />
-                                </td>
+                                <span
+                                  class="sort-indicator ${this
+                                    .sortedColumn === column.key
+                                    ? 'active'
+                                    : ''}"
+                                >
+                                  ${this.sortedColumn === column.key
+                                    ? this.sortDirection === 'asc'
+                                      ? renderIcon('chevron-up', {size: 12})
+                                      : renderIcon('chevron-down', {size: 12})
+                                    : renderIcon('sort', {size: 12})}
+                                </span>
                               `
                             : ''}
-                          ${this.columns.map(
-                            (column) => html`
-                              <td class="${this._getCellClasses(column)}">
-                                ${this._renderCellContent(
-                                  row[column.key],
-                                  column,
-                                  row
-                                )}
-                              </td>
-                            `
-                          )}
-                        </tr>
+                        </th>
                       `
                     )}
-                  </tbody>
-                </table>
-              </div>
-
-              ${this.pagination
-                ? html`
-                    <div class="table-footer">
-                      <div class="table-info">
-                        Showing ${(this.currentPage - 1) * this.pageSize + 1} to
-                        ${Math.min(
-                          this.currentPage * this.pageSize,
-                          this.processedData.length
-                        )}
-                        of ${this.processedData.length} entries
-                      </div>
-
-                      <div
-                        style="display: flex; align-items: center; gap: 16px;"
+                  </tr>
+                </thead>
+                <tbody>
+                  ${displayData.map(
+                    (row, index) => html`
+                      <tr
+                        class="table-row ${this.selectedRows.has(
+                          row._id as string
+                        )
+                          ? 'selected'
+                          : ''}"
+                        @click=${() => this._handleRowClick(row, index)}
                       >
-                        <div
-                          style="display: flex; align-items: center; gap: 8px;"
-                        >
-                          <span>Show:</span>
-                          <scientific-dropdown
-                            .options=${this.pageSizeOptions.map((size) => ({
-                              label: String(size),
-                              value: String(size),
-                            }))}
-                            .selectedValue=${String(this.pageSize)}
-                            .theme=${this.theme}
-                            @option-selected=${this._changePageSize}
-                            style="min-width: 80px;"
-                            label=""
-                          ></scientific-dropdown>
-                        </div>
+                        ${this.selectable
+                          ? html`
+                              <td class="table-cell">
+                                <input
+                                  type="checkbox"
+                                  class="table-checkbox"
+                                  .checked=${this.selectedRows.has(
+                                    row._id as string
+                                  )}
+                                  @click=${(e: Event) => e.stopPropagation()}
+                                  @change=${() =>
+                                    this._toggleRowSelection(row)}
+                                />
+                              </td>
+                            `
+                          : ''}
+                        ${this.columns.map(
+                          (column) => html`
+                            <td class="${this._getCellClasses(column)}">
+                              ${this._renderCellContent(
+                                row[column.key],
+                                column,
+                                row
+                              )}
+                            </td>
+                          `
+                        )}
+                      </tr>
+                    `
+                  )}
+                </tbody>
+              </table>
+            </div>
 
-                        ${this._renderPagination()}
-                      </div>
+            ${this.pagination
+              ? html`
+                  <div class="table-footer">
+                    <div class="table-info">
+                      Showing ${(this.currentPage - 1) * this.pageSize + 1} to
+                      ${Math.min(
+                        this.currentPage * this.pageSize,
+                        this.processedData.length
+                      )}
+                      of ${this.processedData.length} entries
                     </div>
-                  `
-                : ''}
-            `
-          : html`
-              <div class="empty-state">
-                <div class="empty-icon">${this.emptyStateIcon}</div>
-                <h3 class="empty-title">${this.emptyStateTitle}</h3>
-                <p class="empty-description">${this.emptyStateDescription}</p>
-              </div>
-            `}
-      </div>
+
+                    <div
+                      style="display: flex; align-items: center; gap: 16px;"
+                    >
+                      <div
+                        style="display: flex; align-items: center; gap: 8px;"
+                      >
+                        <span>Show:</span>
+                        <scientific-dropdown
+                          .options=${this.pageSizeOptions.map((size) => ({
+                            label: String(size),
+                            value: String(size),
+                          }))}
+                          .selectedValue=${String(this.pageSize)}
+                          .theme=${this.theme}
+                          @option-selected=${this._changePageSize}
+                          style="min-width: 80px;"
+                          label=""
+                        ></scientific-dropdown>
+                      </div>
+
+                      ${this._renderPagination()}
+                    </div>
+                  </div>
+                `
+              : ''}
+          `
+        : html`
+            <div class="empty-state">
+              <div class="empty-icon">${this.emptyStateIcon}</div>
+              <h3 class="empty-title">${this.emptyStateTitle}</h3>
+              <p class="empty-description">${this.emptyStateDescription}</p>
+            </div>
+          `}
     `;
+  }
+
+  get allSelected(): boolean {
+    const displayData =
+      this.paginatedData.length > 0 ? this.paginatedData : this.processedData;
+    return displayData.length > 0 && displayData.every(row => this.selectedRows.has(row._id as string));
+  }
+
+  private _toggleSelectAll() {
+    const displayData =
+      this.paginatedData.length > 0 ? this.paginatedData : this.processedData;
+    
+    if (this.allSelected) {
+      displayData.forEach(row => this.selectedRows.delete(row._id as string));
+    } else {
+      displayData.forEach(row => this.selectedRows.add(row._id as string));
+    }
+    
+    this.requestUpdate();
+    const selectedData = this.processedData.filter((r) =>
+      this.selectedRows.has(r._id as string)
+    );
+    this.onSelectionChange?.(selectedData);
   }
 }
 

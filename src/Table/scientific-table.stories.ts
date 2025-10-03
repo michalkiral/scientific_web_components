@@ -336,7 +336,7 @@ The table accepts data in the \`TableData\` format:
         defaultValue: {summary: 'undefined'},
       },
     },
-    loading: {
+    isLoading: {
       control: 'boolean',
       description: 'Show loading spinner overlay',
       table: {
@@ -550,7 +550,7 @@ export const Loading: Story = {
     description: 'Fetching compound data from server...',
     columns: sampleColumns,
     data: customFormattingData,
-    loading: true,
+    isLoading: true,
     showSearch: true,
   },
   parameters: {
