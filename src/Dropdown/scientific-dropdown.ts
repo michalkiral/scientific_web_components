@@ -15,15 +15,15 @@ import {
 } from '../shared/styles/dropdown-styles.js';
 import {dropdownThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {DropdownInteractionController} from '../shared/controllers/dropdown-interaction-controller.js';
+import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
   filterOptions,
   type DropdownOption,
   type DropdownKeyboardHandler,
-} from '../shared/utils/dropdown-utils.js';
-import {renderDropdownOptions} from '../shared/utils/dropdown-render.js';
+} from '../shared/dropdown/dropdown-utils.js';
+import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown

@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/icons/index.js';
+import {renderIcon} from '../shared/utils/icon-utils.js';
 import {
   sharedVariables,
   containerStyles,

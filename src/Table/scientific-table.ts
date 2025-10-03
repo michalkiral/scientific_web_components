@@ -5,7 +5,7 @@ import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/icons/index.js';
+import {renderIcon} from '../shared/utils/icon-utils.js';
 import {
   containerStyles,
   headerStyles,

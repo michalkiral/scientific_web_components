@@ -1,7 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {property} from 'lit/decorators.js';
 import {classNames} from '../utils/dom-utils.js';
-import {renderIcon} from '../icons/index.js';
+import {renderIcon} from '../utils/icon-utils.js';
 import type {ScientificTheme} from '../styles/common-styles.js';
 
 export abstract class ScientificSurfaceBase extends LitElement {

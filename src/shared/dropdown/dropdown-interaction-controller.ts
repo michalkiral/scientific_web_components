@@ -4,7 +4,7 @@ import {
   createClickOutsideHandler,
   type DropdownKeyboardHandlerConfig,
   type DropdownKeyboardHandler,
-} from '../utils/dropdown-utils.js';
+} from './dropdown-utils.js';
 
 export interface DropdownInteractionHost
   extends ReactiveControllerHost,

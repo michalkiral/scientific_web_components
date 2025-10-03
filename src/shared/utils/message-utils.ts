@@ -1,5 +1,5 @@
 import {html, TemplateResult} from 'lit';
-import {renderIcon} from '../icons/index.js';
+import {renderIcon} from './icon-utils.js';
 
 export type MessageType = 'error' | 'success' | 'warning' | 'info';
 
