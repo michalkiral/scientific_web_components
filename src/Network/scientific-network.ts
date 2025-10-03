@@ -23,8 +23,13 @@ import {
   type ExportableComponent,
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
+import {
+  type ToolbarSection,
+  type ToolbarButtonDescriptor,
+} from '../shared/components/ScientificToolbar/scientific-toolbar.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
+import '../shared/components/ScientificToolbar/scientific-toolbar.js';
 
 export interface NetworkNode {
   id: string;
@@ -48,23 +53,6 @@ export interface NetworkEdge {
 export interface NetworkData {
   nodes: NetworkNode[];
   edges: NetworkEdge[];
-}
-
-export interface ToolbarButtonDescriptor {
-  id: string;
-  label: string;
-  variant: 'primary' | 'outline' | 'danger' | 'success' | 'warning';
-  title: string;
-  handler: () => void;
-  icon?: string;
-  visible?: boolean;
-}
-
-export interface ToolbarSection {
-  networkTypeButtons: ToolbarButtonDescriptor[];
-  interactiveButtons: ToolbarButtonDescriptor[];
-  controlButtons: ToolbarButtonDescriptor[];
-  exportOptions: Array<{value: string; label: string}>;
 }
 
 @customElement('scientific-network')
@@ -108,62 +96,6 @@ export class ScientificNetwork
         width: 100%;
         height: 100%;
         min-height: var(--network-canvas-min-height, 350px);
-      }
-
-      .network-toolbar {
-        display: flex;
-        flex-direction: column;
-        padding: var(--scientific-spacing-md);
-      }
-
-      .toolbar-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
-      .section-title {
-        font-size: var(--scientific-text-sm);
-        font-weight: 600;
-        color: var(--scientific-text-secondary);
-        margin-bottom: var(--scientific-spacing-xs);
-        text-transform: uppercase;
-      }
-
-      .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--scientific-spacing-sm);
-        justify-content: center;
-      }
-
-      @media (min-width: 768px) {
-        .network-toolbar {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: var(--scientific-spacing-md);
-          padding: var(--scientific-spacing-md);
-        }
-
-        .interactive-section .button-group {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-
-      .network-toolbar.grid-3 {
-        grid-template-columns: 1fr 1fr 1fr !important;
-      }
-
-      .network-toolbar.grid-4 {
-        grid-template-columns: 1fr 1fr 1fr 1fr !important;
-      }
-
-      @media (max-width: 767px) {
-        .network-toolbar {
-          gap: var(--scientific-spacing-lg);
-        }
       }
 
       .network-info {
@@ -1107,34 +1039,41 @@ export class ScientificNetwork
     `;
   }
 
-  private _getToolbarButtonDescriptors(): ToolbarSection {
-    const networkTypeButtons: ToolbarButtonDescriptor[] = [
-      {
-        id: 'undirected',
-        label: 'Undirected',
-        variant: (!this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Set network to undirected mode',
-        handler: () => this._handleDirectedChange(
-          new CustomEvent('change', {detail: {value: 'false'}})
-        ),
-      },
-      {
-        id: 'directed',
-        label: 'Directed',
-        variant: (this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Set network to directed mode',
-        handler: () => this._handleDirectedChange(
-          new CustomEvent('change', {detail: {value: 'true'}})
-        ),
-      },
-    ];
+  private _getToolbarSections(): ToolbarSection[] {
+    const sections: ToolbarSection[] = [];
+
+    sections.push({
+      id: 'network-type',
+      title: 'Network Type',
+      className: 'network-type-section',
+      buttons: [
+        {
+          id: 'undirected',
+          label: 'Undirected',
+          variant: (!this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
+          title: 'Set network to undirected mode',
+          handler: () => this._handleDirectedChange(
+            new CustomEvent('change', {detail: {value: 'false'}})
+          ),
+        },
+        {
+          id: 'directed',
+          label: 'Directed',
+          variant: (this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
+          title: 'Set network to directed mode',
+          handler: () => this._handleDirectedChange(
+            new CustomEvent('change', {detail: {value: 'true'}})
+          ),
+        },
+      ],
+    });
 
     const interactiveButtons: ToolbarButtonDescriptor[] = [
       {
         id: 'create-node',
         label: '+ Node',
         variant: (this.isCreatingNode ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Add Node (Press 1 or click on canvas)',
+        title: 'Add Node (Press 1 and click on canvas)',
         handler: () => this._toggleNodeCreation(),
         visible: this.enableNodeCreation,
       },
@@ -1142,7 +1081,7 @@ export class ScientificNetwork
         id: 'create-edge',
         label: '+ Edge',
         variant: (this.isCreatingEdge ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Add Edge (Press 2 or click two nodes)',
+        title: 'Add Edge (Press 2 and click on two nodes)',
         handler: () => this._toggleEdgeCreation(),
         visible: this.enableEdgeCreation,
       },
@@ -1150,7 +1089,7 @@ export class ScientificNetwork
         id: 'rename',
         label: 'Rename',
         variant: (this.isRenaming ? 'primary' : 'outline') as 'primary' | 'outline',
-        title: 'Rename elements (click element)',
+        title: 'Rename elements (Press 3 and click element)',
         handler: () => this._toggleRenaming(),
         visible: this.enableRenaming,
       },
@@ -1158,11 +1097,20 @@ export class ScientificNetwork
         id: 'remove',
         label: 'Remove',
         variant: (this.isRemoving ? 'danger' : 'outline') as 'danger' | 'outline',
-        title: 'Remove elements (double-click element to confirm)',
+        title: 'Remove elements (Press 4 and double-click element to confirm)',
         handler: () => this._toggleRemoval(),
         visible: this.enableRemoval,
       },
     ].filter(button => button.visible);
+
+    if (interactiveButtons.length > 0) {
+      sections.push({
+        id: 'interactive',
+        title: 'Interactive Mode',
+        className: 'interactive-section',
+        buttons: interactiveButtons,
+      });
+    }
 
     const controlButtons: ToolbarButtonDescriptor[] = [
       {
@@ -1194,85 +1142,46 @@ export class ScientificNetwork
       },
     ].filter(button => button.visible);
 
-    const exportOptions = [
-      {value: 'png', label: 'PNG'},
-      {value: 'jpg', label: 'JPG'},
-      {value: 'pdf', label: 'PDF'},
-      {value: 'json', label: 'JSON'},
-    ];
+    if (controlButtons.length > 0) {
+      sections.push({
+        id: 'controls',
+        title: 'Controls',
+        className: 'controls-section',
+        buttons: controlButtons,
+      });
+    }
 
-    return {
-      networkTypeButtons,
-      interactiveButtons,
-      controlButtons,
-      exportOptions,
-    };
-  }
+    sections.push({
+      id: 'export',
+      title: 'Export',
+      className: 'export-section',
+      dropdowns: [
+        {
+          id: 'export-format',
+          label: '',
+          options: [
+            {value: 'png', label: 'PNG'},
+            {value: 'jpg', label: 'JPG'},
+            {value: 'pdf', label: 'PDF'},
+            {value: 'json', label: 'JSON'},
+          ],
+          placeholder: 'Select an export format',
+          handler: (event: CustomEvent) => this._handleExportChange(event),
+        },
+      ],
+    });
 
-  private _renderButtonGroup(buttons: ToolbarButtonDescriptor[]) {
-    return buttons.map(button => html`
-      <scientific-button
-        variant="${button.variant}"
-        size="small"
-        label="${button.label}"
-        .theme="${this.theme}"
-        @click="${button.handler}"
-        title="${button.title}"
-      ></scientific-button>
-    `);
+    return sections;
   }
 
   private _renderToolbar() {
-    const buttonDescriptors = this._getToolbarButtonDescriptors();
-    const hasInteractiveFeatures = buttonDescriptors.interactiveButtons.length > 0;
-    const gridClass = hasInteractiveFeatures ? 'grid-4' : 'grid-3';
-
+    const sections = this._getToolbarSections();
     return html`
-      <div class="network-toolbar ${gridClass}">
-        <div class="toolbar-section network-type-section">
-          <div class="section-title">Network Type</div>
-          <div class="button-group">
-            ${this._renderButtonGroup(buttonDescriptors.networkTypeButtons)}
-          </div>
-        </div>
-
-        ${hasInteractiveFeatures
-          ? html`
-              <div class="toolbar-section interactive-section">
-                <div class="section-title">Interactive Mode</div>
-                <div class="button-group">
-                  ${this._renderButtonGroup(buttonDescriptors.interactiveButtons)}
-                </div>
-              </div>
-            `
-          : ''}
-
-        <div class="toolbar-section controls-section">
-          <div class="section-title">Controls</div>
-          <div class="button-group">
-            ${buttonDescriptors.controlButtons.length > 0
-              ? html`
-                  <div class="zoom-buttons">
-                    ${this._renderButtonGroup(buttonDescriptors.controlButtons)}
-                  </div>
-                `
-              : ''}
-          </div>
-        </div>
-
-        <div class="toolbar-section export-section">
-          <div class="section-title">Export</div>
-          <div class="button-group">
-            <scientific-dropdown
-              .options="${buttonDescriptors.exportOptions}"
-              .theme="${this.theme}"
-              @change="${this._handleExportChange}"
-              placeholder="Select an export format"
-              label=""
-            ></scientific-dropdown>
-          </div>
-        </div>
-      </div>
+      <scientific-toolbar 
+        .sections="${sections}"
+        .theme="${this.theme}"
+        layout="auto"
+      ></scientific-toolbar>
     `;
   }
 
