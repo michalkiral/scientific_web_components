@@ -50,6 +50,23 @@ export interface NetworkData {
   edges: NetworkEdge[];
 }
 
+export interface ToolbarButtonDescriptor {
+  id: string;
+  label: string;
+  variant: 'primary' | 'outline' | 'danger' | 'success' | 'warning';
+  title: string;
+  handler: () => void;
+  icon?: string;
+  visible?: boolean;
+}
+
+export interface ToolbarSection {
+  networkTypeButtons: ToolbarButtonDescriptor[];
+  interactiveButtons: ToolbarButtonDescriptor[];
+  controlButtons: ToolbarButtonDescriptor[];
+  exportOptions: Array<{value: string; label: string}>;
+}
+
 @customElement('scientific-network')
 export class ScientificNetwork
   extends ScientificSurfaceBase
@@ -249,19 +266,25 @@ export class ScientificNetwork
   ];
 
   @property({type: String}) override title = '';
-  @property({type: Object}) data: NetworkData = {nodes: [], edges: []};
+  
+  @property({type: Object, attribute: false}) data: NetworkData = {nodes: [], edges: []};
+  
   @property({type: Boolean}) directed = false;
   @property({type: Boolean}) interactive = true;
   @property({type: Boolean}) showInfo = true;
   @property({type: Boolean}) showMetrics = false;
-  @property({type: Boolean}) enableZoom = true;
-  @property({type: Boolean}) enablePan = true;
-  @property({type: Boolean}) enableSelection = true;
-  @property({type: Boolean}) showTooltips = true;
-  @property({type: Boolean}) enableNodeCreation = false;
-  @property({type: Boolean}) enableEdgeCreation = false;
-  @property({type: Boolean}) enableRenaming = false;
-  @property({type: Boolean}) enableRemoval = false;
+  
+  @property({type: Object, attribute: false}) controls = {
+    enableZoom: true,
+    enablePan: true,
+    enableSelection: true,
+    showTooltips: true,
+    enableNodeCreation: false,
+    enableEdgeCreation: false,
+    enableRenaming: false,
+    enableRemoval: false,
+  };
+  
   @property({attribute: false}) onNodeClick?: (
     node: NetworkNode,
     event: EventObject
@@ -278,7 +301,6 @@ export class ScientificNetwork
   @state() private selectedNodes: string[] = [];
   @state() private selectedEdges: string[] = [];
   @state() private metrics: NetworkMetrics | null = null;
-  @state() private currentZoom = 100;
   @state() private isCreatingNode = false;
   @state() private isCreatingEdge = false;
   @state() private edgeCreationSource: string | null = null;
@@ -300,15 +322,27 @@ export class ScientificNetwork
     y: 0,
   };
 
+  get enableZoom() { return this.controls.enableZoom; }
+  get enablePan() { return this.controls.enablePan; }
+  get enableSelection() { return this.controls.enableSelection; }
+  get enableNodeCreation() { return this.controls.enableNodeCreation; }
+  get enableEdgeCreation() { return this.controls.enableEdgeCreation; }
+  get enableRenaming() { return this.controls.enableRenaming; }
+  get enableRemoval() { return this.controls.enableRemoval; }
+  get showTooltips() { return this.controls.showTooltips; }
+
+  get currentZoom(): number {
+    const cy = this.graphController.getCytoscapeInstance();
+    return cy ? Math.round(cy.zoom() * 100) : 100;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     
-    // Setup keyboard shortcuts using controller
     this.shortcutsController.registerShortcuts(
       NetworkShortcutsController.createDefaultNetworkShortcuts()
     );
     
-    // Listen for shortcut events
     this.addEventListener('shortcut-createNode', () => this._activateNodeCreation());
     this.addEventListener('shortcut-createEdge', () => this._activateEdgeCreation());
     this.addEventListener('shortcut-toggleRename', () => this._toggleRenaming());
@@ -317,7 +351,6 @@ export class ScientificNetwork
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    // Controllers handle their own cleanup via hostDisconnected
   }
 
   override firstUpdated() {
@@ -353,7 +386,6 @@ export class ScientificNetwork
       await this.graphController.initialize(canvasElement, this.data);
       this._setupEventListeners();
       this._updateMetrics();
-      this._updateZoom();
     } catch (error) {
       console.error('Failed to initialize network:', error);
       this.errorMessage = 'Failed to initialize network visualization';
@@ -364,15 +396,10 @@ export class ScientificNetwork
     this.metrics = this.graphController.calculateMetrics();
   }
 
-  private _updateZoom() {
-    this.currentZoom = this.graphController.getCurrentZoom();
-  }
-
   private _setupEventListeners() {
     const cy = this.graphController.getCytoscapeInstance();
     if (!cy) return;
 
-    // Setup event listeners for network interactions
     cy.on('tap', 'node', (event: cytoscape.EventObject) => {
       const node = event.target;
       const nodeData = this._cytoscapeNodeToNetworkNode(node);
@@ -437,7 +464,6 @@ export class ScientificNetwork
     });
 
     cy.on('zoom', () => {
-      this._updateZoom();
       dispatchCustomEvent(this, 'network-zoom', {
         zoomLevel: cy.zoom(),
       });
@@ -473,17 +499,14 @@ export class ScientificNetwork
 
   private _handleZoomIn() {
     this.graphController.zoomIn();
-    this._updateZoom();
   }
 
   private _handleZoomOut() {
     this.graphController.zoomOut();
-    this._updateZoom();
   }
 
   private _handleZoomFit() {
     this.graphController.fitToScreen();
-    this._updateZoom();
   }
 
   private _handleDirectedChange(event: CustomEvent) {
@@ -1084,13 +1107,124 @@ export class ScientificNetwork
     `;
   }
 
-  private _renderToolbar() {
-    const hasInteractiveFeatures =
-      this.enableNodeCreation ||
-      this.enableEdgeCreation ||
-      this.enableRenaming ||
-      this.enableRemoval;
+  private _getToolbarButtonDescriptors(): ToolbarSection {
+    const networkTypeButtons: ToolbarButtonDescriptor[] = [
+      {
+        id: 'undirected',
+        label: 'Undirected',
+        variant: (!this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
+        title: 'Set network to undirected mode',
+        handler: () => this._handleDirectedChange(
+          new CustomEvent('change', {detail: {value: 'false'}})
+        ),
+      },
+      {
+        id: 'directed',
+        label: 'Directed',
+        variant: (this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
+        title: 'Set network to directed mode',
+        handler: () => this._handleDirectedChange(
+          new CustomEvent('change', {detail: {value: 'true'}})
+        ),
+      },
+    ];
 
+    const interactiveButtons: ToolbarButtonDescriptor[] = [
+      {
+        id: 'create-node',
+        label: '+ Node',
+        variant: (this.isCreatingNode ? 'primary' : 'outline') as 'primary' | 'outline',
+        title: 'Add Node (Press 1 or click on canvas)',
+        handler: () => this._toggleNodeCreation(),
+        visible: this.enableNodeCreation,
+      },
+      {
+        id: 'create-edge',
+        label: '+ Edge',
+        variant: (this.isCreatingEdge ? 'primary' : 'outline') as 'primary' | 'outline',
+        title: 'Add Edge (Press 2 or click two nodes)',
+        handler: () => this._toggleEdgeCreation(),
+        visible: this.enableEdgeCreation,
+      },
+      {
+        id: 'rename',
+        label: 'Rename',
+        variant: (this.isRenaming ? 'primary' : 'outline') as 'primary' | 'outline',
+        title: 'Rename elements (click element)',
+        handler: () => this._toggleRenaming(),
+        visible: this.enableRenaming,
+      },
+      {
+        id: 'remove',
+        label: 'Remove',
+        variant: (this.isRemoving ? 'danger' : 'outline') as 'danger' | 'outline',
+        title: 'Remove elements (double-click element to confirm)',
+        handler: () => this._toggleRemoval(),
+        visible: this.enableRemoval,
+      },
+    ].filter(button => button.visible);
+
+    const controlButtons: ToolbarButtonDescriptor[] = [
+      {
+        id: 'zoom-in',
+        label: '+',
+        icon: 'zoom-in',
+        variant: 'outline' as const,
+        title: 'Zoom In',
+        handler: () => this._handleZoomIn(),
+        visible: this.enableZoom,
+      },
+      {
+        id: 'zoom-out',
+        label: '−',
+        icon: 'zoom-out', 
+        variant: 'outline' as const,
+        title: 'Zoom Out',
+        handler: () => this._handleZoomOut(),
+        visible: this.enableZoom,
+      },
+      {
+        id: 'zoom-fit',
+        label: '⌂',
+        icon: 'fit-screen',
+        variant: 'outline' as const,
+        title: 'Fit to Screen',
+        handler: () => this._handleZoomFit(),
+        visible: this.enableZoom,
+      },
+    ].filter(button => button.visible);
+
+    const exportOptions = [
+      {value: 'png', label: 'PNG'},
+      {value: 'jpg', label: 'JPG'},
+      {value: 'pdf', label: 'PDF'},
+      {value: 'json', label: 'JSON'},
+    ];
+
+    return {
+      networkTypeButtons,
+      interactiveButtons,
+      controlButtons,
+      exportOptions,
+    };
+  }
+
+  private _renderButtonGroup(buttons: ToolbarButtonDescriptor[]) {
+    return buttons.map(button => html`
+      <scientific-button
+        variant="${button.variant}"
+        size="small"
+        label="${button.label}"
+        .theme="${this.theme}"
+        @click="${button.handler}"
+        title="${button.title}"
+      ></scientific-button>
+    `);
+  }
+
+  private _renderToolbar() {
+    const buttonDescriptors = this._getToolbarButtonDescriptors();
+    const hasInteractiveFeatures = buttonDescriptors.interactiveButtons.length > 0;
     const gridClass = hasInteractiveFeatures ? 'grid-4' : 'grid-3';
 
     return html`
@@ -1098,26 +1232,7 @@ export class ScientificNetwork
         <div class="toolbar-section network-type-section">
           <div class="section-title">Network Type</div>
           <div class="button-group">
-            <scientific-button
-              variant="${!this.directed ? 'primary' : 'outline'}"
-              size="small"
-              label="Undirected"
-              .theme="${this.theme}"
-              @click="${() =>
-                this._handleDirectedChange(
-                  new CustomEvent('change', {detail: {value: 'false'}})
-                )}"
-            ></scientific-button>
-            <scientific-button
-              variant="${this.directed ? 'primary' : 'outline'}"
-              size="small"
-              label="Directed"
-              .theme="${this.theme}"
-              @click="${() =>
-                this._handleDirectedChange(
-                  new CustomEvent('change', {detail: {value: 'true'}})
-                )}"
-            ></scientific-button>
+            ${this._renderButtonGroup(buttonDescriptors.networkTypeButtons)}
           </div>
         </div>
 
@@ -1126,58 +1241,7 @@ export class ScientificNetwork
               <div class="toolbar-section interactive-section">
                 <div class="section-title">Interactive Mode</div>
                 <div class="button-group">
-                  ${this.enableNodeCreation
-                    ? html`
-                        <scientific-button
-                          variant="${this.isCreatingNode
-                            ? 'primary'
-                            : 'outline'}"
-                          size="small"
-                          label="+ Node"
-                          .theme="${this.theme}"
-                          @click="${this._toggleNodeCreation}"
-                          title="Add Node (Press 1 or click on canvas)"
-                        ></scientific-button>
-                      `
-                    : ''}
-                  ${this.enableEdgeCreation
-                    ? html`
-                        <scientific-button
-                          variant="${this.isCreatingEdge
-                            ? 'primary'
-                            : 'outline'}"
-                          size="small"
-                          label="+ Edge"
-                          .theme="${this.theme}"
-                          @click="${this._toggleEdgeCreation}"
-                          title="Add Edge (Press 2 or click two nodes)"
-                        ></scientific-button>
-                      `
-                    : ''}
-                  ${this.enableRenaming
-                    ? html`
-                        <scientific-button
-                          variant="${this.isRenaming ? 'primary' : 'outline'}"
-                          size="small"
-                          label="Rename"
-                          .theme="${this.theme}"
-                          @click="${this._toggleRenaming}"
-                          title="Rename elements (click element)"
-                        ></scientific-button>
-                      `
-                    : ''}
-                  ${this.enableRemoval
-                    ? html`
-                        <scientific-button
-                          variant="${this.isRemoving ? 'danger' : 'outline'}"
-                          size="small"
-                          label="Remove"
-                          .theme="${this.theme}"
-                          @click="${this._toggleRemoval}"
-                          title="Remove elements (double-click element to confirm)"
-                        ></scientific-button>
-                      `
-                    : ''}
+                  ${this._renderButtonGroup(buttonDescriptors.interactiveButtons)}
                 </div>
               </div>
             `
@@ -1186,33 +1250,10 @@ export class ScientificNetwork
         <div class="toolbar-section controls-section">
           <div class="section-title">Controls</div>
           <div class="button-group">
-            ${this.enableZoom
+            ${buttonDescriptors.controlButtons.length > 0
               ? html`
                   <div class="zoom-buttons">
-                    <scientific-button
-                      variant="outline"
-                      size="small"
-                      label="+"
-                      .theme="${this.theme}"
-                      @click="${this._handleZoomIn}"
-                      title="Zoom In"
-                    ></scientific-button>
-                    <scientific-button
-                      variant="outline"
-                      size="small"
-                      label="−"
-                      .theme="${this.theme}"
-                      @click="${this._handleZoomOut}"
-                      title="Zoom Out"
-                    ></scientific-button>
-                    <scientific-button
-                      variant="outline"
-                      size="small"
-                      label="⌂"
-                      .theme="${this.theme}"
-                      @click="${this._handleZoomFit}"
-                      title="Fit to Screen"
-                    ></scientific-button>
+                    ${this._renderButtonGroup(buttonDescriptors.controlButtons)}
                   </div>
                 `
               : ''}
@@ -1223,12 +1264,7 @@ export class ScientificNetwork
           <div class="section-title">Export</div>
           <div class="button-group">
             <scientific-dropdown
-              .options="${[
-                {value: 'png', label: 'PNG'},
-                {value: 'jpg', label: 'JPG'},
-                {value: 'pdf', label: 'PDF'},
-                {value: 'json', label: 'JSON'},
-              ]}"
+              .options="${buttonDescriptors.exportOptions}"
               .theme="${this.theme}"
               @change="${this._handleExportChange}"
               placeholder="Select an export format"
