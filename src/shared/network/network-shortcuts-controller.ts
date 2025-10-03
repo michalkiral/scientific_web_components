@@ -1,5 +1,6 @@
 import {ReactiveController, ReactiveControllerHost} from 'lit';
 import {dispatchCustomEvent} from '../utils/event-utils.js';
+import {DEFAULT_NETWORK_SHORTCUTS} from '../constants/shortcuts.js';
 
 export interface KeyboardShortcut {
   action: string;
@@ -109,17 +110,7 @@ export class NetworkShortcutsController implements ReactiveController {
   }
 
   static createDefaultNetworkShortcuts(): Record<string, Omit<KeyboardShortcut, 'key'>> {
-    return {
-      '1': {action: 'createNode', description: 'Add Node'},
-      '2': {action: 'createEdge', description: 'Add Edge'},
-      '3': {action: 'toggleRename', description: 'Toggle Rename Mode'},
-      '4': {action: 'toggleRemoval', description: 'Toggle Removal Mode'},
-      'Escape': {action: 'cancelMode', description: 'Cancel Current Mode'},
-      'f': {action: 'fitToScreen', description: 'Fit to Screen'},
-      '+': {action: 'zoomIn', description: 'Zoom In'},
-      '-': {action: 'zoomOut', description: 'Zoom Out'},
-      '0': {action: 'resetZoom', description: 'Reset Zoom'},
-    };
+    return DEFAULT_NETWORK_SHORTCUTS;
   }
 
   getHelpText(): string[] {

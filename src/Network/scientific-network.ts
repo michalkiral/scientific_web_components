@@ -34,6 +34,8 @@ import {
   interactionModeButtons,
   controlButtons,
 } from './scientific-network.stories.data.js';
+import {NetworkEvents, getElementEventName} from '../shared/constants/events.js';
+import {DEFAULT_NETWORK_SHORTCUTS} from '../shared/constants/shortcuts.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import '../shared/components/ScientificToolbar/scientific-toolbar.js';
@@ -155,26 +157,24 @@ export class ScientificNetwork
   override connectedCallback() {
     super.connectedCallback();
     
-    this.shortcutsController.registerShortcuts(
-      NetworkShortcutsController.createDefaultNetworkShortcuts()
-    );
+    this.shortcutsController.registerShortcuts(DEFAULT_NETWORK_SHORTCUTS);
     
-    this.addEventListener('shortcut-createNode', () => {
+    this.addEventListener(NetworkEvents.SHORTCUT_CREATE_NODE, () => {
       if (this.enableNodeCreation) {
         this._activateNodeCreation();
       }
     });
-    this.addEventListener('shortcut-createEdge', () => {
+    this.addEventListener(NetworkEvents.SHORTCUT_CREATE_EDGE, () => {
       if (this.enableEdgeCreation) {
         this._activateEdgeCreation();
       }
     });
-    this.addEventListener('shortcut-toggleRename', () => {
+    this.addEventListener(NetworkEvents.SHORTCUT_TOGGLE_RENAME, () => {
       if (this.enableRenaming) {
         this._toggleRenaming();
       }
     });
-    this.addEventListener('shortcut-toggleRemoval', () => {
+    this.addEventListener(NetworkEvents.SHORTCUT_TOGGLE_REMOVAL, () => {
       if (this.enableRemoval) {
         this._toggleRemoval();
       }
@@ -281,7 +281,7 @@ export class ScientificNetwork
         this.onNodeClick(nodeData, event);
       }
 
-      dispatchCustomEvent(this, 'node-selected', {
+      dispatchCustomEvent(this, NetworkEvents.NODE_SELECTED, {
         node: nodeData,
         cytoscapeEvent: event,
       });
@@ -321,7 +321,7 @@ export class ScientificNetwork
         this.onEdgeClick(edgeData, event);
       }
 
-      dispatchCustomEvent(this, 'edge-selected', {
+      dispatchCustomEvent(this, NetworkEvents.EDGE_SELECTED, {
         edge: edgeData,
         cytoscapeEvent: event,
       });
@@ -344,14 +344,14 @@ export class ScientificNetwork
           cy.nodes().removeClass('edge-source');
         }
 
-        dispatchCustomEvent(this, 'canvas-clicked', {
+        dispatchCustomEvent(this, NetworkEvents.CANVAS_CLICKED, {
           position: event.position,
         });
       }
     });
 
     cy.on('zoom', () => {
-      dispatchCustomEvent(this, 'network-zoom', {
+      dispatchCustomEvent(this, NetworkEvents.NETWORK_ZOOM, {
         zoomLevel: cy.zoom(),
       });
     });
@@ -414,7 +414,7 @@ export class ScientificNetwork
     this.graphController.applyTheme();
     this._updateMetrics();
 
-    dispatchCustomEvent(this, 'network-direction-changed', {
+    dispatchCustomEvent(this, NetworkEvents.NETWORK_DIRECTION_CHANGED, {
       directed: this.directed,
     });
   }
@@ -624,12 +624,12 @@ export class ScientificNetwork
 
       this._updateMetrics();
 
-      dispatchCustomEvent(this, `${elementType}-removed`, {
+      dispatchCustomEvent(this, getElementEventName(elementType, 'removed'), {
         elementId,
         elementType,
       });
 
-      dispatchCustomEvent(this, 'network-updated', {
+      dispatchCustomEvent(this, NetworkEvents.NETWORK_UPDATED, {
         action: 'remove',
         elementType,
         elementId,
@@ -781,7 +781,7 @@ export class ScientificNetwork
       }
     }
 
-    dispatchCustomEvent(this, `${elementType}-renamed`, {
+    dispatchCustomEvent(this, getElementEventName(elementType, 'renamed'), {
       elementId,
       newLabel,
       elementType,
@@ -857,7 +857,7 @@ export class ScientificNetwork
       });
     }
 
-    dispatchCustomEvent(this, 'node-added', {
+    dispatchCustomEvent(this, NetworkEvents.NODE_ADDED, {
       node: newNode,
     });
 
@@ -892,7 +892,7 @@ export class ScientificNetwork
       });
     }
 
-    dispatchCustomEvent(this, 'edge-added', {
+    dispatchCustomEvent(this, NetworkEvents.EDGE_ADDED, {
       edge: newEdge,
     });
 
@@ -968,7 +968,7 @@ export class ScientificNetwork
         });
       }
 
-      dispatchCustomEvent(this, 'network-export', {
+      dispatchCustomEvent(this, NetworkEvents.NETWORK_EXPORT, {
         format,
         title: this.title,
       });
