@@ -20,7 +20,7 @@ import {networkStyles} from '../shared/styles/network-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
-  exportComponent,
+  createExportHandler,
   type ExportableComponent,
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
@@ -959,13 +959,13 @@ export class ScientificNetwork
         }
         this.onExport(format, exportData);
       } else {
-        await exportComponent(this, {
-          format,
+        const handler = createExportHandler(this, {
           title: this.title || 'network',
           subtitle: this.subtitle,
           timestamp: true,
           backgroundColor: this.graphController.getBackgroundColor(),
         });
+        await handler(format)();
       }
 
       dispatchCustomEvent(this, NetworkEvents.NETWORK_EXPORT, {
