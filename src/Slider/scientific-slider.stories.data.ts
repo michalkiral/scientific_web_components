@@ -1,4 +1,6 @@
-export const sliderThemes = ['default', 'dark', 'scientific'] as const;
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+
+export const sliderThemes = SCIENTIFIC_THEMES;
 export const sliderVariants = ['default', 'compact'] as const;
 export const sliderStates = ['default', 'error'] as const;
 

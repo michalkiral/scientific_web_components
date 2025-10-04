@@ -1,8 +1,8 @@
 import {ScientificNetwork} from '../scientific-network';
 import {fixture, assert, aTimeout} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
 
-// Helper function to mock Cytoscape initialization to prevent test errors
 function mockCytoscapeInit(el: ScientificNetwork) {
   (el as any)._initializeCytoscape = () => {};
 }
@@ -149,7 +149,7 @@ suite('ScientificNetwork', () => {
   });
 
   test('handles theme changes', async () => {
-    const themes = ['default', 'dark', 'scientific'] as const;
+    const themes = SCIENTIFIC_THEMES;
 
     for (const theme of themes) {
       const el = await fixture<ScientificNetwork>(html`

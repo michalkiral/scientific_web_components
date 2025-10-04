@@ -9,6 +9,7 @@ import {
 } from './scientific-table.stories.data.js';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import {html} from 'lit';
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
 import './scientific-table';
 import type {ScientificTable} from './scientific-table';
 
@@ -288,7 +289,7 @@ The table accepts data in the \`TableData\` format:
   argTypes: {
     theme: {
       control: {type: 'select'},
-      options: ['default', 'dark', 'scientific'],
+      options: SCIENTIFIC_THEMES,
       description: 'Table theme style',
       table: {
         type: {summary: "'default' | 'dark' | 'scientific'"},

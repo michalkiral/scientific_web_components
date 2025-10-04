@@ -1,4 +1,6 @@
-export const inputThemes = ['default', 'dark', 'scientific'] as const;
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+
+export const inputThemes = SCIENTIFIC_THEMES;
 export const inputStates = ['default', 'error', 'success'] as const;
 
 export const countryOptions = [

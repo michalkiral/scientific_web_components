@@ -1,4 +1,6 @@
-export const dropdownThemes = ['default', 'dark', 'scientific'] as const;
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+
+export const dropdownThemes = SCIENTIFIC_THEMES;
 
 export const basicOptions = [
   {label: 'Option 1', value: '1'},
