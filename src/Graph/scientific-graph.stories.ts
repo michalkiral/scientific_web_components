@@ -84,7 +84,7 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
   showExportButtons
   .exportFormats="\${['png', 'pdf']}"
   xAxisTitle="Month"
-  yAxisTitle="Temperature (°C)"
+  yAxisTitle="Temperature (degC)"
   @graph-exported="\${handleExport}"
 ></scientific-graph>
 \`\`\`
@@ -472,7 +472,7 @@ export const MultipleDatasets: Story = {
     datasets: [
       ...temperatureData.datasets,
       {
-        label: 'Min Temperature (°C)',
+        label: 'Min Temperature (degC)',
         data: [-8, -5, 1, 6, 12, 17, 20, 19, 14, 8, 2, -4],
         borderColor: '#17a2b8',
         backgroundColor: 'rgba(23, 162, 184, 0.1)',
@@ -482,7 +482,7 @@ export const MultipleDatasets: Story = {
       },
     ],
     xAxisTitle: 'Month',
-    yAxisTitle: 'Temperature (°C)',
+    yAxisTitle: 'Temperature (degC)',
     showStatistics: true,
     showLegend: true,
   },

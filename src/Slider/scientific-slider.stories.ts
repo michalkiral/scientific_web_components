@@ -48,7 +48,7 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 - \`showValue\` — Whether to show current value in header
 - \`showRangeLabels\` — Whether to show min/max labels below slider
 - \`marks\` — Array of mark objects with value and optional label
-- \`unit\` — Unit suffix for displayed values (e.g., "px", "%", "°C")
+- \`unit\` — Unit suffix for displayed values (e.g., "px", "%", "degC")
 - \`helperText\` — Helper text displayed below the slider
 - \`errorMessage\` — Error message displayed when state is error
 - \`state\` — Visual state: default, error
@@ -334,7 +334,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     },
     unit: {
       control: 'text',
-      description: 'Unit suffix for displayed values (e.g., "px", "%", "°C")',
+      description: 'Unit suffix for displayed values (e.g., "px", "%", "degC")',
     },
     helperText: {
       control: 'text',

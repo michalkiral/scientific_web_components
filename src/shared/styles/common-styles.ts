@@ -1,6 +1,7 @@
 import {css} from 'lit';
+import type {ScientificTheme} from '../constants/themes.js';
 
-export type ScientificTheme = 'default' | 'dark' | 'scientific';
+export type {ScientificTheme};
 
 export const sharedVariables = css`
   :host {
@@ -511,7 +512,6 @@ export const buttonStyles = css`
     background-color: var(--button-success-hover-bg-color, color-mix(in srgb, var(--scientific-success-color) 90%, black));
   }
 
-  /* Disabled states for variants */
   .scientific-button.secondary:disabled {
     background-color: var(--button-disabled-bg-color, var(--scientific-bg-tertiary));
     color: var(--button-disabled-color, var(--scientific-text-muted));

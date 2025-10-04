@@ -27,21 +27,25 @@ export const interactionModeButtons = {
     id: 'create-node',
     label: '+ Node',
     title: 'Add Node (Press 1 and click on canvas)',
+    icon: 'node-add',
   },
   createEdge: {
     id: 'create-edge',
     label: '+ Edge',
     title: 'Add Edge (Press 2 and click on two nodes)',
+    icon: 'edge-add',
   },
   rename: {
     id: 'rename',
     label: 'Rename',
     title: 'Rename elements (Press 3 and click element)',
+    icon: 'rename',
   },
   remove: {
     id: 'remove',
     label: 'Remove',
     title: 'Remove elements (Press 4 and double-click element to confirm)',
+    icon: 'remove',
   },
 } as const;
 

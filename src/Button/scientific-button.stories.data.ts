@@ -1,4 +1,6 @@
-export const buttonThemes = ['default', 'dark', 'scientific'] as const;
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+
+export const buttonThemes = SCIENTIFIC_THEMES;
 export const buttonVariants = [
   'primary',
   'secondary', 

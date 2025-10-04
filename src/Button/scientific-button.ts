@@ -13,6 +13,7 @@ import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
+import {renderIcon} from '../shared/utils/icon-utils.js';
 
 export type ButtonTheme = ScientificTheme;
 
@@ -55,6 +56,22 @@ export class ScientificButton extends LitElement {
         border-top-color: #007bff;
       }
 
+      .button-content {
+        display: flex;
+        align-items: center;
+        gap: var(--scientific-spacing-xs);
+      }
+
+      .button-icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .button-icon-only {
+        gap: 0;
+      }
+
       @media (max-width: 768px) {
         .scientific-button {
           font-size: var(
@@ -86,6 +103,9 @@ export class ScientificButton extends LitElement {
 
   @property({type: String})
   label = 'Click Me';
+
+  @property({type: String})
+  icon = '';
 
   @property({type: String})
   loadingLabel = 'Processing...';
@@ -180,6 +200,10 @@ export class ScientificButton extends LitElement {
   }
 
   private _getButtonClasses() {
+    const hasIcon = Boolean(this.icon);
+    const hasLabel = Boolean(this.label);
+    const isIconOnly = hasIcon && !hasLabel;
+
     return classNames({
       'scientific-button': true,
       [this.variant]: this.variant !== 'primary',
@@ -187,18 +211,23 @@ export class ScientificButton extends LitElement {
       loading: this.loading && this.showSpinner,
       'loading-text-only': this.loading && !this.showSpinner,
       'full-width': this.fullWidth,
+      'button-icon-only': isIconOnly,
     });
   }
 
   private _renderContent() {
     const label = this.loading ? this.loadingLabel : this.label;
+    const hasIcon = Boolean(this.icon);
+    const hasLabel = Boolean(label);
 
     return html`
       ${this.loading && this.showSpinner
         ? html`<div class="loading-spinner"></div>`
         : ''}
-      <div class="button-content" style="${this.loading && this.showSpinner ? 'visibility: hidden;' : ''}">
-        <span class="button-text">${label}</span>
+      <div class="button-content ${hasIcon && !hasLabel ? 'button-icon-only' : ''}" 
+           style="${this.loading && this.showSpinner ? 'visibility: hidden;' : ''}">
+        ${hasIcon ? html`<span class="button-icon">${renderIcon(this.icon, {size: 16})}</span>` : ''}
+        ${hasLabel ? html`<span class="button-text">${label}</span>` : ''}
       </div>
     `;
   }

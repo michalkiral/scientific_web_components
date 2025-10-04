@@ -1,6 +1,7 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-form.js';
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
 
 const meta: Meta = {
   title: 'Scientific/Form',
@@ -167,7 +168,7 @@ All CSS custom properties available for customization with their default values:
   argTypes: {
     theme: {
       control: {type: 'select'},
-      options: ['default', 'dark', 'scientific'],
+      options: SCIENTIFIC_THEMES,
       description: 'Form theme variant',
       table: {
         type: {summary: "'default' | 'dark' | 'scientific'"},

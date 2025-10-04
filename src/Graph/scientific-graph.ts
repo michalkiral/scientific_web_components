@@ -31,8 +31,13 @@ import {
 import {getChartThemeColors} from '../shared/utils/theme-utils.js';
 import {
   type ToolbarSection,
-  type ToolbarButtonDescriptor,
 } from '../shared/components/ScientificToolbar/scientific-toolbar.js';
+import {
+  createGraphToolbarSections,
+  type GraphToolbarState,
+  type GraphToolbarHandlers,
+} from '../shared/utils/toolbar-config-utils.js';
+import {graphToolbarConfig} from './scientific-graph.stories.data.js';
 
 export interface GraphDataset {
   label: string;
@@ -255,16 +260,6 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   onExport?: (format: 'png' | 'jpg' | 'pdf') => void;
 
   private chart: Chart | null = null;
-
-  private chartTypeOptions = [
-    {label: 'Line Chart', value: 'line'},
-    {label: 'Bar Chart', value: 'bar'},
-    {label: 'Pie Chart', value: 'pie'},
-    {label: 'Doughnut Chart', value: 'doughnut'},
-    {label: 'Scatter Plot', value: 'scatter'},
-    {label: 'Area Chart', value: 'area'},
-    {label: 'Radar Chart', value: 'radar'},
-  ];
 
   override firstUpdated() {
     setTimeout(() => {
@@ -687,80 +682,24 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   }
 
   private _getToolbarSections(): ToolbarSection[] {
-    const sections: ToolbarSection[] = [];
+    const state: GraphToolbarState = {
+      type: this.type,
+      isAreaChart: this.isAreaChart,
+      isLoading: this.isLoading,
+      chartExists: !!this.chart,
+      showExportButtons: this.showExportButtons,
+      exportFormats: this.exportFormats,
+    };
 
-    sections.push({
-      id: 'chart-type',
-      title: 'Chart Type',
-      className: 'graph-controls',
-      dropdowns: [
-        {
-          id: 'chart-type-selector',
-          label: '',
-          options: this.chartTypeOptions,
-          selectedValue: this.isAreaChart ? 'area' : this.type,
-          placeholder: 'Select chart type',
-          disabled: this.isLoading,
-          handler: (event: CustomEvent) => this._handleTypeChange(event),
-          style: '--dropdown-width: 180px; --dropdown-min-width: 160px;',
-        },
-      ],
-    });
+    const handlers: GraphToolbarHandlers = {
+      onTypeChange: (event: CustomEvent) => this._handleTypeChange(event),
+      onExportPng: this._handleExport('png'),
+      onExportJpg: this._handleExport('jpg'),
+      onExportPdf: this._handleExport('pdf'),
+      onRefresh: this._handleDataRefresh(),
+    };
 
-    const actionButtons: ToolbarButtonDescriptor[] = [];
-
-    if (this.showExportButtons) {
-      if (this.exportFormats.includes('png')) {
-        actionButtons.push({
-          id: 'export-png',
-          label: 'PNG',
-          variant: 'outline',
-          title: 'Export chart as PNG image',
-          disabled: this.isLoading || !this.chart,
-          handler: () => this._handleExport('png'),
-        });
-      }
-      if (this.exportFormats.includes('jpg')) {
-        actionButtons.push({
-          id: 'export-jpg',
-          label: 'JPG',
-          variant: 'outline',
-          title: 'Export chart as JPG image',
-          disabled: this.isLoading || !this.chart,
-          handler: () => this._handleExport('jpg'),
-        });
-      }
-      if (this.exportFormats.includes('pdf')) {
-        actionButtons.push({
-          id: 'export-pdf',
-          label: 'PDF',
-          variant: 'outline',
-          title: 'Export chart as PDF document',
-          disabled: this.isLoading || !this.chart,
-          handler: () => this._handleExport('pdf'),
-        });
-      }
-    }
-
-    actionButtons.push({
-      id: 'refresh',
-      label: 'Refresh',
-      variant: 'outline',
-      title: 'Refresh Chart',
-      disabled: this.isLoading,
-      handler: () => this._handleDataRefresh(),
-    });
-
-    if (actionButtons.length > 0) {
-      sections.push({
-        id: 'actions',
-        title: 'Actions',
-        className: 'graph-actions',
-        buttons: actionButtons,
-      });
-    }
-
-    return sections;
+    return createGraphToolbarSections(graphToolbarConfig, state, handlers);
   }
 
   protected override renderToolbar() {

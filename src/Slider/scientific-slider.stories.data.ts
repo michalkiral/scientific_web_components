@@ -1,4 +1,6 @@
-export const sliderThemes = ['default', 'dark', 'scientific'] as const;
+import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+
+export const sliderThemes = SCIENTIFIC_THEMES;
 export const sliderVariants = ['default', 'compact'] as const;
 export const sliderStates = ['default', 'error'] as const;
 
@@ -32,9 +34,9 @@ export const variantExamples = [
     max: 100,
     step: 0.5,
     value: 37.5,
-    unit: '°C',
+    unit: 'degC',
     showValue: true,
-    helperText: 'Normal room temperature is around 20-25°C',
+    helperText: 'Normal room temperature is around 20-25degC',
   },
   {
     title: 'Compact Variant',
@@ -217,7 +219,7 @@ export const scientificUseCaseExamples = [
     max: 150,
     step: 0.5,
     value: 25,
-    unit: '°C',
+    unit: 'degC',
     showValue: true,
     marks: [
       {value: -50, label: 'Min'},
@@ -226,7 +228,7 @@ export const scientificUseCaseExamples = [
       {value: 100, label: 'Boil'},
       {value: 150, label: 'Max'},
     ],
-    helperText: 'Optimal range: 20-30°C',
+    helperText: 'Optimal range: 20-30degC',
   },
   {
     label: 'Pressure',

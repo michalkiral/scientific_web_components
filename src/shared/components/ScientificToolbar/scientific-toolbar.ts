@@ -226,6 +226,7 @@ export class ScientificToolbar extends LitElement {
             variant="${button.variant}"
             size="small"
             label="${button.label}"
+            icon="${button.icon || ''}"
             .theme="${this.theme}"
             .disabled="${button.disabled || false}"
             @click="${button.handler}"
