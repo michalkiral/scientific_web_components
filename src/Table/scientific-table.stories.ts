@@ -87,7 +87,7 @@ A **comprehensive**, **accessible** data table component designed for scientific
       key: 'temperature',
       label: 'Temperature',
       type: 'number',
-      formatter: (value) => \`\${value}°C\`
+      formatter: (value) => \`\${value}degC\`
     },
     {
       key: 'status',

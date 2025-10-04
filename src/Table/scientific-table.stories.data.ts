@@ -35,11 +35,11 @@ export const sampleColumns: TableColumn[] = [
   },
   {
     key: 'boilingPoint',
-    label: 'Boiling Point (°C)',
+    label: 'Boiling Point (degC)',
     type: 'number',
     sortable: true,
     align: 'right',
-    formatter: (value: unknown) => `${value}°C`,
+    formatter: (value: unknown) => `${value}degC`,
   },
   {
     key: 'soluble',
