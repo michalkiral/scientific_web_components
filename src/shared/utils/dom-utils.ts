@@ -4,7 +4,9 @@ export function classNames(
   const classes: string[] = [];
 
   for (const arg of args) {
-    if (!arg) continue;
+    if (!arg) {
+      continue;
+    }
 
     if (typeof arg === 'string') {
       classes.push(arg);
@@ -93,7 +95,9 @@ export function percentageToValue(
   const range = max - min;
   const rawValue = min + (percentage / 100) * range;
 
-  if (step <= 0) return rawValue;
+  if (step <= 0) {
+    return rawValue;
+  }
 
   const steppedValue = Math.round(rawValue / step) * step;
   return clamp(steppedValue, min, max);
@@ -104,7 +108,9 @@ export function valueToPercentage(
   min: number,
   max: number
 ): number {
-  if (max <= min) return 0;
+  if (max <= min) {
+    return 0;
+  }
   const clampedValue = clamp(value, min, max);
   return ((clampedValue - min) / (max - min)) * 100;
 }

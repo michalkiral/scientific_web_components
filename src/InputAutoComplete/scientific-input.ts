@@ -71,6 +71,9 @@ export class ScientificInput
   @property({type: String})
   value = '';
 
+  @property({type: String})
+  type = 'text';
+
   @property({type: Array})
   options: DropdownOption[] = [];
 
@@ -170,7 +173,9 @@ export class ScientificInput
   }
 
   selectOption(option: DropdownOption) {
-    if (option.disabled) return;
+    if (option.disabled) {
+      return;
+    }
 
     this.inputValue = option.label;
     this.value = option.value;
@@ -382,7 +387,7 @@ export class ScientificInput
             : ''}
 
           <input
-            type="text"
+            type="${this.type}"
             class="${this.getInputClasses()}"
             .value="${this.inputValue}"
             .placeholder="${this.placeholder}"

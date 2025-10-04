@@ -1,6 +1,9 @@
-import {html} from 'lit';
+import {LitElement, html, css, nothing} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-form.js';
+import '../InputAutoComplete/scientific-input.js';
+import '../Dropdown/scientific-dropdown.js';
+import '../Button/scientific-button.js';
 import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
 
 const meta: Meta = {
@@ -932,6 +935,228 @@ export const RealWorldExample: Story = {
     </scientific-form>`,
 };
 
+
+class MultiStepFormDemo extends LitElement {
+  static override properties = {
+    step: {state: true},
+    submitting: {state: true},
+    completed: {state: true},
+  };
+
+  static override styles = css`
+    .step-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .step-hint {
+      font-size: 14px;
+      color: #4b5563;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  `;
+
+  step = 0;
+  submitting = false;
+  completed = false;
+
+  get totalSteps() {
+    return 2;
+  }
+
+  private _nextStep() {
+    if (this.step < this.totalSteps - 1) {
+      this.step += 1;
+      this.completed = false;
+    }
+  }
+
+  private _previousStep() {
+    if (this.step > 0) {
+      this.step -= 1;
+      this.completed = false;
+    }
+  }
+
+  private _progressValue() {
+    return Math.round((this.step / (this.totalSteps - 1)) * 100);
+  }
+
+  private _subtitle() {
+    const subtitles = [
+      'Provide your basic information',
+      'Share your project details',
+      'Review & confirm submission',
+    ];
+    return subtitles[this.step];
+  }
+
+  private _renderStepContent() {
+    switch (this.step) {
+      case 0:
+        return html`
+          <div class="step-grid two-column">
+            <scientific-input
+              label="Full Name"
+              name="fullName"
+              placeholder="Ada Lovelace"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-input
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="ada@example.com"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-input
+              label="Institution"
+              name="institution"
+              placeholder="FI MUNI"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-dropdown
+              label="Role"
+              name="role"
+              placeholder="Select your role"
+              .options=${[
+                {label: 'Student', value: 'student'},
+                {label: 'PhD Student', value: 'phd'},
+                {label: 'Postdoc', value: 'postdoc'},
+                {label: 'Faculty', value: 'faculty'},
+                {label: 'Researcher', value: 'researcher'},
+                {label: 'Other', value: 'other'}
+              ]}
+              clearable
+            ></scientific-dropdown>
+          </div>
+        `;
+      default:
+        return html`
+          <div class="step-grid">
+            <scientific-input
+              label="Project Title"
+              name="projectTitle"
+              placeholder="Genome Analysis"
+              required
+              clearable
+            ></scientific-input>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">
+                Research Summary *
+              </label>
+              <textarea
+                name="summary"
+                rows="4"
+                placeholder="Briefly describe your research goals..."
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border: 2px solid #e5e7eb;
+                  border-radius: 8px;
+                  font-size: 16px;
+                  resize: vertical;
+                  font-family: inherit;
+                "
+              ></textarea>
+            </div>
+            <div class="step-hint">
+              💡 Tip: keep the summary short (2-3 sentences) so reviewers can quickly understand your project.
+            </div>
+          </div>
+        `;
+    }
+  }
+
+  private async _handleSubmit(_formData: FormData) {
+    this.submitting = true;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    this.submitting = false;
+    this.completed = true;
+  }
+
+  override render() {
+    return html`
+      <scientific-form
+        title="Research Submission"
+        .subtitle=${this._subtitle()}
+        .showProgress=${true}
+        .progress=${this._progressValue()}
+        .successMessage=${this.completed ? 'All steps completed successfully!' : ''}
+        .showCancel=${false}
+        .footerLayout=${'full-width'}
+        .onSubmit=${(formData: FormData) => this._handleSubmit(formData)}
+      >
+        ${this._renderStepContent()}
+
+        <div slot="footer" class="footer-actions">
+          ${this.step > 0
+            ? html`
+                <scientific-button
+                  label="Back"
+                  variant="outline"
+                  type="button"
+                  @click=${this._previousStep}
+                ></scientific-button>
+              `
+            : nothing}
+
+          ${this.step < this.totalSteps - 1
+            ? html`
+                <scientific-button
+                  label="Next"
+                  variant="primary"
+                  type="button"
+                  @click=${this._nextStep}
+                ></scientific-button>
+              `
+            : html`
+                <scientific-button
+                  label=${this.submitting ? 'Submitting...' : 'Submit'}
+                  variant="success"
+                  type="submit"
+                  .loading=${this.submitting}
+                ></scientific-button>
+              `}
+        </div>
+      </scientific-form>
+    `;
+  }
+}
+
+if (!customElements.get('multi-step-form-demo')) {
+  customElements.define('multi-step-form-demo', MultiStepFormDemo);
+}
+
+export const MultiStepProgression: Story = {
+  render: () => html`<multi-step-form-demo></multi-step-form-demo>`,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive multi-step form example demonstrating progress updates, step navigation, and async submission feedback.',
+      },
+    },
+  },
+};
+
 export const ThemeComparison: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 48px;">
@@ -1032,3 +1257,5 @@ export const ThemeComparison: Story = {
     },
   },
 };
+
+
