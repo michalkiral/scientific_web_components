@@ -601,6 +601,12 @@ export class ScientificTable extends ScientificSurfaceBase {
     }
   }
 
+  private _handleClear() {
+    this.searchTerm = '';
+    this.currentPage = 1;
+    this._processData();
+  }
+
   private _handleRowClick(row: TableData, index: number) {
     if (this.selectable) {
       this._toggleRowSelection(row);
@@ -815,6 +821,7 @@ export class ScientificTable extends ScientificSurfaceBase {
           .placeholder=${this.searchPlaceholder}
           .value=${this.searchTerm}
           @input=${this._handleSearch}
+          @clear=${this._handleClear}
           .clearable=${true}
           .autoComplete=${false}
         ></scientific-input>
