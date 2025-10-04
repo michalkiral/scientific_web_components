@@ -24,7 +24,6 @@ export const inputContainerStyles = css`
     font-size: var(--input-font-size, var(--scientific-text-base));
     min-height: var(--input-min-height, 20px);
     background: transparent;
-    z-index: 2;
   }
 
   :host(.dropdown-open) .input-field {

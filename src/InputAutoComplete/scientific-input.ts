@@ -83,8 +83,6 @@ export class ScientificInput
   @property({type: Boolean})
   clearable = true;
 
-
-
   @property({type: String})
   state: 'default' | 'error' | 'success' = 'default';
 
@@ -102,8 +100,6 @@ export class ScientificInput
 
   @property({type: Boolean})
   allowCustomValues = false;
-
-
 
   @property({type: Number})
   maxLength = -1;

@@ -1,4 +1,4 @@
-import {LitElement, html, nothing} from 'lit';
+import {LitElement, html, nothing, TemplateResult} from 'lit';
 import {property} from 'lit/decorators.js';
 import {classNames} from '../utils/dom-utils.js';
 import {renderIcon} from '../utils/icon-utils.js';
@@ -36,23 +36,39 @@ export abstract class ScientificSurfaceBase extends LitElement {
   }
 
   protected renderHeader() {
-    if (!this.title && !this.subtitle && !this.shouldShowToolbar()) {
+    if (!this.title && !this.subtitle && !this.shouldShowToolbar() && !this.hasHeaderContent()) {
       return nothing;
     }
 
+    const hasTextContent = !!(this.title || this.subtitle);
+    const headerClasses = hasTextContent ? 'scientific-header' : 'scientific-header scientific-header--empty';
+
     return html`
-      <div class="scientific-header">
-        <div class="header-content">
-          ${this.title
-            ? html`<h2 class="scientific-title">${this.title}</h2>`
-            : nothing}
-          ${this.subtitle
-            ? html`<p class="scientific-subtitle">${this.subtitle}</p>`
+      <div class="${headerClasses}">
+        <div class="header-main">
+          <div class="header-text">
+            ${this.title
+              ? html`<h2 class="scientific-title">${this.title}</h2>`
+              : nothing}
+            ${this.subtitle
+              ? html`<p class="scientific-subtitle">${this.subtitle}</p>`
+              : nothing}
+          </div>
+          ${this.hasHeaderContent()
+            ? html`<div class="header-actions">${this.renderHeaderContent()}</div>`
             : nothing}
         </div>
         ${this.shouldShowToolbar() ? this.renderToolbar() : nothing}
       </div>
     `;
+  }
+
+  protected hasHeaderContent(): boolean {
+    return false;
+  }
+
+  protected renderHeaderContent(): typeof nothing | TemplateResult {
+    return nothing;
   }
 
   protected renderError() {

@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import {html, css, TemplateResult} from 'lit';
+import {html, css, TemplateResult, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';
 import '../Button/scientific-button.js';
@@ -68,79 +68,82 @@ export class ScientificTable extends ScientificSurfaceBase {
         max-width: var(--table-max-width, 100%);
       }
 
+      .scientific-header {
+        padding: var(--scientific-header-padding, 20px 24px);
+        background-color: var(--table-header-bg-color);
+      }
+
+      .scientific-header--empty {
+        padding: 0;
+        min-height: 0;
+      }
+
+      :host([theme='scientific']) .scientific-header {
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+
+      .header-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: var(--header-main-gap, 16px);
+      }
+
+      .scientific-title {
+        font-size: var(--scientific-title-font-size, 20px);
+        font-weight: var(--scientific-title-font-weight, 600);
+        color: var(--table-title-color);
+        margin: 0 0 var(--scientific-title-margin-bottom, 4px) 0;
+        line-height: var(--scientific-title-line-height, 1.3);
+      }
+
+      .scientific-subtitle {
+        font-size: var(--scientific-subtitle-font-size, 14px);
+        color: var(--table-description-color);
+        margin: 0;
+        line-height: var(--scientific-subtitle-line-height, 1.4);
+      }
+
       .table-container {
         position: relative;
-        background-color: var(--table-bg-color, #ffffff);
-        border: var(--table-border, 2px solid #e5e7eb);
+        background-color: var(--table-bg-color);
+        border: var(--table-border);
         border-radius: var(--table-border-radius, 12px);
         box-shadow: var(--table-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
         display: flex;
         flex-direction: column;
-        gap: var(--table-gap, 0);
+        gap: 0;
         overflow: hidden;
       }
 
-      .table-header {
-        padding: var(--table-header-padding, 20px 24px);
-        border-bottom: var(--table-header-border, 1px solid #e5e7eb);
-        background-color: var(--table-header-bg-color, #f9fafb);
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: var(--table-header-gap, 16px);
-        flex-wrap: wrap;
+      .table-search {
+        min-width: var(--table-search-min-width, 300px);
+        width: 100%;
       }
 
-      .table-title-section {
-        display: flex;
-        flex-direction: column;
-        gap: var(--table-title-gap, 4px);
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-
-      .table-title {
-        font-size: var(--table-title-font-size, 18px);
-        font-weight: var(--table-title-font-weight, 600);
-        color: var(--table-title-color, #111827);
-        margin: 0;
-        line-height: var(--table-title-line-height, 1.3);
-      }
-
-      .table-description {
-        font-size: var(--table-description-font-size, 14px);
-        font-weight: var(--table-description-font-weight, 400);
-        color: var(--table-description-color, #6b7280);
-        margin: 0;
-        line-height: var(--table-description-line-height, 1.4);
-      }
-
-      .table-controls {
-        display: flex;
-        align-items: center;
-        gap: var(--table-controls-gap, 12px);
-        flex-wrap: wrap;
-      }
-
-      .table-controls scientific-input {
-        max-width: var(--table-search-max-width, 300px);
-        min-width: var(--table-search-min-width, 200px);
+      .table-search scientific-input {
+        width: 100%;
       }
 
       .table-wrapper {
         overflow: auto;
         max-height: var(--table-max-height, 500px);
+        margin: 0;
+        padding: 0;
       }
 
       .table {
         width: 100%;
         border-collapse: collapse;
         font-size: var(--table-font-size, 14px);
-        background-color: var(--table-content-bg-color, #ffffff);
+        background-color: var(--table-content-bg-color);
+        margin: 0;
+        padding: 0;
       }
 
       .table-head {
-        background-color: var(--table-head-bg-color, #f9fafb);
+        background-color: var(--table-head-bg-color);
         position: sticky;
         top: 0;
         z-index: 2;
@@ -148,9 +151,8 @@ export class ScientificTable extends ScientificSurfaceBase {
 
       .table-header-cell {
         padding: var(--table-header-cell-padding, 12px 16px);
-        border-bottom: var(--table-header-cell-border, 2px solid #e5e7eb);
         font-weight: var(--table-header-cell-font-weight, 600);
-        color: var(--table-header-cell-color, #374151);
+        color: var(--table-header-cell-color);
         text-align: left;
         position: relative;
         user-select: none;
@@ -163,7 +165,7 @@ export class ScientificTable extends ScientificSurfaceBase {
       }
 
       .table-header-cell.sortable:hover {
-        background-color: var(--table-header-cell-hover-bg-color, #f3f4f6);
+        background-color: var(--table-header-cell-hover-bg-color);
       }
 
       .table-header-cell.center {
@@ -177,29 +179,29 @@ export class ScientificTable extends ScientificSurfaceBase {
       .sort-indicator {
         margin-left: 6px;
         font-size: 12px;
-        color: var(--table-sort-indicator-color, #9ca3af);
+        color: var(--table-sort-indicator-color);
       }
 
       .sort-indicator.active {
-        color: var(--table-sort-indicator-active-color, #007bff);
+        color: var(--table-sort-indicator-active-color);
       }
 
       .table-row {
-        border-bottom: var(--table-row-border, 1px solid #f3f4f6);
+        border-bottom: var(--table-row-border);
         transition: var(--table-row-transition, all 0.15s ease-in-out);
       }
 
       .table-row:hover {
-        background-color: var(--table-row-hover-bg-color, #f9fafb);
+        background-color: var(--table-row-hover-bg-color);
       }
 
       .table-row.selected {
-        background-color: var(--table-row-selected-bg-color, #eff6ff);
+        background-color: var(--table-row-selected-bg-color);
       }
 
       .table-cell {
         padding: var(--table-cell-padding, 12px 16px);
-        color: var(--table-cell-color, #374151);
+        color: var(--table-cell-color);
         vertical-align: top;
         line-height: 1.4;
       }
@@ -225,8 +227,8 @@ export class ScientificTable extends ScientificSurfaceBase {
 
       .table-footer {
         padding: var(--table-footer-padding, 16px 24px);
-        border-top: var(--table-footer-border, 1px solid #e5e7eb);
-        background-color: var(--table-footer-bg-color, #f9fafb);
+        border-top: var(--table-footer-border);
+        background-color: var(--table-footer-bg-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -236,7 +238,7 @@ export class ScientificTable extends ScientificSurfaceBase {
 
       .table-info {
         font-size: var(--table-info-font-size, 14px);
-        color: var(--table-info-color, #6b7280);
+        color: var(--table-info-color);
       }
 
       .table-pagination {
@@ -259,7 +261,7 @@ export class ScientificTable extends ScientificSurfaceBase {
       .empty-state {
         padding: var(--table-empty-padding, 48px 24px);
         text-align: center;
-        color: var(--table-empty-color, #9ca3af);
+        color: var(--table-empty-color);
       }
 
       .empty-icon {
@@ -272,13 +274,13 @@ export class ScientificTable extends ScientificSurfaceBase {
         font-size: 18px;
         font-weight: 600;
         margin: 0 0 8px 0;
-        color: var(--table-empty-title-color, #6b7280);
+        color: var(--table-empty-title-color);
       }
 
       .empty-description {
         font-size: 14px;
         margin: 0;
-        color: var(--table-empty-description-color, #9ca3af);
+        color: var(--table-empty-description-color);
       }
 
       @media (max-width: 768px) {
@@ -322,9 +324,6 @@ export class ScientificTable extends ScientificSurfaceBase {
 
   @property({type: String})
   override title = '';
-
-  @property({type: String})
-  description = '';
 
   @property({type: Array})
   columns: TableColumn[] = [];
@@ -801,28 +800,34 @@ export class ScientificTable extends ScientificSurfaceBase {
     `;
   }
 
+  protected override hasHeaderContent(): boolean {
+    return this.showSearch;
+  }
+
+  protected override renderHeaderContent(): typeof nothing | TemplateResult {
+    if (!this.showSearch) {
+      return nothing;
+    }
+
+    return html`
+      <div class="table-search">
+        <scientific-input
+          .placeholder=${this.searchPlaceholder}
+          .value=${this.searchTerm}
+          @input=${this._handleSearch}
+          .clearable=${true}
+          .autoComplete=${false}
+        ></scientific-input>
+      </div>
+    `;
+  }
+
   protected override renderContent() {
     const displayData =
       this.paginatedData.length > 0 ? this.paginatedData : this.processedData;
     const hasData = displayData.length > 0;
 
     return html`
-      ${this.showSearch
-        ? html`
-            <div class="table-header">
-              <div class="table-controls">
-                <scientific-input
-                  .placeholder=${this.searchPlaceholder}
-                  .value=${this.searchTerm}
-                  @input=${this._handleSearch}
-                  .clearable=${true}
-                  .autoComplete=${false}
-                ></scientific-input>
-              </div>
-            </div>
-          `
-        : ''}
-
       ${hasData
         ? html`
             <div class="table-wrapper">

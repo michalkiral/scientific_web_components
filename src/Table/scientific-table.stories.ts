@@ -30,7 +30,7 @@ A **comprehensive**, **accessible** data table component designed for scientific
 ## Props
 
 - \`title\` — Table title displayed in header
-- \`description\` — Table description displayed below title
+- \`subtitle\` — Table subtitle displayed below title
 - \`columns\` — Array of column definitions with sorting, filtering, and formatting options
 - \`data\` — Array of data objects to display in the table
 - \`csvPath\` — Path to CSV file for automatic data loading
@@ -65,7 +65,7 @@ A **comprehensive**, **accessible** data table component designed for scientific
 \`\`\`html
 <scientific-table
   title="Chemical Compounds Database"
-  description="A comprehensive table of chemical compounds"
+  subtitle="A comprehensive table of chemical compounds"
   .columns="\${[
     {key: 'name', label: 'Compound Name', type: 'text', sortable: true},
     {key: 'formula', label: 'Formula', type: 'text', align: 'center'},
@@ -304,9 +304,9 @@ The table accepts data in the \`TableData\` format:
         defaultValue: {summary: 'undefined'},
       },
     },
-    description: {
+    subtitle: {
       control: 'text',
-      description: 'Table description displayed below title',
+      description: 'Table subtitle displayed below title',
       table: {
         type: {summary: 'string'},
         defaultValue: {summary: 'undefined'},
@@ -484,7 +484,7 @@ type Story = StoryObj<ScientificTable>;
 export const Default: Story = {
   args: {
     title: 'Chemical Compounds Database',
-    description:
+    subtitle:
       'A comprehensive table of chemical compounds with their properties and characteristics.',
     columns: sampleColumns,
     data: sampleData,
@@ -526,7 +526,7 @@ export const Basic: Story = {
 export const WithSelection: Story = {
   args: {
     title: 'Selectable Compounds',
-    description: 'Select multiple compounds for batch operations.',
+    subtitle: 'Select multiple compounds for batch operations.',
     columns: sampleColumns,
     data: sampleData.slice(0, 8),
     selectable: true,
@@ -548,7 +548,7 @@ export const WithSelection: Story = {
 export const Loading: Story = {
   args: {
     title: 'Loading Data',
-    description: 'Fetching compound data from server...',
+    subtitle: 'Fetching compound data from server...',
     columns: sampleColumns,
     data: customFormattingData,
     isLoading: true,
@@ -567,7 +567,7 @@ export const Loading: Story = {
 export const Empty: Story = {
   args: {
     title: 'No Data Available',
-    description: 'The database currently contains no compound records.',
+    subtitle: 'The database currently contains no compound records.',
     columns: sampleColumns,
     data: [],
     emptyStateTitle: 'No compounds found',
@@ -588,7 +588,7 @@ export const Empty: Story = {
 export const LargeDataset: Story = {
   args: {
     title: 'Extended Compound Database',
-    description: 'Large dataset demonstrating pagination and performance.',
+    subtitle: 'Large dataset demonstrating pagination and performance.',
     columns: sampleColumns,
     data: createLargeCompoundDataset(50),
     pageSize: 8,
@@ -607,7 +607,7 @@ export const LargeDataset: Story = {
 export const CustomFormatting: Story = {
   args: {
     title: 'Custom Formatted Data',
-    description:
+    subtitle:
       'Demonstrating custom formatters and column alignment options.',
     columns: customFormattingColumns,
     data: customFormattingData,
@@ -644,7 +644,7 @@ export const Minimal: Story = {
 export const CSVLoading: Story = {
   args: {
     title: 'CSV Data Import',
-    description: 'Table automatically loading data from a CSV file.',
+    subtitle: 'Table automatically loading data from a CSV file.',
     csvPath: './public/test_data.csv',
     showSearch: true,
     pagination: true,
@@ -663,7 +663,7 @@ export const CSVLoading: Story = {
 export const WithEvents: Story = {
   args: {
     title: 'Interactive Table',
-    description: 'Table with event handlers for user interactions.',
+    subtitle: 'Table with event handlers for user interactions.',
     columns: minimalColumns,
     data: minimalData,
     selectable: true,
@@ -690,12 +690,13 @@ export const WithEvents: Story = {
 export const Accessibility: Story = {
   args: {
     title: 'Accessible Scientific Data Table',
-    description:
+    subtitle:
       'This table is designed with accessibility in mind, featuring proper ARIA labels and keyboard navigation.',
     columns: sampleColumns.slice(0, 4),
     data: sampleData.slice(0, 5),
     pagination: false,
     searchPlaceholder: 'Search for chemical compounds by name or formula',
+    theme: 'scientific',
   },
   parameters: {
     docs: {
@@ -716,7 +717,7 @@ export const ThemeComparison: Story = {
         </h3>
         <scientific-table
           title="Default Theme Table"
-          description="Standard light theme with clean styling"
+          subtitle="Standard light theme with clean styling"
           .columns=${sampleColumns.slice(0, 4)}
           .data=${sampleData.slice(0, 5)}
           theme="default"
@@ -731,7 +732,7 @@ export const ThemeComparison: Story = {
         </h3>
         <scientific-table
           title="Dark Theme Table"
-          description="Dark theme optimized for low-light environments"
+          subtitle="Dark theme optimized for low-light environments"
           .columns=${sampleColumns.slice(0, 4)}
           .data=${sampleData.slice(0, 5)}
           theme="dark"
@@ -746,7 +747,7 @@ export const ThemeComparison: Story = {
         </h3>
         <scientific-table
           title="Scientific Theme Table"
-          description="Professional theme for research and scientific applications"
+          subtitle="Professional theme for research and scientific applications"
           .columns=${sampleColumns.slice(0, 4)}
           .data=${sampleData.slice(0, 5)}
           theme="scientific"

@@ -219,7 +219,7 @@ export const loadingSpinnerStyles = css`
 export const containerStyles = css`
   .scientific-container {
     position: relative;
-    background-color: var(--container-bg-color, #ffffff);
+    background-color: var(--container-bg-color);
     border: var(--container-border, var(--scientific-border));
     border-radius: var(
       --container-border-radius,

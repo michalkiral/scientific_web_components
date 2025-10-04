@@ -13,26 +13,11 @@ export const networkThemeStyles = css`
     border-color: var(--scientific-border-color);
   }
 
-  .info-row {
-    color: var(--scientific-text-secondary);
-  }
-
-  .info-row span:first-child {
-    color: var(--scientific-text-tertiary);
-  }
-
   .network-toolbar scientific-button {
     --button-bg-color: var(--scientific-bg-secondary);
     --button-color: var(--scientific-text-secondary);
     --button-border-color: var(--scientific-border-color);
     --button-hover-bg-color: var(--scientific-bg-tertiary);
-  }
-
-  .network-toolbar scientific-button[variant="primary"] {
-    --button-bg-color: var(--scientific-primary-color);
-    --button-color: #ffffff;
-    --button-border-color: var(--scientific-primary-color);
-    --button-hover-bg-color: var(--scientific-primary-hover);
   }
 `;
 
@@ -61,19 +46,24 @@ export const sliderThemeStyles = css`
 export const tableThemeStyles = css`
   :host {
     --table-bg-color: var(--scientific-bg-primary);
+    --table-border: var(--scientific-border);
     --table-header-bg-color: var(--scientific-bg-secondary);
+    --table-header-border: var(--scientific-border);
     --table-title-color: var(--scientific-text-primary);
     --table-description-color: var(--scientific-text-secondary);
     --table-content-bg-color: var(--scientific-bg-primary);
     --table-head-bg-color: var(--scientific-bg-secondary);
     --table-header-cell-color: var(--scientific-text-primary);
+    --table-header-cell-border: var(--scientific-border);
     --table-header-cell-hover-bg-color: var(--scientific-bg-tertiary);
     --table-sort-indicator-color: var(--scientific-text-muted);
     --table-sort-indicator-active-color: var(--scientific-primary-color);
+    --table-row-border: var(--scientific-border);
     --table-row-hover-bg-color: var(--scientific-bg-secondary);
     --table-row-selected-bg-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
     --table-cell-color: var(--scientific-text-primary);
     --table-footer-bg-color: var(--scientific-bg-secondary);
+    --table-footer-border: var(--scientific-border);
     --table-info-color: var(--scientific-text-secondary);
     --table-empty-color: var(--scientific-text-muted);
     --table-empty-title-color: var(--scientific-text-secondary);
