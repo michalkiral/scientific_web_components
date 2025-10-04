@@ -1,4 +1,5 @@
 import type {GraphDataset} from './scientific-graph';
+import type {GraphToolbarConfig} from '../shared/utils/toolbar-config-utils';
 
 interface GraphData {
   labels: string[];
@@ -60,3 +61,41 @@ export const problematicDatasets: GraphDataset[] = [
     borderColor: '#dc3545',
   },
 ];
+
+export const graphToolbarConfig: GraphToolbarConfig = {
+  chartTypeOptions: [
+    {label: 'Line Chart', value: 'line'},
+    {label: 'Bar Chart', value: 'bar'},
+    {label: 'Pie Chart', value: 'pie'},
+    {label: 'Doughnut Chart', value: 'doughnut'},
+    {label: 'Scatter Plot', value: 'scatter'},
+    {label: 'Area Chart', value: 'area'},
+    {label: 'Radar Chart', value: 'radar'},
+  ],
+  exportButtons: {
+    png: {
+      id: 'export-png',
+      label: 'PNG',
+      title: 'Export chart as PNG image',
+      icon: 'image',
+    },
+    jpg: {
+      id: 'export-jpg',
+      label: 'JPG',
+      title: 'Export chart as JPG image',
+      icon: 'image',
+    },
+    pdf: {
+      id: 'export-pdf',
+      label: 'PDF',
+      title: 'Export chart as PDF document',
+      icon: 'pdf',
+    },
+    refresh: {
+      id: 'refresh',
+      label: 'Refresh',
+      title: 'Refresh Chart',
+      icon: 'refresh',
+    },
+  },
+};

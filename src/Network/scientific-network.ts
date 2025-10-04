@@ -25,8 +25,13 @@ import {
   type ExportOptions,
 } from '../shared/utils/export-utils.js';
 import {
+  createNetworkToolbarSections,
+  type NetworkToolbarConfig,
+  type NetworkToolbarState,
+  type NetworkToolbarHandlers,
+} from '../shared/utils/toolbar-config-utils.js';
+import {
   type ToolbarSection,
-  type ToolbarButtonDescriptor,
 } from '../shared/components/ScientificToolbar/scientific-toolbar.js';
 import {
   exportFormatOptions,
@@ -1018,113 +1023,39 @@ export class ScientificNetwork
   }
 
   private _getToolbarSections(): ToolbarSection[] {
-    const sections: ToolbarSection[] = [];
+    const config: NetworkToolbarConfig = {
+      networkTypeOptions,
+      interactionModeButtons,
+      controlButtons,
+      exportFormatOptions,
+    };
 
-    sections.push({
-      id: 'network-type',
-      title: 'Network Type',
-      className: 'network-type-section',
-      buttons: [
-        {
-          ...networkTypeOptions.undirected,
-          variant: (!this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-          handler: () => this._handleDirectedChange(
-            new CustomEvent('change', {detail: {value: networkTypeOptions.undirected.value}})
-          ),
-        },
-        {
-          ...networkTypeOptions.directed,
-          variant: (this.directed ? 'primary' : 'outline') as 'primary' | 'outline',
-          handler: () => this._handleDirectedChange(
-            new CustomEvent('change', {detail: {value: networkTypeOptions.directed.value}})
-          ),
-        },
-      ],
-    });
+    const state: NetworkToolbarState = {
+      directed: this.directed,
+      isCreatingNode: this.isCreatingNode,
+      isCreatingEdge: this.isCreatingEdge,
+      isRenaming: this.isRenaming,
+      isRemoving: this.isRemoving,
+      enableNodeCreation: this.enableNodeCreation,
+      enableEdgeCreation: this.enableEdgeCreation,
+      enableRenaming: this.enableRenaming,
+      enableRemoval: this.enableRemoval,
+      enableZoom: this.enableZoom,
+    };
 
-    const interactiveButtons: ToolbarButtonDescriptor[] = [
-      {
-        ...interactionModeButtons.createNode,
-        variant: (this.isCreatingNode ? 'primary' : 'outline') as 'primary' | 'outline',
-        handler: () => this._toggleNodeCreation(),
-        visible: this.enableNodeCreation,
-      },
-      {
-        ...interactionModeButtons.createEdge,
-        variant: (this.isCreatingEdge ? 'primary' : 'outline') as 'primary' | 'outline',
-        handler: () => this._toggleEdgeCreation(),
-        visible: this.enableEdgeCreation,
-      },
-      {
-        ...interactionModeButtons.rename,
-        variant: (this.isRenaming ? 'primary' : 'outline') as 'primary' | 'outline',
-        handler: () => this._toggleRenaming(),
-        visible: this.enableRenaming,
-      },
-      {
-        ...interactionModeButtons.remove,
-        variant: (this.isRemoving ? 'danger' : 'outline') as 'danger' | 'outline',
-        handler: () => this._toggleRemoval(),
-        visible: this.enableRemoval,
-      },
-    ].filter(button => button.visible);
+    const handlers: NetworkToolbarHandlers = {
+      onDirectedChange: (event: CustomEvent) => this._handleDirectedChange(event),
+      onToggleNodeCreation: () => this._toggleNodeCreation(),
+      onToggleEdgeCreation: () => this._toggleEdgeCreation(),
+      onToggleRenaming: () => this._toggleRenaming(),
+      onToggleRemoval: () => this._toggleRemoval(),
+      onZoomIn: () => this._handleZoomIn(),
+      onZoomOut: () => this._handleZoomOut(),
+      onZoomFit: () => this._handleZoomFit(),
+      onExportChange: (event: CustomEvent) => this._handleExportChange(event),
+    };
 
-    if (interactiveButtons.length > 0) {
-      sections.push({
-        id: 'interactive',
-        title: 'Interactive Mode',
-        className: 'interactive-section',
-        buttons: interactiveButtons,
-      });
-    }
-
-    const controlButtonsConfig: ToolbarButtonDescriptor[] = [
-      {
-        ...controlButtons.zoomIn,
-        variant: 'outline' as const,
-        handler: () => this._handleZoomIn(),
-        visible: this.enableZoom,
-      },
-      {
-        ...controlButtons.zoomOut,
-        variant: 'outline' as const,
-        handler: () => this._handleZoomOut(),
-        visible: this.enableZoom,
-      },
-      {
-        ...controlButtons.zoomFit,
-        variant: 'outline' as const,
-        handler: () => this._handleZoomFit(),
-        visible: this.enableZoom,
-      },
-    ].filter(button => button.visible);
-
-    if (controlButtonsConfig.length > 0) {
-      sections.push({
-        id: 'controls',
-        title: 'Controls',
-        className: 'controls-section',
-        buttons: controlButtonsConfig,
-      });
-    }
-
-    // Export Setion
-    sections.push({
-      id: 'export',
-      title: 'Export',
-      className: 'export-section',
-      dropdowns: [
-        {
-          id: 'export-format',
-          label: '',
-          options: exportFormatOptions,
-          placeholder: 'Select an export format',
-          handler: (event: CustomEvent) => this._handleExportChange(event),
-        },
-      ],
-    });
-
-    return sections;
+    return createNetworkToolbarSections(config, state, handlers);
   }
 
   private _renderToolbar() {
