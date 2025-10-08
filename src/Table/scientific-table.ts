@@ -25,7 +25,6 @@ export interface TableColumn {
   key: string;
   label: string;
   sortable?: boolean;
-  filterable?: boolean;
   width?: string;
   align?: 'left' | 'center' | 'right';
   type?: 'text' | 'number' | 'date' | 'boolean';
@@ -40,12 +39,6 @@ export interface TableData {
 export interface TableSort {
   column: string;
   direction: 'asc' | 'desc';
-}
-
-export interface TableFilter {
-  column: string;
-  value: string;
-  operator?: 'contains' | 'equals' | 'startsWith' | 'endsWith' | 'gt' | 'lt';
 }
 
 export type TableTheme = ScientificTheme;
@@ -338,9 +331,6 @@ export class ScientificTable extends ScientificSurfaceBase {
   sortable = true;
 
   @property({type: Boolean})
-  filterable = true;
-
-  @property({type: Boolean})
   selectable = false;
 
   @property({type: Boolean})
@@ -379,9 +369,6 @@ export class ScientificTable extends ScientificSurfaceBase {
   @property({attribute: false})
   onSort?: (sort: TableSort) => void;
 
-  @property({attribute: false})
-  onFilter?: (filters: TableFilter[]) => void;
-
   @state()
   private sortedColumn = '';
 
@@ -390,9 +377,6 @@ export class ScientificTable extends ScientificSurfaceBase {
 
   @state()
   private searchTerm = '';
-
-  @state()
-  private filters: TableFilter[] = [];
 
   @state()
   private selectedRows: Set<string> = new Set();
@@ -504,25 +488,6 @@ export class ScientificTable extends ScientificSurfaceBase {
         })
       );
     }
-
-    this.filters.forEach((filter) => {
-      processed = processed.filter((row) => {
-        const value = String(row[filter.column] || '').toLowerCase();
-        const filterValue = filter.value.toLowerCase();
-
-        switch (filter.operator) {
-          case 'equals':
-            return value === filterValue;
-          case 'startsWith':
-            return value.startsWith(filterValue);
-          case 'endsWith':
-            return value.endsWith(filterValue);
-          case 'contains':
-          default:
-            return value.includes(filterValue);
-        }
-      });
-    });
 
     if (this.sortedColumn && this.sortable) {
       processed.sort((a, b) => {
@@ -821,7 +786,7 @@ export class ScientificTable extends ScientificSurfaceBase {
           .placeholder=${this.searchPlaceholder}
           .value=${this.searchTerm}
           @input=${this._handleSearch}
-          @clear=${this._handleClear}
+          @option-cleared=${this._handleClear}
           .clearable=${true}
           .autoComplete=${false}
         ></scientific-input>

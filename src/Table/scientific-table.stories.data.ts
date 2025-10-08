@@ -15,14 +15,12 @@ export const sampleColumns: TableColumn[] = [
     label: 'Compound Name',
     type: 'text',
     sortable: true,
-    filterable: true,
   },
   {
     key: 'formula',
     label: 'Chemical Formula',
     type: 'text',
     sortable: true,
-    filterable: true,
     align: 'center',
   },
   {

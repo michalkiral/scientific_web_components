@@ -295,7 +295,7 @@ export class ScientificInput
 
     dispatchMultipleEvents(this, [
       {
-        name: 'clear',
+        name: 'option-cleared',
         detail: {value: ''},
         options: {bubbles: true, composed: true},
       },
@@ -450,6 +450,9 @@ export class ScientificInput
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
+    if (changedProperties.has('value')) {
+      this.inputValue = this.value;
+    }
     if (changedProperties.has('isOpen')) {
       if (this.isOpen) {
         this.classList.add('dropdown-open');

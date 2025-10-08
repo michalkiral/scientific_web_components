@@ -25,13 +25,13 @@ export const networkTypeOptions = {
 export const interactionModeButtons = {
   createNode: {
     id: 'create-node',
-    label: '+ Node',
+    label: 'Node',
     title: 'Add Node (Press 1 and click on canvas)',
     icon: 'node-add',
   },
   createEdge: {
     id: 'create-edge',
-    label: '+ Edge',
+    label: 'Edge',
     title: 'Add Edge (Press 2 and click on two nodes)',
     icon: 'edge-add',
   },
