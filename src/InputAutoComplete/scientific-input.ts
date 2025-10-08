@@ -28,7 +28,11 @@ import {
 } from '../shared/dropdown/dropdown-utils.js';
 import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 
-export type InputOption = DropdownOption;
+export type InputType =
+  | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'
+  | 'datetime' | 'date' | 'month' | 'week' | 'time' | 'datetime-local'
+  | 'number' | 'range' | 'color' | 'checkbox' | 'radio' | 'file'
+  | 'submit' | 'image' | 'reset' | 'button';
 
 @customElement('scientific-input')
 export class ScientificInput
@@ -72,7 +76,7 @@ export class ScientificInput
   value = '';
 
   @property({type: String})
-  type = 'text';
+  type: InputType = 'text';
 
   @property({type: Array})
   options: DropdownOption[] = [];

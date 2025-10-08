@@ -1008,7 +1008,6 @@ class MultiStepFormDemo extends LitElement {
           <div class="step-grid two-column">
             <scientific-input
               label="Full Name"
-              name="fullName"
               placeholder="Ada Lovelace"
               required
               clearable
@@ -1016,7 +1015,6 @@ class MultiStepFormDemo extends LitElement {
             ></scientific-input>
             <scientific-input
               label="Email"
-              name="email"
               type="email"
               placeholder="ada@example.com"
               required
@@ -1025,7 +1023,6 @@ class MultiStepFormDemo extends LitElement {
             ></scientific-input>
             <scientific-input
               label="Institution"
-              name="institution"
               placeholder="FI MUNI"
               required
               clearable
@@ -1033,7 +1030,6 @@ class MultiStepFormDemo extends LitElement {
             ></scientific-input>
             <scientific-dropdown
               label="Role"
-              name="role"
               placeholder="Select your role"
               .options=${[
                 {label: 'Student', value: 'student'},
@@ -1052,7 +1048,6 @@ class MultiStepFormDemo extends LitElement {
           <div class="step-grid">
             <scientific-input
               label="Project Title"
-              name="projectTitle"
               placeholder="Genome Analysis"
               required
               clearable
