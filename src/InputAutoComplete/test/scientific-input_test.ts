@@ -284,7 +284,7 @@ suite('ScientificInput', () => {
       <scientific-input
         value="test value"
         clearable
-        @clear=${() => (clearEventFired = true)}
+        @option-cleared=${() => (clearEventFired = true)}
       ></scientific-input>
     `);
 

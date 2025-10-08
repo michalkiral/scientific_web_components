@@ -338,6 +338,7 @@ export class ScientificInput
     return classNames(
       'input-field',
       'scientific-input',
+      this.required && 'required',
       this.state !== 'default' && this.state
     );
   }

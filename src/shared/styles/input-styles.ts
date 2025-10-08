@@ -28,7 +28,6 @@ export const inputContainerStyles = css`
 
   .input-field.scientific-input.required {
     border-color: var(--scientific-danger-color);
-    color: var(--scientific-danger-color);
   }
 
   :host(.dropdown-open) .input-field {
