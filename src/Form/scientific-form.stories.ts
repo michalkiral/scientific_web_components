@@ -297,7 +297,6 @@ export const Default: Story = {
       .noValidate=${noValidate}
       .onSubmit=${async (formData: FormData) => {
         console.log('Form submitted with data:', Object.fromEntries(formData));
-        // Simulate async processing
         await new Promise((resolve) => setTimeout(resolve, 2000));
         alert('Registration successful! Check console for form data.');
       }}
@@ -642,105 +641,6 @@ export const ButtonVariants: Story = {
       </scientific-form>
     </div>
   `,
-};
-
-export const CustomStyling: Story = {
-  args: {
-    title: 'Custom Styled Form',
-    subtitle: 'Demonstrating CSS variable customization',
-  },
-  render: ({title, subtitle}) =>
-    html`<scientific-form
-      .title=${title}
-      .subtitle=${subtitle}
-      style="
-        --form-bg-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --form-border: none;
-        --form-border-radius: 20px;
-        --form-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        --form-hover-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        --form-title-color: #000000;
-        --form-subtitle-color: rgba(0, 0, 0, 0.8);
-        --form-header-border: 1px solid rgba(255, 255, 255, 0.2);
-        --form-footer-border: 1px solid rgba(255, 255, 255, 0.2);
-        --form-padding: 32px;
-        --form-gap: 24px;
-        max-width: 500px;
-        margin: 20px auto;
-        
-        /* Custom button styling for glassmorphism effect */
-        --button-bg-color: rgba(255, 255, 255, 0.2);
-        --button-color: #b92929;
-        --button-border: 2px solid rgba(255, 255, 255, 0.3);
-        --button-border-radius: 12px;
-        --button-padding: 16px 32px;
-        --button-font-weight: 600;
-        --button-font-size: 16px;
-        --button-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        --button-hover-bg-color: rgba(255, 255, 255, 0.3);
-        --button-hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        --button-hover-transform: translateY(-2px);
-        --button-focus-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
-        --button-focus-border-color: rgba(255, 255, 255, 0.6);
-        --button-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      "
-    >
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        <input
-          type="text"
-          placeholder="Enter your name"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        />
-        <input
-          type="email"
-          placeholder="Enter your email"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        />
-        <textarea
-          placeholder="Tell us about your project..."
-          rows="3"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            resize: vertical;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        ></textarea>
-      </div>
-    </scientific-form>`,
 };
 
 export const RealWorldExample: Story = {

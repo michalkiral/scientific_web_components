@@ -321,13 +321,14 @@ export class ScientificForm extends ScientificSurfaceBase {
     this.onReset?.();
   }
 
-  private _getFormClasses() {
-    return classNames(
-      'scientific-container',
+  protected override getContainerClasses(additionalClasses?: string): string {
+    const formClasses = [
       'form-container',
       this.disabled && 'disabled',
-      this.isLoading && 'loading'
-    );
+      additionalClasses,
+    ].filter(Boolean).join(' ');
+    
+    return super.getContainerClasses(formClasses);
   }
 
   private _getFooterClasses() {
@@ -347,13 +348,9 @@ export class ScientificForm extends ScientificSurfaceBase {
   }
 
   protected override renderContent() {
-    return html``;
-  }
-
-  override render() {
     return html`
       <form
-        class="${this._getFormClasses()}"
+        class="form-wrapper"
         method="${this.method}"
         action="${ifDefined(this.action || undefined)}"
         enctype="${this.enctype}"
@@ -363,9 +360,6 @@ export class ScientificForm extends ScientificSurfaceBase {
         role="form"
         aria-busy="${this.isLoading}"
       >
-        ${this.renderLoading()}
-        ${this.renderHeader()}
-        ${this.renderError()}
         ${this.showProgress
           ? html`
               <div class="form-progress">
@@ -417,6 +411,16 @@ export class ScientificForm extends ScientificSurfaceBase {
           </slot>
         </div>
       </form>
+    `;
+  }
+
+  override render() {
+    return html`
+      <div class="${this.getContainerClasses()}">
+        ${this.renderHeader()}
+        ${this.renderError()}
+        ${this.renderContent()}
+      </div>
     `;
   }
 }
