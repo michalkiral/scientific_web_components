@@ -109,12 +109,6 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
         height: auto;
       }
 
-      .graph-error {
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
       .graph-statistics {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -674,8 +668,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   protected override getContainerClasses(additionalClasses?: string): string {
     return super.getContainerClasses(
       classNames(
-        'graph-wrapper',
-        this.theme && `graph-theme-${this.theme}`,
+        this.theme && `scientific-theme-${this.theme}`,
         additionalClasses
       )
     );

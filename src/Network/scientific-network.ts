@@ -986,8 +986,7 @@ export class ScientificNetwork
   protected override getContainerClasses(additionalClasses?: string): string {
     return super.getContainerClasses(
       classNames(
-        'network-wrapper',
-        this.theme && `network-theme-${this.theme}`,
+        this.theme && `scientific-theme-${this.theme}`,
         additionalClasses
       )
     );

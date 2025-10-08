@@ -24,7 +24,6 @@ A **modern**, **accessible** form component for scientific web apps with advance
 
 - \`title\` — Form title text
 - \`subtitle\` — Form subtitle/description text
-- \`variant\` — Form style: default, compact, elevated
 - \`submitLabel\` — Submit button text
 - \`cancelLabel\` — Cancel button text
 - \`loadingLabel\` — Loading state text
@@ -105,7 +104,6 @@ A **modern**, **accessible** form component for scientific web apps with advance
 - **Form Integration**: Native HTML form features with custom async enhancement
 - **Responsive Design**: Mobile-friendly responsive design with touch optimization  
 - **Accessibility**: ARIA attributes, screen reader support, and keyboard navigation
-- **Variant System**: Default, compact, and elevated visual variants
 - **Auto Focus**: Optional automatic focus on first form input
 - **Validation**: HTML5 validation with optional disable and custom error display
 - **Scientific Design System**: Full integration with design tokens and shared styles
@@ -158,11 +156,6 @@ All CSS custom properties available for customization with their default values:
       --form-progress-bg-color: #f3f4f6;
       --form-progress-color: var(--scientific-primary-color);
       --form-progress-border-radius: var(--scientific-border-radius);
-      
-      /* Compact Variant */
-      --form-compact-min-height: auto;
-      --form-compact-content-gap: var(--scientific-spacing-md);
-      --form-compact-footer-padding-top: var(--scientific-spacing-sm);
     }
         `,
       },
@@ -180,11 +173,6 @@ All CSS custom properties available for customization with their default values:
     },
     title: {control: 'text', description: 'Form title'},
     subtitle: {control: 'text', description: 'Form subtitle'},
-    variant: {
-      control: 'select',
-      options: ['default', 'compact', 'elevated'],
-      description: 'Form variant',
-    },
     submitLabel: {control: 'text', description: 'Submit button label'},
     cancelLabel: {control: 'text', description: 'Cancel button label'},
     loadingLabel: {control: 'text', description: 'Loading state label'},
@@ -263,7 +251,6 @@ export const Default: Story = {
     method: 'post',
     action: '',
     noValidate: false,
-    variant: 'default',
   },
   render: ({
     title,
@@ -286,7 +273,6 @@ export const Default: Story = {
     method,
     action,
     noValidate,
-    variant,
   }) =>
     html`<scientific-form
       .title=${title}
@@ -309,7 +295,6 @@ export const Default: Story = {
       .method=${method}
       .action=${action}
       .noValidate=${noValidate}
-      .variant=${variant}
       .onSubmit=${async (formData: FormData) => {
         console.log('Form submitted with data:', Object.fromEntries(formData));
         // Simulate async processing
@@ -371,54 +356,6 @@ export const Default: Story = {
         </label>
       </div>
     </scientific-form>`,
-};
-
-export const Variants: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; max-width: 800px;"
-    >
-      <h3 style="margin: 0;">Default Variant</h3>
-      <scientific-form
-        title="Default Form"
-        subtitle="Standard form styling with full features"
-        variant="default"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-
-      <h3 style="margin: 0;">Compact Variant</h3>
-      <scientific-form
-        title="Compact Form"
-        subtitle="Reduced spacing for dense layouts"
-        variant="compact"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-
-      <h3 style="margin: 0;">Elevated Variant</h3>
-      <scientific-form
-        title="Elevated Form"
-        subtitle="Enhanced shadow and depth"
-        variant="elevated"
-        style="--form-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); --form-hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-    </div>
-  `,
 };
 
 export const WithProgress: Story = {

@@ -89,7 +89,6 @@ export class ScientificSlider extends LitElement {
           --slider-track-color,
           var(--scientific-border-color)
         );
-        border-radius: var(--scientific-border-radius-sm);
         overflow: hidden;
         cursor: pointer;
         transition: var(--scientific-transition);
@@ -309,9 +308,6 @@ export class ScientificSlider extends LitElement {
 
   @property({type: Boolean})
   required = false;
-
-  @property({type: String})
-  variant: 'default' | 'compact' = 'default';
 
   @property({type: Boolean})
   showTooltip = true;
@@ -534,7 +530,6 @@ export class ScientificSlider extends LitElement {
     return classNames(
       'slider-container',
       'scientific-container',
-      this.variant !== 'default' && this.variant,
       this.disabled && 'disabled',
       this.state !== 'default' && this.state
     );
@@ -685,7 +680,7 @@ export class ScientificSlider extends LitElement {
   private _renderMessages() {
     return html`
       ${this.helperText
-        ? html`<div class="slider-helper scientific-helper">
+        ? html`<div>
             ${this.helperText}
           </div>`
         : ''}

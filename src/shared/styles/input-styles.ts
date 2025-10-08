@@ -90,7 +90,6 @@ export const inputClearButtonStyles = css`
     height: var(--input-clear-size, 20px);
     background: transparent;
     border: none;
-    border-radius: var(--scientific-border-radius-sm);
     cursor: pointer;
     color: var(--scientific-text-muted);
     transition: var(--scientific-transition-fast);

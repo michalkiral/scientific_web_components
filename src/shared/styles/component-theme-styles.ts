@@ -12,13 +12,6 @@ export const networkThemeStyles = css`
     color: var(--scientific-text-secondary);
     border-color: var(--scientific-border-color);
   }
-
-  .network-toolbar scientific-button {
-    --button-bg-color: var(--scientific-bg-secondary);
-    --button-color: var(--scientific-text-secondary);
-    --button-border-color: var(--scientific-border-color);
-    --button-hover-bg-color: var(--scientific-bg-tertiary);
-  }
 `;
 
 export const sliderThemeStyles = css`
@@ -166,22 +159,6 @@ export const formThemeStyles = css`
     --form-progress-bar-bg-color: var(--scientific-primary-color);
   }
 
-  :host([theme='scientific']) .form-error {
-    color: var(--scientific-danger-color);
-    background-color: color-mix(in srgb, var(--scientific-danger-color) 5%, transparent);
-    border: 1px solid color-mix(in srgb, var(--scientific-danger-color) 20%, transparent);
-    border-radius: var(--scientific-border-radius);
-    padding: var(--scientific-spacing-sm);
-  }
-
-  :host([theme='scientific']) .form-success {
-    color: var(--scientific-success-color);
-    background-color: color-mix(in srgb, var(--scientific-success-color) 5%, transparent);
-    border: 1px solid color-mix(in srgb, var(--scientific-success-color) 20%, transparent);
-    border-radius: var(--scientific-border-radius);
-    padding: var(--scientific-spacing-sm);
-  }
-
   :host([theme='scientific']) .loading-overlay {
     backdrop-filter: blur(2px);
   }
@@ -193,13 +170,5 @@ export const graphThemeStyles = css`
     --graph-stat-item-bg-color: var(--scientific-bg-secondary);
     --graph-stat-item-border-color: var(--scientific-border-color);
     --graph-stat-value-color: var(--scientific-text-primary);
-  }
-
-  :host([theme='scientific']) .graph-error {
-    color: var(--scientific-danger-color);
-    background-color: color-mix(in srgb, var(--scientific-danger-color) 5%, transparent);
-    border: 1px solid color-mix(in srgb, var(--scientific-danger-color) 20%, transparent);
-    border-radius: var(--scientific-border-radius);
-    padding: var(--scientific-spacing-sm);
   }
 `;

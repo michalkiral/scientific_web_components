@@ -262,13 +262,6 @@ export const headerStyles = css`
     );
   }
 
-  .scientific-header.required::after {
-    content: ' *';
-    color: var(--required-indicator-color, var(--scientific-danger-color));
-    font-weight: var(--required-indicator-weight, 600);
-    margin-left: var(--required-indicator-spacing, 2px);
-  }
-
   .scientific-title {
     font-size: var(--title-font-size, var(--scientific-text-2xl));
     font-weight: var(--title-font-weight, 600);
@@ -362,18 +355,6 @@ export const messageStyles = css`
     background-color: var(--success-bg-color, color-mix(in srgb, var(--scientific-success-color) 5%, transparent));
     border: var(--success-border, 1px solid color-mix(in srgb, var(--scientific-success-color) 20%, transparent));
     color: var(--success-color, var(--scientific-success-color));
-  }
-
-  .scientific-message--warning {
-    background-color: var(--warning-bg-color, color-mix(in srgb, var(--scientific-warning-color) 5%, transparent));
-    border: var(--warning-border, 1px solid color-mix(in srgb, var(--scientific-warning-color) 20%, transparent));
-    color: var(--warning-color, var(--scientific-warning-color));
-  }
-
-  .scientific-message--info {
-    background-color: var(--info-bg-color, color-mix(in srgb, var(--scientific-info-color) 5%, transparent));
-    border: var(--info-border, 1px solid color-mix(in srgb, var(--scientific-info-color) 20%, transparent));
-    color: var(--info-color, var(--scientific-info-color));
   }
 `;
 

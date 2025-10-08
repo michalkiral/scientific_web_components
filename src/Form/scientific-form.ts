@@ -83,18 +83,6 @@ export class ScientificForm extends ScientificSurfaceBase {
         border-bottom: var(--form-section-title-border, 1px solid #f3f4f6);
       }
 
-      .form-error {
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
-      .form-success {
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
       .form-footer {
         display: flex;
         justify-content: var(--form-footer-justify, flex-end);
@@ -165,26 +153,8 @@ export class ScientificForm extends ScientificSurfaceBase {
           width: 100%;
         }
       }
-
-      .form-container.compact {
-        min-height: var(--form-compact-min-height, auto);
-      }
-
-      .form-container.compact .form-content {
-        gap: var(--form-compact-content-gap, var(--scientific-spacing-md));
-      }
-
-      .form-container.compact .form-footer {
-        padding-top: var(
-          --form-compact-footer-padding-top,
-          var(--scientific-spacing-sm)
-        );
-      }
     `,
   ];
-
-  @property({type: String})
-  variant: 'default' | 'compact' | 'elevated' = 'default';
 
   @property({type: String})
   submitLabel = 'Submit';
@@ -367,7 +337,6 @@ export class ScientificForm extends ScientificSurfaceBase {
     return classNames(
       'scientific-container',
       'form-container',
-      this.variant !== 'default' && this.variant,
       this.disabled && 'disabled',
       this.isLoading && 'loading'
     );
