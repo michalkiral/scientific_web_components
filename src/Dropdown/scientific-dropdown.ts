@@ -24,6 +24,10 @@ import {
   type DropdownKeyboardHandler,
 } from '../shared/dropdown/dropdown-utils.js';
 import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
+import {
+  renderClearButton,
+  createClearHandler,
+} from '../shared/components/clear-button/clear-button-utils.js';
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown
@@ -84,6 +88,11 @@ export class ScientificDropdown
 
   @property({type: Number})
   focusedOptionIndex = -1;
+
+  private clearHandler = createClearHandler(this, {
+    resetValue: () => { this.selectedValue = ''; },
+    eventPrefix: 'option',
+  });
 
   private dropdownController = new DropdownInteractionController(this, {
     onBeforeOpen: () => {
@@ -166,20 +175,6 @@ export class ScientificDropdown
     this.dropdownController.open();
   }
 
-  private clearSelection() {
-    this.selectedValue = '';
-
-    dispatchCustomEvent(this, 'option-cleared', {
-      timestamp: Date.now(),
-    });
-
-    dispatchCustomEvent(this, 'change', {
-      value: '',
-      label: '',
-      timestamp: Date.now(),
-    });
-  }
-
   private handleSearch(e: Event) {
     const target = e.target as HTMLInputElement;
     const cursorPosition = target.selectionStart;
@@ -250,19 +245,11 @@ export class ScientificDropdown
 
           <div style="display: flex; align-items: center;">
             ${this.clearable && selectedLabel
-              ? html`
-                  <button
-                    class="clear-button"
-                    @click="${(e: Event) => {
-                      e.stopPropagation();
-                      this.clearSelection();
-                    }}"
-                    title="Clear selection"
-                    aria-label="Clear selection"
-                  >
-                    ✕
-                  </button>
-                `
+              ? renderClearButton({
+                  onClear: this.clearHandler,
+                  ariaLabel: 'Clear selection',
+                  title: 'Clear selection',
+                })
               : ''}
             <div
               class="${classNames({

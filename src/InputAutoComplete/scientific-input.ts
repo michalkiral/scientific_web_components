@@ -17,7 +17,6 @@ import {
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
-import {renderIcon} from '../shared/utils/icon-utils.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
@@ -27,6 +26,10 @@ import {
   type DropdownKeyboardHandler,
 } from '../shared/dropdown/dropdown-utils.js';
 import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
+import {
+  renderClearButton,
+  createClearHandler,
+} from '../shared/components/clear-button/clear-button-utils.js';
 
 export type InputType =
   | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'
@@ -134,6 +137,24 @@ export class ScientificInput
 
   @state()
   private autocompleteHint = '';
+
+  private clearHandler = createClearHandler(this, {
+    resetValue: () => {
+      this.inputValue = '';
+      this.value = '';
+    },
+    additionalReset: () => {
+      this.closeDropdown();
+      this.autocompleteHint = '';
+    },
+    eventPrefix: 'option',
+    onComplete: () => {
+      const input = this.shadowRoot?.querySelector(
+        '.input-field'
+      ) as HTMLInputElement;
+      input?.focus();
+    },
+  });
 
   private dropdownController = new DropdownInteractionController(this, {
     onBeforeOpen: () => {
@@ -287,31 +308,6 @@ export class ScientificInput
     this.selectOption(option);
   }
 
-  private handleClear() {
-    this.inputValue = '';
-    this.value = '';
-    this.closeDropdown();
-    this.autocompleteHint = '';
-
-    dispatchMultipleEvents(this, [
-      {
-        name: 'option-cleared',
-        detail: {value: ''},
-        options: {bubbles: true, composed: true},
-      },
-      {
-        name: 'change',
-        detail: {value: ''},
-        options: {bubbles: true, composed: true},
-      },
-    ]);
-
-    const input = this.shadowRoot?.querySelector(
-      '.input-field'
-    ) as HTMLInputElement;
-    input?.focus();
-  }
-
   private handleFocus() {
     if (this.autoComplete) {
       this.openDropdown();
@@ -412,17 +408,11 @@ export class ScientificInput
 
           ${this.renderDropdown()}
           ${showClear
-            ? html`
-                <button
-                  class="clear-button"
-                  @click="${this.handleClear}"
-                  type="button"
-                  tabindex="-1"
-                  aria-label="Clear input"
-                >
-                  ${renderIcon('close', {size: 12})}
-                </button>
-              `
+            ? renderClearButton({
+                onClear: this.clearHandler,
+                ariaLabel: 'Clear input',
+                stopPropagation: false,
+              })
             : ''}
           ${hasIcon ? html` <div class="input-icon">${this.icon}</div> ` : ''}
         </div>

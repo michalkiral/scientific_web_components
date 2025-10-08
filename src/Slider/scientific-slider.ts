@@ -485,22 +485,6 @@ export class ScientificSlider extends LitElement {
         event.preventDefault();
         newValue = Math.min(this.max, this.value + this.step);
         break;
-      case 'Home':
-        event.preventDefault();
-        newValue = this.min;
-        break;
-      case 'End':
-        event.preventDefault();
-        newValue = this.max;
-        break;
-      case 'PageDown':
-        event.preventDefault();
-        newValue = Math.max(this.min, this.value - this.step * 10);
-        break;
-      case 'PageUp':
-        event.preventDefault();
-        newValue = Math.min(this.max, this.value + this.step * 10);
-        break;
     }
 
     if (newValue !== this.value) {
