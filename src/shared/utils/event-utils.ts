@@ -51,18 +51,3 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
     timeoutId = setTimeout(() => func(...args), delay);
   };
 }
-
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let lastExecution = 0;
-
-  return (...args: Parameters<T>) => {
-    const now = Date.now();
-    if (now - lastExecution >= delay) {
-      func(...args);
-      lastExecution = now;
-    }
-  };
-}

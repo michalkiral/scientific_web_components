@@ -159,6 +159,10 @@ export class ScientificToolbar extends LitElement {
         gap: var(--scientific-spacing-sm);
       }
 
+      .interactive-section .button-group scientific-button {
+        width: var(--button-width, 90px);
+      }
+
       @media (min-width: 768px) {
         .interactive-section .button-group {
           display: grid;

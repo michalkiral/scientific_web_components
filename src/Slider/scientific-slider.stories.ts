@@ -4,10 +4,8 @@ import './scientific-slider.js';
 import type {ScientificSlider} from './scientific-slider.js';
 import {
   sliderThemes,
-  sliderVariants,
   sliderStates,
   defaultSliderArgs,
-  variantExamples,
   markExamples,
   stateExamples,
   customFormattingExamples,
@@ -43,7 +41,6 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 - \`value\` — Current value of the slider
 - \`disabled\` — Whether the slider is disabled
 - \`required\` — Whether the slider is required (shows asterisk)
-- \`variant\` — Visual variant: default, compact
 - \`showTooltip\` — Whether to show tooltip on hover/drag
 - \`showValue\` — Whether to show current value in header
 - \`showRangeLabels\` — Whether to show min/max labels below slider
@@ -98,7 +95,6 @@ A **highly customizable**, **accessible** slider component for scientific web ap
 ## Features
 
 - **Range Control**: Configurable min/max values with custom step sizes
-- **Multiple Variants**: Default and compact layouts for different use cases
 - **Visual States**: Error state with custom styling and validation messages
 - **Custom Marks**: Add labeled marks at specific values for reference points
 - **Tooltips**: Show current value on hover or during interaction
@@ -252,10 +248,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --slider-error-message-font-size: 12px;
       --slider-error-message-margin-top: 6px;
       
-      /* Compact Variant */
-      --slider-compact-padding: 12px;
-      --slider-compact-gap: 8px;
-      
       /* Mobile Responsive */
       --slider-mobile-thumb-size: 22px;
       --slider-mobile-track-height: 10px;
@@ -310,11 +302,6 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     required: {
       control: 'boolean',
       description: 'Whether the slider is required (shows asterisk)',
-    },
-    variant: {
-      control: {type: 'select'},
-      options: sliderVariants,
-      description: 'Visual variant of the slider',
     },
     showTooltip: {
       control: 'boolean',
@@ -374,7 +361,6 @@ export const Default: Story = {
     value,
     disabled,
     required,
-    variant,
     showTooltip,
     showValue,
     showRangeLabels,
@@ -394,7 +380,6 @@ export const Default: Story = {
         .value=${value}
         .disabled=${disabled}
         .required=${required}
-        .variant=${variant}
         .showTooltip=${showTooltip}
         .showValue=${showValue}
         .showRangeLabels=${showRangeLabels}
@@ -405,35 +390,6 @@ export const Default: Story = {
         .state=${state}
       ></scientific-slider>
     </div>`,
-};
-
-export const Variants: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 32px; width: 500px;"
-    >
-      ${variantExamples.map(
-        (example) => html`
-          <div>
-            <h3 style="margin: 0 0 16px 0;">${example.title}</h3>
-            <scientific-slider
-              .label=${example.label}
-              .description=${'description' in example ? example.description : ''}
-              .variant=${'variant' in example ? example.variant : 'default'}
-              .min=${example.min}
-              .max=${example.max}
-              .step=${example.step}
-              .value=${example.value}
-              .unit=${example.unit}
-              .showValue=${example.showValue}
-              .formatValue=${'formatValue' in example ? example.formatValue : undefined}
-              .helperText=${'helperText' in example ? example.helperText : ''}
-            ></scientific-slider>
-          </div>
-        `
-      )}
-    </div>
-  `,
 };
 
 export const WithMarks: Story = {

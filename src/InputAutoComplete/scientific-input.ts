@@ -17,7 +17,6 @@ import {
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
-import {renderIcon} from '../shared/utils/icon-utils.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {
@@ -27,8 +26,16 @@ import {
   type DropdownKeyboardHandler,
 } from '../shared/dropdown/dropdown-utils.js';
 import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
+import {
+  renderClearButton,
+  createClearHandler,
+} from '../shared/components/clear-button/clear-button-utils.js';
 
-export type InputOption = DropdownOption;
+export type InputType =
+  | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'
+  | 'datetime' | 'date' | 'month' | 'week' | 'time' | 'datetime-local'
+  | 'number' | 'range' | 'color' | 'checkbox' | 'radio' | 'file'
+  | 'submit' | 'image' | 'reset' | 'button';
 
 @customElement('scientific-input')
 export class ScientificInput
@@ -70,6 +77,9 @@ export class ScientificInput
 
   @property({type: String})
   value = '';
+
+  @property({type: String})
+  type: InputType = 'text';
 
   @property({type: Array})
   options: DropdownOption[] = [];
@@ -128,6 +138,24 @@ export class ScientificInput
   @state()
   private autocompleteHint = '';
 
+  private clearHandler = createClearHandler(this, {
+    resetValue: () => {
+      this.inputValue = '';
+      this.value = '';
+    },
+    additionalReset: () => {
+      this.closeDropdown();
+      this.autocompleteHint = '';
+    },
+    eventPrefix: 'option',
+    onComplete: () => {
+      const input = this.shadowRoot?.querySelector(
+        '.input-field'
+      ) as HTMLInputElement;
+      input?.focus();
+    },
+  });
+
   private dropdownController = new DropdownInteractionController(this, {
     onBeforeOpen: () => {
       this.filterOptions();
@@ -170,7 +198,9 @@ export class ScientificInput
   }
 
   selectOption(option: DropdownOption) {
-    if (option.disabled) return;
+    if (option.disabled) {
+      return;
+    }
 
     this.inputValue = option.label;
     this.value = option.value;
@@ -278,31 +308,6 @@ export class ScientificInput
     this.selectOption(option);
   }
 
-  private handleClear() {
-    this.inputValue = '';
-    this.value = '';
-    this.closeDropdown();
-    this.autocompleteHint = '';
-
-    dispatchMultipleEvents(this, [
-      {
-        name: 'clear',
-        detail: {value: ''},
-        options: {bubbles: true, composed: true},
-      },
-      {
-        name: 'change',
-        detail: {value: ''},
-        options: {bubbles: true, composed: true},
-      },
-    ]);
-
-    const input = this.shadowRoot?.querySelector(
-      '.input-field'
-    ) as HTMLInputElement;
-    input?.focus();
-  }
-
   private handleFocus() {
     if (this.autoComplete) {
       this.openDropdown();
@@ -333,6 +338,7 @@ export class ScientificInput
     return classNames(
       'input-field',
       'scientific-input',
+      this.required && 'required',
       this.state !== 'default' && this.state
     );
   }
@@ -382,7 +388,7 @@ export class ScientificInput
             : ''}
 
           <input
-            type="text"
+            type="${this.type}"
             class="${this.getInputClasses()}"
             .value="${this.inputValue}"
             .placeholder="${this.placeholder}"
@@ -403,17 +409,11 @@ export class ScientificInput
 
           ${this.renderDropdown()}
           ${showClear
-            ? html`
-                <button
-                  class="clear-button"
-                  @click="${this.handleClear}"
-                  type="button"
-                  tabindex="-1"
-                  aria-label="Clear input"
-                >
-                  ${renderIcon('close', {size: 12})}
-                </button>
-              `
+            ? renderClearButton({
+                onClear: this.clearHandler,
+                ariaLabel: 'Clear input',
+                stopPropagation: false,
+              })
             : ''}
           ${hasIcon ? html` <div class="input-icon">${this.icon}</div> ` : ''}
         </div>
@@ -441,6 +441,9 @@ export class ScientificInput
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
+    if (changedProperties.has('value')) {
+      this.inputValue = this.value;
+    }
     if (changedProperties.has('isOpen')) {
       if (this.isOpen) {
         this.classList.add('dropdown-open');

@@ -21,7 +21,9 @@ export async function parseCSV(
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (skipEmptyLines && !trimmed) continue;
+    if (skipEmptyLines && !trimmed) {
+      continue;
+    }
 
     const row = trimmed.split(delimiter).map((cell) => cell.trim());
     rawData.push(row);
@@ -64,7 +66,9 @@ export async function parseCSVStream(
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const {value, done} = await reader.read();
-    if (done) break;
+    if (done) {
+      break;
+    }
 
     const text = decoder.decode(value, {stream: true});
     const lines = (partialChunk + text).split('\n');
@@ -72,7 +76,9 @@ export async function parseCSVStream(
 
     for (const line of lines) {
       const trimmed = line.trim();
-      if (skipEmptyLines && !trimmed) continue;
+      if (skipEmptyLines && !trimmed) {
+        continue;
+      }
 
       const row = trimmed.split(delimiter).map((cell) => cell.trim());
       rawData.push(row);

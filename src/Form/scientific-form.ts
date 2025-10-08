@@ -43,18 +43,6 @@ export class ScientificForm extends ScientificSurfaceBase {
         position: relative;
       }
 
-      .form-header {
-        border-bottom: var(--form-header-border, 1px solid #f3f4f6);
-      }
-
-      .form-title {
-        font-size: var(--form-title-font-size, var(--scientific-text-2xl));
-      }
-
-      .form-subtitle {
-        font-size: var(--form-subtitle-font-size, var(--scientific-text-base));
-      }
-
       .form-content {
         display: flex;
         flex-direction: column;
@@ -81,18 +69,6 @@ export class ScientificForm extends ScientificSurfaceBase {
           var(--scientific-spacing-xs)
         );
         border-bottom: var(--form-section-title-border, 1px solid #f3f4f6);
-      }
-
-      .form-error {
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
-      }
-
-      .form-success {
-        display: flex;
-        align-items: center;
-        gap: var(--scientific-spacing-sm);
       }
 
       .form-footer {
@@ -165,26 +141,8 @@ export class ScientificForm extends ScientificSurfaceBase {
           width: 100%;
         }
       }
-
-      .form-container.compact {
-        min-height: var(--form-compact-min-height, auto);
-      }
-
-      .form-container.compact .form-content {
-        gap: var(--form-compact-content-gap, var(--scientific-spacing-md));
-      }
-
-      .form-container.compact .form-footer {
-        padding-top: var(
-          --form-compact-footer-padding-top,
-          var(--scientific-spacing-sm)
-        );
-      }
     `,
   ];
-
-  @property({type: String})
-  variant: 'default' | 'compact' | 'elevated' = 'default';
 
   @property({type: String})
   submitLabel = 'Submit';
@@ -363,14 +321,14 @@ export class ScientificForm extends ScientificSurfaceBase {
     this.onReset?.();
   }
 
-  private _getFormClasses() {
-    return classNames(
-      'scientific-container',
+  protected override getContainerClasses(additionalClasses?: string): string {
+    const formClasses = [
       'form-container',
-      this.variant !== 'default' && this.variant,
       this.disabled && 'disabled',
-      this.isLoading && 'loading'
-    );
+      additionalClasses,
+    ].filter(Boolean).join(' ');
+    
+    return super.getContainerClasses(formClasses);
   }
 
   private _getFooterClasses() {
@@ -390,13 +348,8 @@ export class ScientificForm extends ScientificSurfaceBase {
   }
 
   protected override renderContent() {
-    return html``;
-  }
-
-  override render() {
     return html`
       <form
-        class="${this._getFormClasses()}"
         method="${this.method}"
         action="${ifDefined(this.action || undefined)}"
         enctype="${this.enctype}"
@@ -406,9 +359,6 @@ export class ScientificForm extends ScientificSurfaceBase {
         role="form"
         aria-busy="${this.isLoading}"
       >
-        ${this.renderLoading()}
-        ${this.renderHeader()}
-        ${this.renderError()}
         ${this.showProgress
           ? html`
               <div class="form-progress">
@@ -460,6 +410,17 @@ export class ScientificForm extends ScientificSurfaceBase {
           </slot>
         </div>
       </form>
+    `;
+  }
+
+  override render() {
+    return html`
+      <div class="${this.getContainerClasses()}">
+        ${this.renderLoading()}
+        ${this.renderHeader()}
+        ${this.renderError()}
+        ${this.renderContent()}
+      </div>
     `;
   }
 }

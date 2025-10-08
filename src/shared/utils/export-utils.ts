@@ -72,7 +72,6 @@ export async function exportCanvasToPDF(
     const imgHeight = canvas.height;
     const ratio = imgHeight / imgWidth;
 
-    // A4 page dimensions in points
     const pageWidth = 600;
     const pageHeight = 850;
     const margin = 40;

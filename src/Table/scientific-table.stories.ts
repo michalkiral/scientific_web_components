@@ -36,7 +36,6 @@ A **comprehensive**, **accessible** data table component designed for scientific
 - \`csvPath\` — Path to CSV file for automatic data loading
 - \`loading\` — Show loading spinner overlay
 - \`sortable\` — Enable column sorting functionality
-- \`filterable\` — Enable column filtering functionality
 - \`selectable\` — Enable row selection with checkboxes
 - \`pagination\` — Enable pagination controls
 - \`pageSize\` — Number of rows per page
@@ -50,14 +49,12 @@ A **comprehensive**, **accessible** data table component designed for scientific
 - \`onRowClick\` — Callback fired when a row is clicked
 - \`onSelectionChange\` — Callback fired when selection changes
 - \`onSort\` — Callback fired when sorting changes
-- \`onFilter\` — Callback fired when filters change
 
 ## Events
 
 - \`row-click\` — Fired when a row is clicked with row data and index
 - \`selection-change\` — Fired when row selection changes
 - \`sort-change\` — Fired when column sorting changes
-- \`filter-change\` — Fired when column filters change
 - \`page-change\` — Fired when pagination changes
 
 ## Basic Usage
@@ -73,7 +70,6 @@ A **comprehensive**, **accessible** data table component designed for scientific
   ]}"
   .data="\${compounds}"
   sortable
-  filterable
   pagination
   showSearch
 ></scientific-table>
@@ -105,7 +101,7 @@ A **comprehensive**, **accessible** data table component designed for scientific
 ## Features
 
 - **Advanced Sorting**: Multi-type sorting (text, number, date, boolean) with custom sort functions
-- **Search & Filtering**: Global search with column-specific filters and operators
+- **Global Search**: Search across all table data with highlighted results
 - **Pagination**: Configurable page sizes and navigation with large dataset support
 - **Selection**: Single and multi-row selection capabilities with selection events
 - **Data Types**: Support for various data types with custom formatters and validators
@@ -138,7 +134,6 @@ Each column supports these properties:
       label: string;                  // Display label
       type?: 'text' | 'number' | 'date' | 'boolean';  // Data type
       sortable?: boolean;             // Enable sorting
-      filterable?: boolean;           // Enable filtering
       width?: string;                 // Column width (CSS)
       align?: 'left' | 'center' | 'right';  // Text alignment
       formatter?: (value, row) => string;   // Custom formatter
@@ -353,14 +348,6 @@ The table accepts data in the \`TableData\` format:
         defaultValue: {summary: 'true'},
       },
     },
-    filterable: {
-      control: 'boolean',
-      description: 'Enable column filtering functionality',
-      table: {
-        type: {summary: 'boolean'},
-        defaultValue: {summary: 'true'},
-      },
-    },
     selectable: {
       control: 'boolean',
       description: 'Enable row selection with checkboxes',
@@ -466,14 +453,6 @@ The table accepts data in the \`TableData\` format:
         defaultValue: {summary: 'undefined'},
       },
     },
-    onFilter: {
-      control: false,
-      description: 'Callback fired when filters change',
-      table: {
-        type: {summary: '(filters: TableFilter[]) => void'},
-        defaultValue: {summary: 'undefined'},
-      },
-    },
   },
   tags: ['autodocs'],
 };
@@ -490,7 +469,6 @@ export const Default: Story = {
     data: sampleData,
     theme: 'default',
     sortable: true,
-    filterable: true,
     pagination: true,
     pageSize: 10,
     showSearch: true,

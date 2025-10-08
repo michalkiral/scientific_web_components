@@ -1,7 +1,6 @@
 import {
   type ToolbarSection,
   type ToolbarButtonDescriptor,
-  type ToolbarDropdownDescriptor,
 } from '../components/ScientificToolbar/scientific-toolbar.js';
 
 export interface ButtonConfig {
@@ -307,75 +306,5 @@ function createExportSection(
         handler: handlers.onExportChange,
       },
     ],
-  };
-}
-
-export function createToolbarButton(
-  id: string,
-  label: string,
-  title: string,
-  options: {
-    icon?: string;
-    variant?: ToolbarButtonDescriptor['variant'];
-    handler?: () => void;
-    visible?: boolean;
-    disabled?: boolean;
-  } = {}
-): ToolbarButtonDescriptor {
-  return {
-    id,
-    label,
-    title,
-    icon: options.icon,
-    variant: options.variant || 'outline',
-    handler: options.handler || (() => {}),
-    visible: options.visible !== false,
-    disabled: options.disabled || false,
-  };
-}
-
-export function createToolbarDropdown(
-  id: string,
-  label: string,
-  options: Array<{value: string; label: string}>,
-  config: {
-    placeholder?: string;
-    handler?: (event: CustomEvent) => void;
-    selectedValue?: string;
-    visible?: boolean;
-    disabled?: boolean;
-    style?: string;
-  } = {}
-): ToolbarDropdownDescriptor {
-  return {
-    id,
-    label,
-    options,
-    placeholder: config.placeholder || 'Select an option',
-    handler: config.handler || (() => {}),
-    selectedValue: config.selectedValue,
-    visible: config.visible !== false,
-    disabled: config.disabled || false,
-    style: config.style,
-  };
-}
-
-export function createToolbarSection(
-  id: string,
-  title: string,
-  config: {
-    buttons?: ToolbarButtonDescriptor[];
-    dropdowns?: ToolbarDropdownDescriptor[];
-    className?: string;
-    visible?: boolean;
-  } = {}
-): ToolbarSection {
-  return {
-    id,
-    title,
-    buttons: config.buttons || [],
-    dropdowns: config.dropdowns || [],
-    className: config.className || id,
-    visible: config.visible !== false,
   };
 }

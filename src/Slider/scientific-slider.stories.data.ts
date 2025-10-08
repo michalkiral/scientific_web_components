@@ -1,7 +1,6 @@
 import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
 
 export const sliderThemes = SCIENTIFIC_THEMES;
-export const sliderVariants = ['default', 'compact'] as const;
 export const sliderStates = ['default', 'error'] as const;
 
 export const defaultSliderArgs = {
@@ -14,7 +13,6 @@ export const defaultSliderArgs = {
   value: 50,
   disabled: false,
   required: false,
-  variant: 'default' as const,
   showTooltip: true,
   showValue: true,
   showRangeLabels: true,
@@ -24,33 +22,6 @@ export const defaultSliderArgs = {
   errorMessage: '',
   state: 'default' as const,
 };
-
-export const variantExamples = [
-  {
-    title: 'Default Variant',
-    label: 'Temperature',
-    description: 'Set the target temperature for the experiment',
-    min: 0,
-    max: 100,
-    step: 0.5,
-    value: 37.5,
-    unit: 'degC',
-    showValue: true,
-    helperText: 'Normal room temperature is around 20-25degC',
-  },
-  {
-    title: 'Compact Variant',
-    label: 'Opacity',
-    variant: 'compact' as const,
-    min: 0,
-    max: 1,
-    step: 0.01,
-    value: 0.75,
-    unit: '',
-    showValue: true,
-    formatValue: (value: number) => `${Math.round(value * 100)}%`,
-  },
-] as const;
 
 export const markExamples = [
   {
@@ -391,7 +362,6 @@ export const responsiveExample = {
       value: 50,
       showValue: true,
       showTooltip: false,
-      variant: 'compact' as const,
       helperText: 'Optimized for touch interaction',
     },
   ],
@@ -406,6 +376,5 @@ export const performanceExample = {
     step: 1,
     value: Math.floor(Math.random() * 100),
     showValue: true,
-    variant: 'compact' as const,
   })),
 };

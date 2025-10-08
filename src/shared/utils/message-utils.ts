@@ -1,7 +1,7 @@
 import {html, TemplateResult} from 'lit';
 import {renderIcon} from './icon-utils.js';
 
-export type MessageType = 'error' | 'success' | 'warning' | 'info';
+export type MessageType = 'error' | 'success';
 
 export interface MessageConfig {
   type?: MessageType;
@@ -10,7 +10,7 @@ export interface MessageConfig {
 }
 
 export function renderMessage(config: MessageConfig): TemplateResult {
-  const {type = 'info', content, className = ''} = config;
+  const {type = 'success', content, className = ''} = config;
 
   const iconName = getMessageIcon(type);
   const messageClass =
@@ -30,10 +30,6 @@ function getMessageIcon(type: MessageType): string {
       return 'warning';
     case 'success':
       return 'check';
-    case 'warning':
-      return 'warning';
-    case 'info':
-      return 'info';
     default:
       return 'info';
   }

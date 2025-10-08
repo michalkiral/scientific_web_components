@@ -40,25 +40,6 @@ suite('ScientificForm', () => {
     assert.include(subtitle!.textContent!, 'Custom Subtitle');
   });
 
-  test('applies variant classes correctly', async () => {
-    const variants = ['default', 'compact', 'elevated'] as const;
-
-    for (const variant of variants) {
-      const el = await fixture<ScientificForm>(html`
-        <scientific-form variant=${variant}></scientific-form>
-      `);
-      const container = el.shadowRoot!.querySelector('.form-container');
-
-      if (variant !== 'default') {
-        assert.include(
-          container!.className,
-          variant,
-          `Container should have ${variant} class`
-        );
-      }
-    }
-  });
-
   test('handles loading state', async () => {
     const el = await fixture<ScientificForm>(html`
       <scientific-form loadingLabel="Processing Data..."></scientific-form>

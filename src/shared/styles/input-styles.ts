@@ -26,6 +26,10 @@ export const inputContainerStyles = css`
     background: transparent;
   }
 
+  .input-field.scientific-input.required {
+    border-color: var(--scientific-danger-color);
+  }
+
   :host(.dropdown-open) .input-field {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -41,7 +45,7 @@ export const inputContainerStyles = css`
 
   .input-label.required::after {
     content: ' *';
-    color: var(--scientific-danger-color, var(--scientific-danger-color));
+    color: var(--scientific-danger-color);
   }
 
   .input-icon {
@@ -85,7 +89,6 @@ export const inputClearButtonStyles = css`
     height: var(--input-clear-size, 20px);
     background: transparent;
     border: none;
-    border-radius: var(--scientific-border-radius-sm);
     cursor: pointer;
     color: var(--scientific-text-muted);
     transition: var(--scientific-transition-fast);

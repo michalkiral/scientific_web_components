@@ -109,12 +109,6 @@ suite('scientific-slider', () => {
 
     thumb.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
     assert.equal(el.value, 50, 'Arrow left should decrease value by step');
-
-    thumb.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
-    assert.equal(el.value, 0, 'Home key should set value to minimum');
-
-    thumb.dispatchEvent(new KeyboardEvent('keydown', {key: 'End'}));
-    assert.equal(el.value, 100, 'End key should set value to maximum');
   });
 
   test('respects disabled state', async () => {

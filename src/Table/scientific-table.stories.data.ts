@@ -15,14 +15,12 @@ export const sampleColumns: TableColumn[] = [
     label: 'Compound Name',
     type: 'text',
     sortable: true,
-    filterable: true,
   },
   {
     key: 'formula',
     label: 'Chemical Formula',
     type: 'text',
     sortable: true,
-    filterable: true,
     align: 'center',
   },
   {
@@ -210,7 +208,7 @@ export const customFormattingColumns: TableColumn[] = [
     label: 'Temperature',
     type: 'number',
     align: 'right',
-    formatter: (value: unknown) => `${value}�C`,
+    formatter: (value: unknown) => `${value}degC`,
   },
 ];
 

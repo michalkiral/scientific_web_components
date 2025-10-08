@@ -9,6 +9,7 @@ export const sharedVariables = css`
       'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
     --scientific-border-radius: 8px;
+    --scientific-border-radius-sm: 4px;
     --scientific-border-radius-lg: 12px;
 
     --scientific-spacing-xs: 4px;
@@ -262,11 +263,26 @@ export const headerStyles = css`
     );
   }
 
-  .scientific-header.required::after {
-    content: ' *';
-    color: var(--required-indicator-color, var(--scientific-danger-color));
-    font-weight: var(--required-indicator-weight, 600);
-    margin-left: var(--required-indicator-spacing, 2px);
+  .header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--header-main-gap, var(--scientific-spacing-lg));
+  }
+
+  .header-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--header-text-gap, var(--scientific-spacing-xs));
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--header-actions-gap, var(--scientific-spacing-sm));
+    flex-shrink: 0;
   }
 
   .scientific-title {
@@ -362,18 +378,6 @@ export const messageStyles = css`
     background-color: var(--success-bg-color, color-mix(in srgb, var(--scientific-success-color) 5%, transparent));
     border: var(--success-border, 1px solid color-mix(in srgb, var(--scientific-success-color) 20%, transparent));
     color: var(--success-color, var(--scientific-success-color));
-  }
-
-  .scientific-message--warning {
-    background-color: var(--warning-bg-color, color-mix(in srgb, var(--scientific-warning-color) 5%, transparent));
-    border: var(--warning-border, 1px solid color-mix(in srgb, var(--scientific-warning-color) 20%, transparent));
-    color: var(--warning-color, var(--scientific-warning-color));
-  }
-
-  .scientific-message--info {
-    background-color: var(--info-bg-color, color-mix(in srgb, var(--scientific-info-color) 5%, transparent));
-    border: var(--info-border, 1px solid color-mix(in srgb, var(--scientific-info-color) 20%, transparent));
-    color: var(--info-color, var(--scientific-info-color));
   }
 `;
 

@@ -1,6 +1,9 @@
-import {html} from 'lit';
+import {LitElement, html, css, nothing} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-form.js';
+import '../InputAutoComplete/scientific-input.js';
+import '../Dropdown/scientific-dropdown.js';
+import '../Button/scientific-button.js';
 import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
 
 const meta: Meta = {
@@ -21,7 +24,6 @@ A **modern**, **accessible** form component for scientific web apps with advance
 
 - \`title\` — Form title text
 - \`subtitle\` — Form subtitle/description text
-- \`variant\` — Form style: default, compact, elevated
 - \`submitLabel\` — Submit button text
 - \`cancelLabel\` — Cancel button text
 - \`loadingLabel\` — Loading state text
@@ -102,7 +104,6 @@ A **modern**, **accessible** form component for scientific web apps with advance
 - **Form Integration**: Native HTML form features with custom async enhancement
 - **Responsive Design**: Mobile-friendly responsive design with touch optimization  
 - **Accessibility**: ARIA attributes, screen reader support, and keyboard navigation
-- **Variant System**: Default, compact, and elevated visual variants
 - **Auto Focus**: Optional automatic focus on first form input
 - **Validation**: HTML5 validation with optional disable and custom error display
 - **Scientific Design System**: Full integration with design tokens and shared styles
@@ -155,11 +156,6 @@ All CSS custom properties available for customization with their default values:
       --form-progress-bg-color: #f3f4f6;
       --form-progress-color: var(--scientific-primary-color);
       --form-progress-border-radius: var(--scientific-border-radius);
-      
-      /* Compact Variant */
-      --form-compact-min-height: auto;
-      --form-compact-content-gap: var(--scientific-spacing-md);
-      --form-compact-footer-padding-top: var(--scientific-spacing-sm);
     }
         `,
       },
@@ -177,11 +173,6 @@ All CSS custom properties available for customization with their default values:
     },
     title: {control: 'text', description: 'Form title'},
     subtitle: {control: 'text', description: 'Form subtitle'},
-    variant: {
-      control: 'select',
-      options: ['default', 'compact', 'elevated'],
-      description: 'Form variant',
-    },
     submitLabel: {control: 'text', description: 'Submit button label'},
     cancelLabel: {control: 'text', description: 'Cancel button label'},
     loadingLabel: {control: 'text', description: 'Loading state label'},
@@ -260,7 +251,6 @@ export const Default: Story = {
     method: 'post',
     action: '',
     noValidate: false,
-    variant: 'default',
   },
   render: ({
     title,
@@ -283,7 +273,6 @@ export const Default: Story = {
     method,
     action,
     noValidate,
-    variant,
   }) =>
     html`<scientific-form
       .title=${title}
@@ -306,10 +295,8 @@ export const Default: Story = {
       .method=${method}
       .action=${action}
       .noValidate=${noValidate}
-      .variant=${variant}
       .onSubmit=${async (formData: FormData) => {
         console.log('Form submitted with data:', Object.fromEntries(formData));
-        // Simulate async processing
         await new Promise((resolve) => setTimeout(resolve, 2000));
         alert('Registration successful! Check console for form data.');
       }}
@@ -368,54 +355,6 @@ export const Default: Story = {
         </label>
       </div>
     </scientific-form>`,
-};
-
-export const Variants: Story = {
-  render: () => html`
-    <div
-      style="display: flex; flex-direction: column; gap: 24px; max-width: 800px;"
-    >
-      <h3 style="margin: 0;">Default Variant</h3>
-      <scientific-form
-        title="Default Form"
-        subtitle="Standard form styling with full features"
-        variant="default"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-
-      <h3 style="margin: 0;">Compact Variant</h3>
-      <scientific-form
-        title="Compact Form"
-        subtitle="Reduced spacing for dense layouts"
-        variant="compact"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-
-      <h3 style="margin: 0;">Elevated Variant</h3>
-      <scientific-form
-        title="Elevated Form"
-        subtitle="Enhanced shadow and depth"
-        variant="elevated"
-        style="--form-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); --form-hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);"
-      >
-        <input
-          type="text"
-          placeholder="Sample input"
-          style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; width: 100%; box-sizing: border-box;"
-        />
-      </scientific-form>
-    </div>
-  `,
 };
 
 export const WithProgress: Story = {
@@ -704,105 +643,6 @@ export const ButtonVariants: Story = {
   `,
 };
 
-export const CustomStyling: Story = {
-  args: {
-    title: 'Custom Styled Form',
-    subtitle: 'Demonstrating CSS variable customization',
-  },
-  render: ({title, subtitle}) =>
-    html`<scientific-form
-      .title=${title}
-      .subtitle=${subtitle}
-      style="
-        --form-bg-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --form-border: none;
-        --form-border-radius: 20px;
-        --form-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        --form-hover-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        --form-title-color: #000000;
-        --form-subtitle-color: rgba(0, 0, 0, 0.8);
-        --form-header-border: 1px solid rgba(255, 255, 255, 0.2);
-        --form-footer-border: 1px solid rgba(255, 255, 255, 0.2);
-        --form-padding: 32px;
-        --form-gap: 24px;
-        max-width: 500px;
-        margin: 20px auto;
-        
-        /* Custom button styling for glassmorphism effect */
-        --button-bg-color: rgba(255, 255, 255, 0.2);
-        --button-color: #b92929;
-        --button-border: 2px solid rgba(255, 255, 255, 0.3);
-        --button-border-radius: 12px;
-        --button-padding: 16px 32px;
-        --button-font-weight: 600;
-        --button-font-size: 16px;
-        --button-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        --button-hover-bg-color: rgba(255, 255, 255, 0.3);
-        --button-hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        --button-hover-transform: translateY(-2px);
-        --button-focus-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
-        --button-focus-border-color: rgba(255, 255, 255, 0.6);
-        --button-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      "
-    >
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        <input
-          type="text"
-          placeholder="Enter your name"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        />
-        <input
-          type="email"
-          placeholder="Enter your email"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        />
-        <textarea
-          placeholder="Tell us about your project..."
-          rows="3"
-          style="
-            padding: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 12px; 
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            resize: vertical;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            outline: none;
-          "
-          onfocus="this.style.borderColor='rgba(255, 255, 255, 0.6)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 0 3px rgba(255, 255, 255, 0.2)'"
-          onblur="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'"
-        ></textarea>
-      </div>
-    </scientific-form>`,
-};
-
 export const RealWorldExample: Story = {
   args: {
     title: 'Research Data Submission',
@@ -932,6 +772,223 @@ export const RealWorldExample: Story = {
     </scientific-form>`,
 };
 
+
+class MultiStepFormDemo extends LitElement {
+  static override properties = {
+    step: {state: true},
+    submitting: {state: true},
+    completed: {state: true},
+  };
+
+  static override styles = css`
+    .step-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .step-hint {
+      font-size: 14px;
+      color: #4b5563;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  `;
+
+  step = 0;
+  submitting = false;
+  completed = false;
+
+  get totalSteps() {
+    return 2;
+  }
+
+  private _nextStep() {
+    if (this.step < this.totalSteps - 1) {
+      this.step += 1;
+      this.completed = false;
+    }
+  }
+
+  private _previousStep() {
+    if (this.step > 0) {
+      this.step -= 1;
+      this.completed = false;
+    }
+  }
+
+  private _progressValue() {
+    return Math.round((this.step / (this.totalSteps - 1)) * 100);
+  }
+
+  private _subtitle() {
+    const subtitles = [
+      'Provide your basic information',
+      'Share your project details',
+      'Review & confirm submission',
+    ];
+    return subtitles[this.step];
+  }
+
+  private _renderStepContent() {
+    switch (this.step) {
+      case 0:
+        return html`
+          <div class="step-grid two-column">
+            <scientific-input
+              label="Full Name"
+              placeholder="Ada Lovelace"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-input
+              label="Email"
+              type="email"
+              placeholder="ada@example.com"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-input
+              label="Institution"
+              placeholder="FI MUNI"
+              required
+              clearable
+              .autoComplete=${false}
+            ></scientific-input>
+            <scientific-dropdown
+              label="Role"
+              placeholder="Select your role"
+              .options=${[
+                {label: 'Student', value: 'student'},
+                {label: 'PhD Student', value: 'phd'},
+                {label: 'Postdoc', value: 'postdoc'},
+                {label: 'Faculty', value: 'faculty'},
+                {label: 'Researcher', value: 'researcher'},
+                {label: 'Other', value: 'other'}
+              ]}
+              clearable
+            ></scientific-dropdown>
+          </div>
+        `;
+      default:
+        return html`
+          <div class="step-grid">
+            <scientific-input
+              label="Project Title"
+              placeholder="Genome Analysis"
+              required
+              clearable
+            ></scientific-input>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">
+                Research Summary *
+              </label>
+              <textarea
+                name="summary"
+                rows="4"
+                placeholder="Briefly describe your research goals..."
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border: 2px solid #e5e7eb;
+                  border-radius: 8px;
+                  font-size: 16px;
+                  resize: vertical;
+                  font-family: inherit;
+                "
+              ></textarea>
+            </div>
+            <div class="step-hint">
+              💡 Tip: keep the summary short (2-3 sentences) so reviewers can quickly understand your project.
+            </div>
+          </div>
+        `;
+    }
+  }
+
+  private async _handleSubmit(_formData: FormData) {
+    this.submitting = true;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    this.submitting = false;
+    this.completed = true;
+  }
+
+  override render() {
+    return html`
+      <scientific-form
+        title="Research Submission"
+        .subtitle=${this._subtitle()}
+        .showProgress=${true}
+        .progress=${this._progressValue()}
+        .successMessage=${this.completed ? 'All steps completed successfully!' : ''}
+        .showCancel=${false}
+        .footerLayout=${'full-width'}
+        .onSubmit=${(formData: FormData) => this._handleSubmit(formData)}
+      >
+        ${this._renderStepContent()}
+
+        <div slot="footer" class="footer-actions">
+          ${this.step > 0
+            ? html`
+                <scientific-button
+                  label="Back"
+                  variant="outline"
+                  type="button"
+                  @click=${this._previousStep}
+                ></scientific-button>
+              `
+            : nothing}
+
+          ${this.step < this.totalSteps - 1
+            ? html`
+                <scientific-button
+                  label="Next"
+                  variant="primary"
+                  type="button"
+                  @click=${this._nextStep}
+                ></scientific-button>
+              `
+            : html`
+                <scientific-button
+                  label=${this.submitting ? 'Submitting...' : 'Submit'}
+                  variant="success"
+                  type="submit"
+                  .loading=${this.submitting}
+                ></scientific-button>
+              `}
+        </div>
+      </scientific-form>
+    `;
+  }
+}
+
+if (!customElements.get('multi-step-form-demo')) {
+  customElements.define('multi-step-form-demo', MultiStepFormDemo);
+}
+
+export const MultiStepProgression: Story = {
+  render: () => html`<multi-step-form-demo></multi-step-form-demo>`,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive multi-step form example demonstrating progress updates, step navigation, and async submission feedback.',
+      },
+    },
+  },
+};
+
 export const ThemeComparison: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 48px;">
@@ -1032,3 +1089,5 @@ export const ThemeComparison: Story = {
     },
   },
 };
+
+
