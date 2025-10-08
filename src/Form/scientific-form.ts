@@ -417,6 +417,7 @@ export class ScientificForm extends ScientificSurfaceBase {
   override render() {
     return html`
       <div class="${this.getContainerClasses()}">
+        ${this.renderLoading()}
         ${this.renderHeader()}
         ${this.renderError()}
         ${this.renderContent()}
