@@ -15,7 +15,6 @@ import {
   loadingSpinnerStyles,
   responsiveStyles,
 } from '../shared/styles/common-styles.js';
-import {networkThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {networkStyles} from '../shared/styles/network-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
@@ -81,7 +80,6 @@ export class ScientificNetwork
     baseComponentStyles,
     sharedVariables,
     themeStyles,
-    networkThemeStyles,
     containerStyles,
     headerStyles,
     messageStyles,

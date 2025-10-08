@@ -208,7 +208,7 @@ export const customFormattingColumns: TableColumn[] = [
     label: 'Temperature',
     type: 'number',
     align: 'right',
-    formatter: (value: unknown) => `${value}�C`,
+    formatter: (value: unknown) => `${value}degC`,
   },
 ];
 

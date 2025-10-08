@@ -34,7 +34,9 @@ export const networkInfoStyles = css`
     bottom: var(--scientific-spacing-md);
     left: var(--scientific-spacing-md);
     background: color-mix(in srgb, var(--scientific-bg-primary) 95%, transparent);
+    color: var(--scientific-text-secondary);
     border: var(--scientific-border);
+    border-color: var(--scientific-border-color);
     border-radius: var(--scientific-border-radius);
     padding: var(--scientific-spacing-md);
     font-size: var(--scientific-text-sm);
@@ -43,6 +45,7 @@ export const networkInfoStyles = css`
     max-width: 250px;
     z-index: 10;
     backdrop-filter: blur(8px);
+
   }
 
   .info-row {

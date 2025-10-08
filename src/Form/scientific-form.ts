@@ -43,18 +43,6 @@ export class ScientificForm extends ScientificSurfaceBase {
         position: relative;
       }
 
-      .form-header {
-        border-bottom: var(--form-header-border, 1px solid #f3f4f6);
-      }
-
-      .form-title {
-        font-size: var(--form-title-font-size, var(--scientific-text-2xl));
-      }
-
-      .form-subtitle {
-        font-size: var(--form-subtitle-font-size, var(--scientific-text-base));
-      }
-
       .form-content {
         display: flex;
         flex-direction: column;

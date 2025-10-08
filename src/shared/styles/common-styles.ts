@@ -9,6 +9,7 @@ export const sharedVariables = css`
       'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
     --scientific-border-radius: 8px;
+    --scientific-border-radius-sm: 4px;
     --scientific-border-radius-lg: 12px;
 
     --scientific-spacing-xs: 4px;
@@ -260,6 +261,28 @@ export const headerStyles = css`
       --header-border,
       1px solid var(--scientific-border-color)
     );
+  }
+
+  .header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--header-main-gap, var(--scientific-spacing-lg));
+  }
+
+  .header-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--header-text-gap, var(--scientific-spacing-xs));
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--header-actions-gap, var(--scientific-spacing-sm));
+    flex-shrink: 0;
   }
 
   .scientific-title {

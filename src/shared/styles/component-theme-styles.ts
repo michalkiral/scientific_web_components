@@ -1,19 +1,5 @@
 import {css} from 'lit';
 
-export const networkThemeStyles = css`
-  .network-toolbar {
-    background: var(--scientific-bg-secondary);
-    color: var(--scientific-text-secondary);
-    border-color: var(--scientific-border-color);
-  }
-
-  .network-info {
-    background: color-mix(in srgb, var(--scientific-bg-primary) 95%, transparent);
-    color: var(--scientific-text-secondary);
-    border-color: var(--scientific-border-color);
-  }
-`;
-
 export const sliderThemeStyles = css`
   :host {
     --slider-value-bg-color: var(--scientific-bg-secondary);

@@ -76,13 +76,6 @@ export class ScientificTable extends ScientificSurfaceBase {
         border-bottom: none;
       }
 
-      .header-main {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: var(--header-main-gap, 16px);
-      }
-
       .scientific-title {
         font-size: var(--scientific-title-font-size, 20px);
         font-weight: var(--scientific-title-font-weight, 600);
