@@ -92,19 +92,6 @@ export function getThemeColors(element: Element, themeName: 'default' | 'dark' |
   };
 }
 
-export function getThemeColorsByName(themeName: 'default' | 'dark' | 'scientific'): ScientificThemeColors {
-  return THEME_COLORS[themeName];
-}
-
-export function getThemeColor(
-  element: Element, 
-  property: string, 
-  fallback: string
-): string {
-  const style = getComputedStyle(element);
-  const cssProperty = property.startsWith('--') ? property : `--${property}`;
-  return style.getPropertyValue(cssProperty).trim() || fallback;
-}
 
 export function applyThemeColors<T extends Record<string, string>>(
   element: Element,
@@ -137,12 +124,6 @@ export function getPaletteColor(index: number, alpha = 1): string {
   return alpha === 1 ? color : `color-mix(in srgb, ${color} ${alpha * 100}%, transparent)`;
 }
 
-export function generateColorPalette(count: number, alpha = 1): string[] {
-  return Array.from({length: count}, (_, index) =>
-    getPaletteColor(index, alpha)
-  );
-}
-
 // Chart.js specific theme utilities
 export interface ChartThemeColors {
   gridColor: string;
@@ -170,49 +151,5 @@ export function getChartThemeColors(element: Element, themeName: 'default' | 'da
     tooltipBackgroundColor: bgSecondary,
     tooltipTextColor: textPrimary,
     tooltipBorderColor: borderFocus,
-  };
-}
-
-export function createChartThemeConfig(element: Element, themeName: 'default' | 'dark' | 'scientific' = 'default') {
-  const colors = getChartThemeColors(element, themeName);
-  
-  return {
-    scales: {
-      x: {
-        grid: {
-          color: colors.gridColor,
-        },
-        ticks: {
-          color: colors.axisLabelColor,
-        },
-        title: {
-          color: colors.axisTitleColor,
-        },
-      },
-      y: {
-        grid: {
-          color: colors.gridColor,
-        },
-        ticks: {
-          color: colors.axisLabelColor,
-        },
-        title: {
-          color: colors.axisTitleColor,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        labels: {
-          color: colors.axisLabelColor,
-        },
-      },
-      tooltip: {
-        backgroundColor: colors.tooltipBackgroundColor,
-        titleColor: colors.tooltipTextColor,
-        bodyColor: colors.tooltipTextColor,
-        borderColor: colors.tooltipBorderColor,
-      },
-    },
   };
 }

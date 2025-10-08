@@ -263,20 +263,17 @@ export class ScientificSlider extends LitElement {
         border-color: var(--slider-error-thumb-border-color, #fecaca);
       }
 
+      .slider-helper {
+        font-size: var(--slider-helper-font-size, var(--scientific-text-sm));
+        color: var(--slider-helper-color, var(--scientific-text-muted));
+        margin-top: var(--slider-helper-margin-top, var(--scientific-spacing-xs));
+        line-height: var(--slider-helper-line-height, 1.4);
+      }
+
       @media (max-width: 768px) {
         .slider-thumb {
           width: var(--slider-mobile-thumb-size, 24px);
           height: var(--slider-mobile-thumb-size, 24px);
-        }
-
-        .slider-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--scientific-spacing-sm);
-        }
-
-        .slider-value-display {
-          align-self: flex-end;
         }
       }
     `,
@@ -548,34 +545,38 @@ export class ScientificSlider extends LitElement {
     }
 
     return html`
-      <div class="slider-header scientific-header">
-        <div class="slider-label-section scientific-header-content">
-          ${this.label
+      <div class="scientific-header">
+        <div class="header-main">
+          <div class="header-text">
+            ${this.label
+              ? html`
+                  <h3
+                    class="slider-label scientific-title ${this.required
+                      ? 'required'
+                      : ''}"
+                  >
+                    ${this.label}
+                  </h3>
+                `
+              : ''}
+            ${this.description
+              ? html`
+                  <p class="slider-description scientific-subtitle">
+                    ${this.description}
+                  </p>
+                `
+              : ''}
+          </div>
+          ${this.showValue
             ? html`
-                <h3
-                  class="slider-label scientific-title ${this.required
-                    ? 'required'
-                    : ''}"
-                >
-                  ${this.label}
-                </h3>
-              `
-            : ''}
-          ${this.description
-            ? html`
-                <p class="slider-description scientific-subtitle">
-                  ${this.description}
-                </p>
+                <div class="header-actions">
+                  <div class="slider-value-display">
+                    ${this._formatDisplayValue(this.value)}
+                  </div>
+                </div>
               `
             : ''}
         </div>
-        ${this.showValue
-          ? html`
-              <div class="slider-value-display">
-                ${this._formatDisplayValue(this.value)}
-              </div>
-            `
-          : ''}
       </div>
     `;
   }
@@ -664,9 +665,7 @@ export class ScientificSlider extends LitElement {
   private _renderMessages() {
     return html`
       ${this.helperText
-        ? html`<div>
-            ${this.helperText}
-          </div>`
+        ? html`<div class="slider-helper scientific-message">${this.helperText}</div>`
         : ''}
       ${this.state === 'error' && this.errorMessage
         ? html`<div class="slider-error scientific-message scientific-message--error">

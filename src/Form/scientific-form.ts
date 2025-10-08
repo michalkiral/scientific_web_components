@@ -350,7 +350,6 @@ export class ScientificForm extends ScientificSurfaceBase {
   protected override renderContent() {
     return html`
       <form
-        class="form-wrapper"
         method="${this.method}"
         action="${ifDefined(this.action || undefined)}"
         enctype="${this.enctype}"
