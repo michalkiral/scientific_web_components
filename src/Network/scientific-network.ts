@@ -996,7 +996,6 @@ export class ScientificNetwork
 
   protected override renderContent() {
     return html`
-      ${this.renderLoading()}
       ${this._renderNetwork()}
       ${this.tooltip.visible ? this._renderTooltip() : nothing}
     `;

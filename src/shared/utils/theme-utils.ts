@@ -92,23 +92,6 @@ export function getThemeColors(element: Element, themeName: 'default' | 'dark' |
   };
 }
 
-
-export function applyThemeColors<T extends Record<string, string>>(
-  element: Element,
-  colorMap: T
-): T {
-  const result = {} as T;
-  const style = getComputedStyle(element);
-  
-  for (const [key, property] of Object.entries(colorMap)) {
-    const cssProperty = property.startsWith('--') ? property : `--${property}`;
-    const resolvedColor = style.getPropertyValue(cssProperty).trim() || property;
-    (result as Record<string, string>)[key] = resolvedColor;
-  }
-  
-  return result;
-}
-
 export function createColorVariants(baseColor: string) {
   return {
     base: baseColor,

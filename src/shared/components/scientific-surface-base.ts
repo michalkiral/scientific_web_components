@@ -21,6 +21,9 @@ export abstract class ScientificSurfaceBase extends LitElement {
   @property({type: String})
   errorMessage = '';
 
+  @property({type: String})
+  successMessage = '';
+
   @property({type: Boolean})
   showToolbar = true;
 
@@ -88,6 +91,23 @@ export abstract class ScientificSurfaceBase extends LitElement {
     `;
   }
 
+  protected renderSuccess() {
+    if (!this.successMessage) {
+      return nothing;
+    }
+
+    return html`
+      <div class="scientific-message scientific-message--success" role="status">
+        <div class="message-icon">
+          ${renderIcon('check', {size: 16})}
+        </div>
+        <div class="message-content">
+          <span>${this.successMessage}</span>
+        </div>
+      </div>
+    `;
+  }
+
   protected renderLoading() {
     if (!this.isLoading) {
       return nothing;
@@ -111,12 +131,20 @@ export abstract class ScientificSurfaceBase extends LitElement {
 
   protected abstract renderContent(): unknown;
 
+  protected shouldHideContentOnError(): boolean {
+    return true;
+  }
+
   override render() {
+    const shouldShowContent = !this.shouldHideContentOnError() || !this.errorMessage;
+    
     return html`
       <div class="${this.getContainerClasses()}">
+        ${this.renderLoading()}
         ${this.renderHeader()}
         ${this.renderError()}
-        ${!this.errorMessage ? this.renderContent() : nothing}
+        ${this.renderSuccess()}
+        ${shouldShowContent ? this.renderContent() : nothing}
       </div>
     `;
   }
