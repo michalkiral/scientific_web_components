@@ -708,7 +708,6 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
 
   protected override renderContent() {
     return html`
-      ${this.renderLoading()}
       <div class="graph-canvas-container">
         <canvas></canvas>
       </div>

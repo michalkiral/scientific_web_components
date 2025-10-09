@@ -184,9 +184,6 @@ export class ScientificForm extends ScientificSurfaceBase {
   progress = 0;
 
   @property({type: String})
-  successMessage = '';
-
-  @property({type: String})
   footerLayout: 'end' | 'start' | 'center' | 'space-between' | 'full-width' =
     'end';
 
@@ -276,7 +273,10 @@ export class ScientificForm extends ScientificSurfaceBase {
         return;
       }
 
-      this.successMessage = 'Form submitted successfully!';
+      if (!this.successMessage) {
+        this.successMessage = 'Form submitted successfully!';
+      }
+      
       dispatchCustomEvent(this, 'form-submit-success', {
         formData,
       });
@@ -373,13 +373,6 @@ export class ScientificForm extends ScientificSurfaceBase {
               </div>
             `
           : ''}
-        ${this.successMessage
-          ? html`
-              <div class="scientific-success form-success" role="status">
-                <span>${this.successMessage}</span>
-              </div>
-            `
-          : ''}
 
         <div class="form-content">
           <slot></slot>
@@ -413,15 +406,9 @@ export class ScientificForm extends ScientificSurfaceBase {
     `;
   }
 
-  override render() {
-    return html`
-      <div class="${this.getContainerClasses()}">
-        ${this.renderLoading()}
-        ${this.renderHeader()}
-        ${this.renderError()}
-        ${this.renderContent()}
-      </div>
-    `;
+
+  protected override shouldHideContentOnError(): boolean {
+    return false;
   }
 }
 

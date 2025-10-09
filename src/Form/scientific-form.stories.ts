@@ -509,11 +509,13 @@ export const WithMessages: Story = {
         subtitle="Stay updated with our latest news"
         successMessage="Thank you! You've been successfully subscribed to our newsletter."
       >
-        <input
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+          <input
           type="email"
           placeholder="Your email address"
           class="success-input"
         />
+        </div>
       </scientific-form>
     </div>
   `,

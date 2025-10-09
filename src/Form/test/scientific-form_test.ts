@@ -282,7 +282,7 @@ suite('ScientificForm', () => {
     el.successMessage = 'Form submitted successfully';
     await el.updateComplete;
 
-    const successElement = el.shadowRoot!.querySelector('.scientific-success');
+    const successElement = el.shadowRoot!.querySelector('.scientific-message--success');
     assert.isNotNull(successElement);
     assert.include(successElement!.textContent!, 'Form submitted successfully');
   });
