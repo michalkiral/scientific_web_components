@@ -211,6 +211,7 @@ export class ScientificNetwork
     }
     
     if (changedProperties.has('directed')) {
+      this._handleDirectionChange();
       this.graphController.applyTheme();
       this._updateMetrics();
     }
@@ -259,7 +260,7 @@ export class ScientificNetwork
         if (!this.edgeCreationSource) {
           this.edgeCreationSource = node.id();
           node.addClass('edge-source');
-        } else if (this.edgeCreationSource !== node.id()) {
+        } else if (this.directed || this.edgeCreationSource !== node.id()) {
           this._addEdge(this.edgeCreationSource, node.id());
           cy.nodes().removeClass('edge-source');
         }
@@ -420,6 +421,30 @@ export class ScientificNetwork
     dispatchCustomEvent(this, NetworkEvents.NETWORK_DIRECTION_CHANGED, {
       directed: this.directed,
     });
+  }
+
+  private _handleDirectionChange() {
+    const cy = this.graphController.getCytoscapeInstance();
+    if (!cy) {
+      return;
+    }
+
+    if (!this.directed) {
+      const selfLoops = this.data.edges.filter(edge => edge.source === edge.target);
+      
+      if (selfLoops.length > 0) {
+        this.data.edges = this.data.edges.filter(edge => edge.source !== edge.target);
+        
+        selfLoops.forEach(edge => {
+          cy.getElementById(edge.id).remove();
+          
+          dispatchCustomEvent(this, NetworkEvents.EDGE_REMOVED, {
+            edge,
+            reason: 'self-loop-removed-undirected'
+          });
+        });
+      }
+    }
   }
 
   private _handleExportChange(event: CustomEvent) {
