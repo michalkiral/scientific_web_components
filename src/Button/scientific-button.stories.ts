@@ -34,54 +34,55 @@ A **customizable**, **accessible** button component for scientific web apps with
 
 ## Props
 
-- \`label\` — Button text
-- \`loading\` — Shows loading state
-- \`loadingLabel\` — Text when loading
-- \`showSpinner\` — Shows spinner when loading (default: true)
-- \`action\` — Async function on click
-- \`variant\` — Button style: primary, secondary, outline, ghost, danger, success
-- \`size\` — Button size: small, medium, large
-- \`disabled\` — Disables the button
-- \`fullWidth\` — Makes button take full width
-- \`type\` — Button type: button, submit, reset
-- \`form\` — Associates button with a form by ID
-- \`name\` — Name attribute for form submission
-- \`value\` — Value attribute for form submission
-- \`href\` — Renders as link when provided
-- \`target\` — Link target when href is used
-- \`autoFocus\` — Auto-focuses the button
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`label\` - Button text
+- \`icon\` - Optional icon name rendered before the label
+- \`loading\` - Controls the loading state (auto-managed when \`action\` runs)
+- \`loadingLabel\` - Text announced and shown while loading
+- \`showSpinner\` - Toggles the spinner while loading (default: true)
+- \`action\` - Async or sync function invoked on click; awaited before events fire
+- \`variant\` - Button style: primary, secondary, outline, ghost, danger, success
+- \`size\` - Button size: small, medium, large
+- \`disabled\` - Disables interaction
+- \`fullWidth\` - Makes the host and control span 100% width
+- \`type\` - Button type: button, submit, reset
+- \`form\` - Associates the button with a form by ID
+- \`name\` - Name attribute forwarded to \`<button>\`
+- \`value\` - Value attribute forwarded to \`<button>\`
+- \`href\` - Renders as a link when provided
+- \`target\` - Link target when \`href\` is used (defaults to \`_self\`)
+- \`autoFocus\` - Auto-focuses the control when it is rendered
 
 ## Events
 
-- \`button-click-start\` — Fired when action starts
-- \`button-click-complete\` — Fired when action completes
-- \`button-click-error\` — Fired when action fails
-- \`success\` — Simplified success event
-- \`error\` — Simplified error event
+- \`button-click-start\` - Fires before awaiting \`action\` (detail: {originalEvent}); does not bubble
+- \`button-click-complete\` - Fires after a successful \`action\`; does not bubble
+- \`button-click-error\` - Fires when \`action\` throws or rejects (detail: {error}); does not bubble
+- \`success\` - Convenience success event mirroring \`button-click-complete\`
+- \`error\` - Convenience error event with the thrown value in \`detail.error\`
 
 ## Features
 
-- **Multiple Variants**: Different visual styles for different contexts (primary, secondary, outline, ghost, danger, success)
-- **Size Options**: Small, medium, and large sizes with responsive behavior
-- **Loading States**: Animated spinner with accessible loading state and customizable text
-- **Link Mode**: Can render as a link with href and target attributes
-- **Form Integration**: Submit, reset, and button types with form association
-- **Full Width Support**: Can expand to fill container width
-- **Accessibility**: ARIA attributes, focus management, keyboard support, screen reader compatible
-- **Async Actions**: Built-in support for async functions with automatic loading states
-- **Event Handling**: Comprehensive event system for interaction tracking
-- **Responsive Design**: Mobile-optimized with touch-friendly sizing
-- **CSS Custom Properties**: Extensive customization through CSS variables
+- **Multiple Variants**: Primary, secondary, outline, ghost, danger, and success styles backed by design-system tokens
+- **Icon & Text Layout**: Handles icons, text, or icon-only states with consistent spacing
+- **Size Options**: Small, medium, and large sizes with responsive min-heights (48/36/56px desktop; 44/32/52px mobile defaults)
+- **Loading States**: Spinner (toggleable) and \`loadingLabel\` update shown text and aria attributes while \`loading\` is true
+- **Async Actions**: Awaited \`action\` function automatically toggles \`loading\` and emits start/complete/error events
+- **Link Mode**: Renders an anchor when \`href\` is set, preserving disabled/loading guards and optional \`target\`
+- **Form Integration**: \`type\`, \`form\`, \`name\`, and \`value\` are forwarded to support native form submission
+- **Full Width Support**: \`fullWidth\` reflects to the host and underlying control for layout control
+- **Theming**: \`theme\` attribute switches shared palettes (\`default\`, \`dark\`, \`scientific\`)
+- **CSS Custom Properties**: Extensive CSS variables let you tune spacing, colors, typography, and states
 
 ## Accessibility Features
 
-- **ARIA Labels**: Dynamic aria-label updates based on loading state
-- **Loading States**: aria-busy attribute for screen readers during async operations
-- **Focus Management**: Proper focus handling and visual focus indicators
-- **Keyboard Navigation**: Full keyboard support with Enter and Space activation
-- **Color Contrast**: Meets WCAG contrast requirements across all variants
-- **Touch Targets**: Mobile-optimized touch target sizes (44px minimum)
-- **Semantic HTML**: Uses proper button/link elements with correct roles
+- **ARIA Labels**: \`<button>\` usage updates \`aria-label\` between \`label\` and \`loadingLabel\`; anchor mode exposes visible text
+- **Loading States**: \`<button>\` sets \`aria-busy\` when \`loading\` is true; anchor mode relies on visual and pointer-state updates
+- **Focus Management**: \`autoFocus\` plus an overridden \`focus()\` method target the interactive element; focus ring styles are defined
+- **Keyboard Navigation**: Native button semantics support Enter/Space; anchor mode stays focusable via \`tabindex\` and activates with Enter
+- **Color Contrast**: Defaults aim for high contrast, though primary (~3.98:1) and success (~3.13:1) fall below WCAG 4.5:1 with white text
+- **Touch Targets**: Default min heights are 48px (medium), 36px (small), 56px (large) with mobile overrides of 44/32/52px
+- **Semantic HTML**: Uses \`<button>\` or \`<a role="button">\` and suppresses clicks when disabled or loading
 
 ## Styling
 
@@ -105,11 +106,11 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
     scientific-button {
       /* Spinner size and colors */
       --loading-spinner-size: 18px;
-      
+
       /* Primary variant spinner (white on colored background) */
       --loading-spinner-color: rgba(255, 255, 255, 0.3);
       --loading-spinner-active-color: #ffffff;
-      
+
       /* Outline/Ghost variant spinner (colored on transparent background) */
       --loading-spinner-color: rgba(0, 123, 255, 0.3);
       --loading-spinner-active-color: #007bff;
@@ -124,20 +125,20 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --button-min-height: 48px;
       --button-padding: 12px 24px;
       --button-gap: 8px;
-      
+
       /* Typography */
       --button-font-family: var(--scientific-font-family);
       --button-font-size: var(--scientific-text-base);
       --button-font-weight: 500;
       --button-line-height: 1.5;
-      
+
       /* Colors & Appearance */
       --button-bg-color: var(--scientific-primary-color);
       --button-color: #ffffff;
       --button-border: var(--scientific-border);
       --button-border-radius: var(--scientific-border-radius);
       --button-shadow: var(--scientific-shadow-sm);
-      
+
       /* Interactions */
       --button-transition: var(--scientific-transition);
       --button-hover-bg-color: var(--scientific-primary-hover);
@@ -147,47 +148,45 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --button-focus-border-color: var(--scientific-border-focus);
       --button-active-transform: translateY(0);
       --button-active-shadow: var(--scientific-shadow-sm);
-      
+
       /* Disabled States */
-      --button-disabled-bg-color: #e9ecef;
-      --button-disabled-color: #6c757d;
-      --button-disabled-border-color: #dee2e6;
-      
+      --button-disabled-bg-color: var(--scientific-bg-tertiary);
+      --button-disabled-color: var(--scientific-text-muted);
+      --button-disabled-border-color: var(--scientific-border-color);
+
       /* Variant Colors */
       --button-secondary-bg-color: var(--scientific-secondary-color);
-      --button-secondary-color: #ffffff;
-      --button-secondary-hover-bg-color: #545b62;
-      
+      --button-secondary-color: var(--scientific-text-primary);
+      --button-secondary-hover-bg-color: var(--scientific-bg-secondary);
+
       --button-outline-bg-color: transparent;
       --button-outline-color: var(--scientific-primary-color);
       --button-outline-border-color: var(--scientific-primary-color);
       --button-outline-hover-bg-color: var(--scientific-primary-color);
-      --button-outline-hover-color: #ffffff;
-      
+      --button-outline-hover-color: var(--scientific-bg-primary);
+
       --button-ghost-bg-color: transparent;
       --button-ghost-color: var(--scientific-primary-color);
       --button-ghost-border-color: transparent;
-      --button-ghost-hover-bg-color: rgba(0, 123, 255, 0.1);
-      
+      --button-ghost-hover-bg-color: color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
+
       --button-danger-bg-color: var(--scientific-danger-color);
-      --button-danger-color: #ffffff;
-      --button-danger-hover-bg-color: #c82333;
-      
+      --button-danger-color: var(--scientific-bg-primary);
+      --button-danger-hover-bg-color: color-mix(in srgb, var(--scientific-danger-color) 90%, black);
+
       --button-success-bg-color: var(--scientific-success-color);
-      --button-success-color: #ffffff;
-      --button-success-hover-bg-color: #218838;
-      
+      --button-success-color: var(--scientific-bg-primary);
+      --button-success-hover-bg-color: color-mix(in srgb, var(--scientific-success-color) 90%, black);
+
       /* Size Variants */
       --button-small-font-size: var(--scientific-text-sm);
       --button-small-padding: 8px 16px;
       --button-small-min-height: 36px;
-      
+
       --button-large-font-size: var(--scientific-text-lg);
       --button-large-padding: 16px 24px;
       --button-large-min-height: 56px;
-      
-      /* Loading */
-      
+
       /* Mobile Responsive */
       --button-mobile-font-size: var(--scientific-text-base);
       --button-mobile-min-height: 44px;
@@ -217,7 +216,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --scientific-danger-color: #dc3545;
       --scientific-warning-color: #ffc107;
       --scientific-info-color: #17a2b8;
-      
+
       /* Typography */
       --scientific-font-family: system-ui, -apple-system, sans-serif;
       --scientific-text-xs: 12px;
@@ -226,7 +225,7 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --scientific-text-lg: 18px;
       --scientific-text-xl: 20px;
       --scientific-text-2xl: 24px;
-      
+
       /* Spacing */
       --scientific-spacing-xs: 4px;
       --scientific-spacing-sm: 8px;
@@ -234,21 +233,21 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
       --scientific-spacing-lg: 16px;
       --scientific-spacing-xl: 20px;
       --scientific-spacing-2xl: 24px;
-      
+
       /* Borders & Radius */
       --scientific-border-radius: 8px;
       --scientific-border-radius-lg: 12px;
-      --scientific-border: 2px solid #e5e7eb;
+      --scientific-border: 1px solid #e5e7eb;
       --scientific-border-color: #e5e7eb;
       --scientific-border-hover: #d1d5db;
       --scientific-border-focus: #007bff;
-      
+
       /* Shadows */
       --scientific-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
       --scientific-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       --scientific-shadow-lg: 0 8px 12px rgba(0, 0, 0, 0.15);
       --scientific-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
-      
+
       /* Transitions */
       --scientific-transition: all 0.2s ease-in-out;
       --scientific-transition-fast: all 0.15s ease-out;
