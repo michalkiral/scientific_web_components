@@ -202,6 +202,22 @@ export const Default: Story = {
     showToolbar: true,
     theme: 'default',
   },
+  render: (args) => html`
+    <div
+      style="
+        width: 1200px;
+        padding-top: 24px;
+      "
+    >
+      <scientific-network
+        title=${args.title}
+        .data=${args.data}
+        theme=${args.theme}
+        ?interactive=${args.interactive}
+        ?showToolbar=${args.showToolbar}
+      ></scientific-network>
+    </div>
+  `,
 };
 
 export const ProteinInteraction: Story = {

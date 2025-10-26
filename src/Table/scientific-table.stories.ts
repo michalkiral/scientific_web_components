@@ -474,6 +474,28 @@ export const Default: Story = {
     showSearch: true,
     searchPlaceholder: 'Search compounds...',
   },
+  render: (args) => html`
+    <div
+      style="
+        width: 1200px;
+        padding-top: 24px;
+        margin: 0 auto;
+      "
+    >
+      <scientific-table
+        title=${args.title}
+        subtitle=${args.subtitle}
+        .columns=${args.columns}
+        .data=${args.data}
+        theme=${args.theme}
+        .sortable=${args.sortable}
+        .pagination=${args.pagination}
+        .pageSize=${args.pageSize}
+        .showSearch=${args.showSearch}
+        searchPlaceholder=${args.searchPlaceholder}
+      ></scientific-table>
+    </div>
+  `,
   parameters: {
     docs: {
       description: {
