@@ -58,12 +58,12 @@ A **themed**, **accessible** form surface with built-in loading, messaging, and 
 
 ## Basic Usage
 
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-form
   title="User Registration"
   subtitle="Create your account"
-  @form-submit-success="\\\${handleSuccess}"
-  @form-submit-error="\\\${handleError}"
+  @form-submit-success="\${handleSuccess}"
+  @form-submit-error="\${handleError}"
 >
   <div style="display: flex; flex-direction: column; gap: 16px;">
     <input type="text" name="name" placeholder="Full Name" required />
@@ -71,15 +71,15 @@ A **themed**, **accessible** form surface with built-in loading, messaging, and 
     <input type="password" name="password" placeholder="Password" required />
   </div>
 </scientific-form>
-\\\`\\\`\\\`
+\`\`\`
 
 ## Advanced Usage
 
 **With async submit handler:**
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-form
   title="Data Upload"
-  .onSubmit="\\\${async (formData) => {
+  .onSubmit="\${async (formData) => {
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData
@@ -88,11 +88,11 @@ A **themed**, **accessible** form surface with built-in loading, messaging, and 
   }}"
   enctype="multipart/form-data"
   showProgress
-  .progress="\\\${uploadProgress}"
+  .progress="\${uploadProgress}"
 >
   <input type="file" name="dataFile" accept=".csv,.json" required />
 </scientific-form>
-\\\`\\\`\\\`
+\`\`\`
 
 ---
 

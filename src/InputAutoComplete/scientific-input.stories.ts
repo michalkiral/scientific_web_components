@@ -65,31 +65,31 @@ A **highly configurable**, **accessible** autocomplete/combobox built on the sci
 
 ## Basic Usage
 
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-input
   label="Search Countries"
   placeholder="Type to search countries..."
-  .options="\\\${[
+  .options="\${[
     {label: 'United States', value: 'us'},
     {label: 'United Kingdom', value: 'uk'},
     {label: 'Canada', value: 'ca'}
   ]}"
   clearable
-  @option-selected="\\\${handleSelection}"
+  @option-selected="\${handleSelection}"
 ></scientific-input>
-\\\`\\\`\\\`
+\`\`\`
 
 **Advanced Usage with Custom Values:**
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-input
   label="Tags"
   placeholder="Type to add a tag..."
   allowCustomValues
-  .options="\\\${existingTags}"
-  @custom-value-selected="\\\${handleCustomValue}"
-  @option-selected="\\\${handleTagSelection}"
+  .options="\${existingTags}"
+  @custom-value-selected="\${handleCustomValue}"
+  @option-selected="\${handleTagSelection}"
 ></scientific-input>
-\\\`\\\`\\\`
+\`\`\`
 
 ## Features
 
@@ -125,7 +125,7 @@ Each option object can include:
 Use CSS variables to customize appearance. Here are the most commonly used variables:
 
 **Basic Styling:**
-\\\`\\\`\\\`css
+\`\`\`css
 scientific-input {
   --input-width: 100%;
   --input-border: var(--scientific-border);
@@ -135,11 +135,11 @@ scientific-input {
   --input-focus-border-color: var(--scientific-border-focus);
   --input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
 }
-\\\`\\\`\\\`
+\`\`\`
 
 **Complete Variable List:**
 
-\\\`\\\`\\\`css
+\`\`\`css
 scientific-input {
   /* Dimensions */
   --input-width: 100%;
@@ -181,7 +181,7 @@ scientific-input {
   --input-dropdown-max-width: none;
   --input-dropdown-shadow: var(--scientific-shadow);
 }
-\\\`\\\`\\\`
+\`\`\`
         `,
       },
     },

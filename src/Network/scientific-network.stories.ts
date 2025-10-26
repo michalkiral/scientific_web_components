@@ -41,7 +41,7 @@ An **interactive**, **exportable** Cytoscape.js surface for visualising complex 
 - \`onExport\` - Optional callback that overrides the built-in export handler
 
 Default control configuration:
-\\\`\\\`\\\`ts
+\`\`\`ts
 controls = {
   enableZoom: true,
   enablePan: true,
@@ -52,7 +52,7 @@ controls = {
   enableRenaming: false,
   enableRemoval: false,
 };
-\\\`\\\`\\\`
+\`\`\`
 
 ## Events
 
@@ -70,19 +70,19 @@ controls = {
 
 ## Basic Usage
 
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-network
   title="Protein Interaction Network"
-  .data="\\\${networkData}"
-  .controls="\\\${{ enableNodeCreation: true, enableEdgeCreation: true }}"
+  .data="\${networkData}"
+  .controls="\${{ enableNodeCreation: true, enableEdgeCreation: true }}"
   showInfo
   showMetrics
 ></scientific-network>
-\\\`\\\`\\\`
+\`\`\`
 
 ## Data Model
 
-\\\`\\\`\\\`ts
+\`\`\`ts
 interface NetworkNode {
   id: string;
   label?: string;
@@ -106,7 +106,7 @@ interface NetworkData {
   nodes: NetworkNode[];
   edges: NetworkEdge[];
 }
-\\\`\\\`\\\`
+\`\`\`
 
 ## Features
 
@@ -128,7 +128,7 @@ interface NetworkData {
 
 Use CSS variables to customise layout and overlays. Common overrides:
 
-\\\`\\\`\\\`css
+\`\`\`css
 scientific-network {
   --network-width: 100%;
   --network-height: 480px;
@@ -141,7 +141,7 @@ scientific-network .network-info {
   /* inherits scientific tokens but can be themed */
   box-shadow: var(--scientific-shadow-lg);
 }
-\\\`\\\`\\\`
+\`\`\`
         `,
 
       },

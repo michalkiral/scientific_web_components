@@ -57,13 +57,13 @@ A **theme-aware**, **exportable** Chart.js surface for scientific dashboards wit
 
 ## Basic Usage
 
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-graph
   title="Sample Scientific Data"
   subtitle="Basic line chart with default settings"
   type="line"
-  .labels="\\\${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}"
-  .datasets="\\\${[{
+  .labels="\${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}"
+  .datasets="\${[{
     label: 'Sample Data',
     data: [12, 19, 3, 5, 2, 3]
   }]}"
@@ -71,23 +71,23 @@ A **theme-aware**, **exportable** Chart.js surface for scientific dashboards wit
   showLegend
   showToolbar
 ></scientific-graph>
-\\\`\\\`\\\`
+\`\`\`
 
 **Advanced Usage with Export:**
-\\\`\\\`\\\`html
+\`\`\`html
 <scientific-graph
   title="Temperature Data"
   type="line"
-  .labels="\\\${monthLabels}"
-  .datasets="\\\${temperatureDatasets}"
+  .labels="\${monthLabels}"
+  .datasets="\${temperatureDatasets}"
   showToolbar
   showExportButtons
-  .exportFormats="\\\${['png', 'pdf']}"
+  .exportFormats="\${['png', 'pdf']}"
   xAxisTitle="Month"
   yAxisTitle="Temperature (degC)"
-  @graph-exported="\\\${handleExport}"
+  @graph-exported="\${handleExport}"
 ></scientific-graph>
-\\\`\\\`\\\`
+\`\`\`
 
 ## Features
 
