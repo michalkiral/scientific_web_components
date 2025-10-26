@@ -27,39 +27,41 @@ const meta: Meta<ScientificInput> = {
         component: `
 # Scientific Input
 
-A **highly customizable**, **accessible** autocomplete input component for scientific web apps with advanced features.
+A **highly configurable**, **accessible** autocomplete/combobox built on the scientific design system.
 
 ---
 
 ## Props
 
-- \`label\` — Label text displayed above the input
-- \`placeholder\` — Placeholder text shown when input is empty  
-- \`value\` — Current value of the input
-- \`options\` — Array of available options for autocomplete
-- \`disabled\` — Whether the input is disabled
-- \`required\` — Whether the input is required (shows asterisk)
-- \`clearable\` — Whether to show a clear button when input has value
-- \`state\` — Visual state: default, error, success
-- \`helperText\` — Helper text displayed below the input
-- \`errorMessage\` — Error message displayed when state is error
-- \`successMessage\` — Success message displayed when state is success
-- \`icon\` — Icon displayed on the right side (emoji or text)
-- \`allowCustomValues\` — Whether users can add custom values not in options
-- \`maxLength\` — Maximum length of input value (-1 for unlimited)
-- \`noOptionsText\` — Text shown when no options match the search
-- \`autoComplete\` — Whether to enable autocomplete functionality
-- \`autoFocus\` — Whether to focus the input on mount
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`label\` - Text label rendered above the field
+- \`placeholder\` - Placeholder text when no value is present
+- \`value\` - Current value (kept in sync with the rendered input)
+- \`type\` - Input type (default \`text\`; supports scientific \`InputType\` union)
+- \`options\` - Array of \`DropdownOption\` objects (label, value, optional \`disabled\`, optional \`group\`) used for autocomplete
+- \`disabled\` - Disables interaction and styling
+- \`required\` - Marks the label and adds required styling
+- \`clearable\` - Shows the clear button when a value exists (default: true)
+- \`state\` - Visual state: \`default\`, \`error\`, or \`success\`
+- \`helperText\` - Supporting helper copy below the field
+- \`errorMessage\` - Message rendered when \`state='error'\`
+- \`successMessage\` - Message rendered when \`state='success'\`
+- \`icon\` - Optional trailing icon/text rendered when the clear button is hidden
+- \`allowCustomValues\` - Allows selecting values not present in \`options\`
+- \`maxLength\` - Maximum input length (\`-1\` means unlimited)
+- \`noOptionsText\` - Message shown when no results match
+- \`autoComplete\` - Enables dropdown filtering, hinting, and auto-open behaviour (default: true)
+- \`autoFocus\` - Focuses the input after the component renders
 
 ## Events
 
-- \`input\` — Fired when the input value changes
-- \`change\` — Fired when the input value changes
-- \`option-selected\` — Fired when an option is selected from dropdown
-- \`custom-value-selected\` — Fired when a custom value is added
-- \`clear\` — Fired when the input is cleared
-- \`focus\` — Fired when the input gains focus
-- \`blur\` — Fired when the input loses focus
+- \`input\` - detail: {value}; fired on every keystroke (bubbles, composed)
+- \`change\` - detail: {value, label?}; emitted alongside other selection/clear events for form integration (bubbles, composed)
+- \`option-selected\` - detail: {option, value, label}; fired when a dropdown option is chosen
+- \`custom-value-selected\` - detail: {value}; fired when a custom value is accepted
+- \`option-cleared\` - detail: {value: '', label: '', timestamp}; fired after the clear button resets the field
+- \`focus\` - detail: {value}; emitted when the input gains focus
+- \`blur\` - detail: {value}; emitted after focus leaves the input
 
 ## Basic Usage
 
@@ -91,28 +93,32 @@ A **highly customizable**, **accessible** autocomplete input component for scien
 
 ## Features
 
-- **Autocomplete functionality** with customizable options
-- **State management** (default, error, success) with visual feedback
-- **Clearable input** with optional clear button
-- **Custom value support** allowing users to add new options
-- **Grouped options** for better organization
-- **Keyboard navigation** with arrow keys and Enter/Escape support
-- **Tab autocompletion** for quick selection
-- **Length validation** with max length constraints
-- **Form integration** with proper form submission support
-- **Responsive design** that works on all devices
-- **Highly customizable** with CSS custom properties
+- **Debounced Autocomplete**: Filters options as you type (150 ms) and auto-opens the list when appropriate
+- **Predictive Hinting**: Displays an inline completion hint and accepts it with Tab
+- **Keyboard Navigation**: Dropdown controller handles arrow keys, Enter, Escape, and Tab selection semantics
+- **Custom Values & Clearing**: Optional custom-value flow plus a reusable clear button that focuses the field again
+- **Stateful Messaging**: Helper, error, and success copy share scientific message styling and roles
+- **Grouped Options**: Supports grouped datasets via each option's \`group\` field
+- **Theme Ready**: Integrates with design-system themes and shared typography/spacing tokens
 
 ## Accessibility Features
 
-- **ARIA Labels**: Comprehensive labeling for screen readers
-- **Keyboard Navigation**: Full keyboard support with arrow keys, Enter, Escape, Tab
-- **Screen Reader Support**: Proper announcements for option selection and changes
-- **Focus Management**: Logical focus flow and visible focus indicators
-- **Role Attributes**: Correct ARIA roles for combobox functionality
-- **Live Regions**: Dynamic content updates announced to screen readers
-- **Error Handling**: Accessible error messages and validation states
-- **Required Field Indicators**: Clear visual and programmatic required field marking
+- **Combobox Semantics**: Uses \`role="combobox"\`, \`aria-expanded\`, \`aria-autocomplete\`, and \`aria-haspopup\` for assistive tech
+- **Visible Feedback**: Required indicator, state styling, and helper/error messages announced with appropriate roles
+- **Keyboard-First Design**: All interactions are reachable with the keyboard; Tab accepts hints or closes the list
+- **Live Hint Layer**: Autocomplete hint renders as plain text so screen readers echo forthcoming input
+- **Consistent Focus**: Clear actions return focus to the input and dropdown closing preserves context
+
+## Option Shape
+
+Each option object can include:
+
+    {
+      label: string;    // Visible text
+      value: string;    // Submitted value
+      disabled?: boolean;
+      group?: string;   // Optional grouping header
+    }
 
 ## Styling
 
@@ -122,137 +128,58 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
 \`\`\`css
 scientific-input {
   --input-width: 100%;
-  --input-border: 2px solid #e5e7eb;
-  --input-border-radius: 8px;
-  --input-bg-color: #ffffff;
-  --input-padding: 12px 16px;
-  --input-font-size: 16px;
-  --input-focus-border-color: #007bff;
-  --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  --input-border: var(--scientific-border);
+  --input-border-radius: var(--scientific-border-radius);
+  --input-padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
+  --input-font-size: var(--scientific-text-base);
+  --input-focus-border-color: var(--scientific-border-focus);
+  --input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
 }
 \`\`\`
 
 **Complete Variable List:**
 
-All CSS custom properties available for customization with their default values:
-
 \`\`\`css
 scientific-input {
-  /* Container & Layout */
+  /* Dimensions */
   --input-width: 100%;
   --input-min-width: auto;
   --input-max-width: none;
+  --input-min-height: 48px;
   --input-container-z-index: 1;
-  
-  /* Label Styling */
+
+  /* Labels */
+  --input-label-color: var(--scientific-text-primary);
   --input-label-margin-bottom: var(--scientific-spacing-sm);
-  --input-label-font-size: var(--scientific-text-sm);
-  --input-label-font-weight: 500;
-  --input-label-color: #374151;
-  
-  /* Main Input Field Styling */
-  --input-padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
+
+  /* Field */
+  --input-font-size: var(--scientific-text-base);
   --input-border: var(--scientific-border);
   --input-border-radius: var(--scientific-border-radius);
-  --input-bg-color: #ffffff;
-  --input-color: #374151;
-  --input-font-size: var(--scientific-text-base);
-  --input-transition: var(--scientific-transition);
+  --input-bg-color: var(--scientific-bg-primary);
+  --input-color: var(--scientific-text-secondary);
   --input-shadow: var(--scientific-shadow-sm);
-  --input-min-height: 48px;
-  
-  /* Hover States */
+  --input-transition: var(--scientific-transition);
+
+  /* States */
   --input-hover-border-color: var(--scientific-border-hover);
-  --input-hover-shadow: var(--scientific-shadow);
-  
-  /* Focus States */
   --input-focus-border-color: var(--scientific-border-focus);
-  --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-  
-  /* Disabled States */
-  --input-disabled-bg-color: #f9fafb;
-  --input-disabled-border-color: #e5e7eb;
-  --input-disabled-color: #9ca3af;
-  
-  /* Error States */
+  --input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--scientific-primary-color) 10%, transparent);
+  --input-disabled-bg-color: var(--scientific-bg-tertiary);
+  --input-disabled-border-color: var(--scientific-border-color);
+  --input-disabled-color: var(--scientific-text-muted);
   --input-error-border-color: var(--scientific-danger-color);
-  --input-error-color: var(--scientific-danger-color);
-  --input-error-bg-color: #fef2f2;
-  
-  /* Success States */
   --input-success-border-color: var(--scientific-success-color);
-  --input-success-color: var(--scientific-success-color);
-  --input-success-bg-color: #f0fdf4;
-  
-  /* Placeholder */
-  --input-placeholder-color: #9ca3af;
-  
-  /* Icon Styling */
-  --input-icon-color: #6b7280;
+
+  /* Icons & Clear Button */
+  --input-icon-color: var(--scientific-text-muted);
   --input-icon-size: 20px;
-  
-  /* Clear Button */
-  --input-clear-color: #6b7280;
-  --input-clear-hover-color: var(--scientific-danger-color);
-  --input-clear-size: 18px;
-  
-  /* Autocomplete Dropdown */
+  --input-clear-size: 20px;
+
+  /* Dropdown */
   --input-dropdown-min-width: 100%;
   --input-dropdown-max-width: none;
-  --input-dropdown-border: var(--scientific-border);
-  --input-dropdown-border-radius: 0 0 var(--scientific-border-radius) var(--scientific-border-radius);
-  --input-dropdown-bg-color: #ffffff;
-  --input-dropdown-shadow: var(--scientific-shadow-lg);
-  --input-dropdown-z-index: 1000;
-  --input-dropdown-max-height: 200px;
-  --input-dropdown-animation: slideDown 0.15s ease-out;
-  
-  /* Autocomplete Options */
-  --input-option-padding: var(--scientific-spacing-md) var(--scientific-spacing-lg);
-  --input-option-border: 1px solid #f3f4f6;
-  --input-option-color: #374151;
-  --input-option-font-size: var(--scientific-text-base);
-  --input-option-hover-bg-color: #f9fafb;
-  --input-option-selected-bg-color: #eff6ff;
-  --input-option-selected-color: var(--scientific-primary-color);
-  --input-option-selected-font-weight: 500;
-  --input-option-highlighted-bg-color: #f3f4f6;
-  --input-option-disabled-color: #9ca3af;
-  --input-option-disabled-bg-color: #f9fafb;
-  
-  /* Group Headers */
-  --input-group-header-padding: var(--scientific-spacing-sm) var(--scientific-spacing-lg);
-  --input-group-header-font-size: var(--scientific-text-xs);
-  --input-group-header-font-weight: 600;
-  --input-group-header-color: #6b7280;
-  --input-group-header-bg-color: #f9fafb;
-  --input-group-header-border: 1px solid #e5e7eb;
-  
-  /* Helper Text */
-  --input-helper-font-size: var(--scientific-text-sm);
-  --input-helper-color: #6b7280;
-  --input-helper-margin-top: var(--scientific-spacing-xs);
-  
-  /* Error/Success Messages */
-  --input-message-font-size: var(--scientific-text-sm);
-  --input-message-margin-top: var(--scientific-spacing-xs);
-  --input-error-message-color: var(--scientific-danger-color);
-  --input-success-message-color: var(--scientific-success-color);
-  
-  /* Autocomplete Hint */
-  --input-hint-color: #9ca3af;
-  --input-hint-font-style: italic;
-  
-  /* No Options State */
-  --input-no-options-padding: var(--scientific-spacing-lg);
-  --input-no-options-color: #9ca3af;
-  --input-no-options-font-style: italic;
-  
-  /* Mobile Responsive */
-  --input-mobile-font-size: var(--scientific-text-base);
-  --input-mobile-min-height: 44px;
-  --input-mobile-max-height: 150px;
-  --input-mobile-option-padding: var(--scientific-spacing-sm) var(--scientific-spacing-md);
+  --input-dropdown-shadow: var(--scientific-shadow);
 }
 \`\`\`
         `,

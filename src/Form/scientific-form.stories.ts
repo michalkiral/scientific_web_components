@@ -16,43 +16,45 @@ const meta: Meta = {
         component: `
 # Scientific Form
 
-A **modern**, **accessible** form component for scientific web apps with advanced features and professional styling.
+A **themed**, **accessible** form surface with built-in loading, messaging, and layout controls for scientific workflows.
 
 ---
 
 ## Props
 
-- \`title\` — Form title text
-- \`subtitle\` — Form subtitle/description text
-- \`submitLabel\` — Submit button text
-- \`cancelLabel\` — Cancel button text
-- \`loadingLabel\` — Loading state text
-- \`submitVariant\` — Submit button variant
-- \`cancelVariant\` — Cancel button variant
-- \`isLoading\` — Shows loading state
-- \`disabled\` — Disables the form
-- \`showCancel\` — Shows/hides cancel button
-- \`showProgress\` — Shows progress bar
-- \`progress\` — Progress percentage (0-100)
-- \`errorMessage\` — Error message to display
-- \`successMessage\` — Success message to display
-- \`footerLayout\` — Footer button alignment: end, start, center, space-between, full-width
-- \`autoFocus\` — Auto-focuses first input
-- \`method\` — Form HTTP method: get, post
-- \`action\` — Form action URL
-- \`enctype\` — Form encoding type: application/x-www-form-urlencoded, multipart/form-data, text/plain
-- \`noValidate\` — Disables HTML5 validation
-- \`onSubmit\` — Async callback function called on form submission (receives FormData)
-- \`onCancel\` — Callback function called when cancel button is clicked
-- \`onReset\` — Callback function called when form is reset
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`title\` - Heading text rendered in the surface header
+- \`subtitle\` - Supporting description text beneath the title
+- \`showToolbar\` - Toggles the optional toolbar area inherited from the surface base
+- \`submitLabel\` - Primary action label (default: "Submit")
+- \`cancelLabel\` - Secondary action label when \`showCancel\` is true (default: "Cancel")
+- \`loadingLabel\` - Replaces the submit label while \`isLoading\` is true (default: "Processing...")
+- \`submitVariant\` - Submit button variant: primary, secondary, outline, ghost, danger, success
+- \`cancelVariant\` - Cancel button variant: primary, secondary, outline, ghost, danger, success (default: outline)
+- \`isLoading\` - Shows the loading overlay and toggles button states; automatically managed during submission
+- \`disabled\` - Disables the surface and keeps the submit button inactive
+- \`showCancel\` - Displays the default cancel button (default: true)
+- \`showProgress\` - Renders the progress bar above the form (default: false)
+- \`progress\` - Progress value (0-100) used to size the progress bar; reset to 0 on form reset
+- \`errorMessage\` - Error text shown with \`role="alert"\`
+- \`successMessage\` - Success text shown with \`role="status"\`
+- \`footerLayout\` - Footer alignment: end, start, center, space-between, full-width
+- \`autoFocus\` - Focuses the first light-DOM input/select/textarea on first update
+- \`method\` - Form method attribute: POST, GET, or dialog (case-insensitive)
+- \`action\` - Form action URL used when no \`onSubmit\` handler is provided
+- \`enctype\` - Encoding type: application/x-www-form-urlencoded, multipart/form-data, text/plain
+- \`noValidate\` - Skips HTML5 validation and sets the \`novalidate\` attribute
+- \`onSubmit\` - Optional async/sync callback invoked with \`FormData\`; awaited before success/error events fire
+- \`onCancel\` - Optional callback run after the cancel event dispatches
+- \`onReset\` - Optional callback run after the reset event dispatches
 
 ## Events
 
-- \`form-submit-start\` — Fired when form submission starts
-- \`form-submit-success\` — Fired when form submission succeeds
-- \`form-submit-error\` — Fired when form submission fails
-- \`form-cancel\` — Fired when cancel button is clicked
-- \`form-reset\` — Fired when form is reset
+- \`form-submit-start\` - Fires before submission begins; detail: {formData, originalEvent}; bubbles and composes
+- \`form-submit-success\` - Fires after a successful submit; detail: {formData}; bubbles and composes
+- \`form-submit-error\` - Fires when the submit handler throws or rejects; detail: {error, formData}; bubbles and composes
+- \`form-cancel\` - Fires when the cancel action is triggered; detail: {timestamp}; bubbles and composes
+- \`form-reset\` - Fires after the form is reset; detail: {timestamp}; bubbles and composes
 
 ## Basic Usage
 
@@ -96,17 +98,16 @@ A **modern**, **accessible** form component for scientific web apps with advance
 
 ## Features
 
-- **Modern Design**: Clean, professional styling with hover effects and transitions
-- **Loading States**: Built-in loading overlay and button states with customizable loading text
-- **Progress Tracking**: Optional progress bar for multi-step forms with percentage display
-- **Error Handling**: Built-in error and success message display with ARIA announcements
-- **Flexible Layout**: Multiple footer layouts (end, start, center, space-between, full-width)
-- **Form Integration**: Native HTML form features with custom async enhancement
-- **Responsive Design**: Mobile-friendly responsive design with touch optimization  
-- **Accessibility**: ARIA attributes, screen reader support, and keyboard navigation
-- **Auto Focus**: Optional automatic focus on first form input
-- **Validation**: HTML5 validation with optional disable and custom error display
-- **Scientific Design System**: Full integration with design tokens and shared styles
+- **Design System Surface**: Inherits header, toolbar, theming, and shared container styling from \`ScientificSurfaceBase\`
+- **Built-in Loading**: \`isLoading\` controls an overlay spinner and swaps the submit label to \`loadingLabel\`
+- **Async Submission Flow**: Waits on \`onSubmit\`, clears prior messages, emits start/success/error events, and falls back to a native submission when \`action\` is set
+- **Progress Indicator**: \`showProgress\` renders an accessible progress bar bound to \`progress\` and resets during form resets
+- **Messaging**: Managed \`errorMessage\` and \`successMessage\` outputs use alert/status roles and default success text when none is provided
+- **Footer Layout & Slots**: \`footerLayout\` adjusts alignment/stacking and the \`footer\` slot lets you replace or extend the action buttons
+- **Form Integration**: Supports native \`method\`, \`action\`, \`enctype\`, \`novalidate\`, and honors built-in reset/submit semantics
+- **Accessibility**: \`<form role="form">\` with \`aria-busy\`, progressbar semantics, and bubbling events for cross-component coordination
+- **Auto Focus & Disabled States**: \`autoFocus\` targets the first focusable field; \`disabled\` dims the container and keeps actions inactive
+- **Responsive Layout**: Footer actions stack vertically on narrow viewports and stretch when \`footerLayout="full-width"\`
 
 ## Styling
 
@@ -114,11 +115,9 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
 
 **Basic Styling:**
     scientific-form {
-      --form-bg-color: #ffffff;
-      --form-border: 2px solid #e5e7eb;
-      --form-border-radius: 12px;
-      --form-padding: 24px;
-      --form-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --form-max-width: 720px;
+      --form-footer-justify: space-between;
+      --form-progress-color: #2563eb;
     }
 
 **Complete Variable List:**
@@ -130,12 +129,7 @@ All CSS custom properties available for customization with their default values:
       --form-max-width: 600px;
       --form-width: 100%;
       --form-min-height: auto;
-      
-      /* Header Styling */
-      --form-header-border: 1px solid #f3f4f6;
-      --form-title-font-size: var(--scientific-text-2xl);
-      --form-subtitle-font-size: var(--scientific-text-base);
-      
+
       /* Content Layout */
       --form-content-gap: var(--scientific-spacing-lg);
       --form-section-gap: var(--scientific-spacing-md);
@@ -144,18 +138,25 @@ All CSS custom properties available for customization with their default values:
       --form-section-title-color: #374151;
       --form-section-title-padding-bottom: var(--scientific-spacing-xs);
       --form-section-title-border: 1px solid #f3f4f6;
-      
+
       /* Footer Layout */
       --form-footer-justify: flex-end;
       --form-footer-gap: var(--scientific-spacing-md);
       --form-footer-padding-top: var(--scientific-spacing-lg);
       --form-footer-border: 1px solid #f3f4f6;
-      
+
       /* Progress Bar */
       --form-progress-height: var(--scientific-spacing-xs);
       --form-progress-bg-color: #f3f4f6;
       --form-progress-color: var(--scientific-primary-color);
       --form-progress-border-radius: var(--scientific-border-radius);
+
+      /* ScientificSurfaceBase Container */
+      --container-bg-color: var(--scientific-bg-primary);
+      --container-border: var(--scientific-border);
+      --container-border-radius: var(--scientific-border-radius-lg);
+      --container-padding: var(--scientific-spacing-2xl);
+      --container-shadow: var(--scientific-shadow);
     }
         `,
       },

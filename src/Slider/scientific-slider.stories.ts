@@ -26,242 +26,117 @@ const meta: Meta<ScientificSlider> = {
         component: `
 # Scientific Slider
 
-A **highly customizable**, **accessible** slider component for scientific web apps with advanced features.
+An **interactive**, **accessible** single-value slider built for the scientific design system.
 
 ---
 
 ## Props
 
-- \`label\` — Label text displayed above the slider
-- \`description\` — Description text displayed below the label
-- \`theme\` — Theme variant: default, dark, scientific
-- \`min\` — Minimum value of the slider range
-- \`max\` — Maximum value of the slider range
-- \`step\` — Step increment for value changes
-- \`value\` — Current value of the slider
-- \`disabled\` — Whether the slider is disabled
-- \`required\` — Whether the slider is required (shows asterisk)
-- \`showTooltip\` — Whether to show tooltip on hover/drag
-- \`showValue\` — Whether to show current value in header
-- \`showRangeLabels\` — Whether to show min/max labels below slider
-- \`marks\` — Array of mark objects with value and optional label
-- \`unit\` — Unit suffix for displayed values (e.g., "px", "%", "degC")
-- \`helperText\` — Helper text displayed below the slider
-- \`errorMessage\` — Error message displayed when state is error
-- \`state\` — Visual state: default, error
-- \`formatValue\` — Custom function to format displayed values
-- \`onValueChange\` — Callback function fired when value changes
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`label\` - Text label rendered above the slider
+- \`description\` - Optional helper text displayed under the label
+- \`min\` - Minimum value for the range (default: 0)
+- \`max\` - Maximum value for the range (default: 100)
+- \`step\` - Increment applied when the value changes (default: 1)
+- \`value\` - Current numeric value (clamped between \`min\` and \`max\`)
+- \`disabled\` - Disables pointer and keyboard interaction
+- \`required\` - Adds required styling to the label
+- \`showTooltip\` - Toggles the floating value tooltip while hovering or dragging (default: true)
+- \`showValue\` - Renders the formatted value in the header actions (default: true)
+- \`showRangeLabels\` - Displays min/max labels beneath the track (default: true)
+- \`marks\` - Array of \`{value, label?}\` objects rendered along the track
+- \`unit\` - Optional unit suffix appended in the formatted display
+- \`helperText\` - Additional helper copy shown below the slider
+- \`errorMessage\` - Message rendered when \`state\` is set to \`error\`
+- \`state\` - Visual state: \`default\` or \`error\`
+- \`formatValue\` - Optional formatter \`(value: number) => string\` used for display
+- \`onValueChange\` - Optional callback invoked after a value update
 
 ## Events
 
-- \`value-changed\` — Fired when value changes with detail.value
-- \`change\` — Standard change event for form integration
+- \`value-changed\` - detail: {value}; fired whenever the slider value changes (bubbles, composed)
+- \`change\` - detail: {value}; mirrored event for form integrations (bubbles, composed)
 
 ## Basic Usage
 
 \`\`\`html
 <scientific-slider
-  label="Volume Control"
-  description="Adjust the volume level"
+  label="Volume"
+  description="Adjust the playback level"
   min="0"
   max="100"
-  step="1"
+  step="5"
   value="50"
   unit="%"
-  showValue
   showTooltip
+  showValue
   @value-changed="\${handleVolumeChange}"
 ></scientific-slider>
 \`\`\`
 
-**Advanced Usage with Marks:**
+**With Marks and Custom Formatting:**
 \`\`\`html
 <scientific-slider
-  label="Quality Setting"
+  label="Quality"
   min="0"
   max="4"
   step="1"
   value="2"
-  showValue
   .marks="\${[
     {value: 0, label: 'Low'},
     {value: 2, label: 'Medium'},
     {value: 4, label: 'High'}
   ]}"
-  .formatValue="\${(value) => qualityLabels[value]}"
+  .formatValue="\${(val) => qualityLabels[val] || String(val)}"
 ></scientific-slider>
+\`\`\`
+
+## Marks Shape
+
+\`\`\`ts
+interface SliderMark {
+  value: number;
+  label?: string;
+}
 \`\`\`
 
 ## Features
 
-- **Range Control**: Configurable min/max values with custom step sizes
-- **Visual States**: Error state with custom styling and validation messages
-- **Custom Marks**: Add labeled marks at specific values for reference points
-- **Tooltips**: Show current value on hover or during interaction
-- **Custom Formatting**: Format display values with units or custom functions
-- **Form Integration**: Standard form events and validation support
-- **Event Handling**: Comprehensive event system for value changes
-- **Responsive Design**: Optimized for mobile and desktop interactions
-- **Scientific Applications**: Perfect for parameter adjustment and data filtering
+- **Precision Control**: Configurable min, max, and step values with clamping of incoming updates
+- **Live Feedback**: Optional tooltip and header value display stay in sync with pointer and keyboard input
+- **Labeled Marks**: Render reference ticks with optional text using the \`marks\` array
+- **Custom Formatting**: Provide \`unit\` or a \`formatValue\` callback to tailor the displayed number
+- **Stateful Messaging**: Helper text and error messages reuse the scientific message styles
+- **Form Friendly**: Emits \`value-changed\` and \`change\` events and accepts programmatic updates via the \`value\` prop
+- **Theme Ready**: Inherits palette-aware tokens and respects scientific light, dark, and scientific themes
 
 ## Accessibility Features
 
-- **Keyboard Navigation**: Full keyboard support with arrow keys, Page Up/Down, Home/End
-- **ARIA Support**: Proper ARIA roles, labels, and value announcements
-- **Screen Reader Compatible**: Value changes announced to assistive technologies
-- **Focus Management**: Clear visual focus indicators and logical focus flow
-- **Touch Friendly**: Optimized touch targets for mobile devices
-- **High Contrast**: Supports high contrast mode and custom color schemes
-- **Reduced Motion**: Respects user preferences for reduced motion
-
-## Keyboard Navigation
-
-- **Arrow Keys**: Increase/decrease by step value
-- **Page Up/Down**: Increase/decrease by 10x step value
-- **Home/End**: Jump to min/max values
-- **Tab**: Focus navigation
+- **ARIA Slider Role**: The track container exposes role="slider" with \`aria-valuenow\`, \`aria-valuemin\`, \`aria-valuemax\`, and \`aria-valuetext\`
+- **Keyboard Support**: Left/Right and Up/Down arrows adjust the value by \`step\`
+- **Visible Focus**: Focus styling is applied to the track container for keyboard users
+- **Tooltip Awareness**: Tooltip content mirrors the formatted value for both mouse and keyboard interactions
 
 ## Styling
 
-Use CSS variables to customize appearance. Here are the most commonly used variables:
+Common CSS variables for customising appearance:
 
-**Basic Styling:**
-    scientific-slider {
-      --slider-width: 100%;
-      --slider-bg-color: #ffffff;
-      --slider-border: 2px solid #e5e7eb;
-      --slider-border-radius: 8px;
-      --slider-track-color: #f3f4f6;
-      --slider-fill-color: #007bff;
-      --slider-thumb-color: #007bff;
-      --slider-thumb-size: 20px;
-    }
-
-**Complete Variable List:**
-
-    scientific-slider {
-      /* Container & Layout */
-      --slider-width: 100%;
-      --slider-max-width: 100%;
-      --slider-height: auto;
-      --slider-padding: 16px;
-      --slider-margin: 0;
-      --slider-gap: 12px;
-      
-      /* Container Styling */
-      --slider-bg-color: #ffffff;
-      --slider-border: 2px solid #e5e7eb;
-      --slider-border-radius: 8px;
-      --slider-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-      --slider-transition: all 0.2s ease-in-out;
-      
-      /* Label & Description */
-      --slider-label-font-size: 14px;
-      --slider-label-font-weight: 500;
-      --slider-label-color: #374151;
-      --slider-label-margin-bottom: 6px;
-      --slider-description-font-size: 12px;
-      --slider-description-color: #6b7280;
-      
-      /* Value Display */
-      --slider-value-bg-color: #f3f4f6;
-      --slider-value-border: 1px solid #e5e7eb;
-      --slider-value-border-radius: 6px;
-      --slider-value-padding: 4px 8px;
-      --slider-value-font-size: 14px;
-      --slider-value-font-weight: 500;
-      --slider-value-color: #374151;
-      
-      /* Track Styling */
-      --slider-track-height: 8px;
-      --slider-track-color: #f3f4f6;
-      --slider-track-border-radius: 4px;
-      --slider-track-border: 1px solid #e5e7eb;
-      
-      /* Fill/Progress Styling */
-      --slider-fill-color: #007bff;
-      --slider-fill-height: 8px;
-      --slider-fill-border-radius: 4px;
-      --slider-fill-transition: width 0.1s ease-out;
-      
-      /* Thumb Styling */
-      --slider-thumb-size: 20px;
-      --slider-thumb-color: #007bff;
-      --slider-thumb-border: 3px solid #ffffff;
-      --slider-thumb-border-radius: 50%;
-      --slider-thumb-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      --slider-thumb-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      --slider-thumb-active-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
-      --slider-thumb-transition: all 0.2s ease-in-out;
-      
-      /* Hover States */
-      --slider-hover-thumb-color: #0056b3;
-      --slider-hover-fill-color: #0056b3;
-      
-      /* Focus States */
-      --slider-focus-thumb-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
-      --slider-focus-outline: none;
-      
-      /* Disabled States */
-      --slider-disabled-bg-color: #f9fafb;
-      --slider-disabled-border-color: #e5e7eb;
-      --slider-disabled-track-color: #f3f4f6;
-      --slider-disabled-fill-color: #9ca3af;
-      --slider-disabled-thumb-color: #9ca3af;
-      --slider-disabled-color: #9ca3af;
-      
-      /* Error States */
-      --slider-error-border-color: #ef4444;
-      --slider-error-fill-color: #ef4444;
-      --slider-error-thumb-color: #ef4444;
-      --slider-error-focus-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
-      
-      /* Range Labels */
-      --slider-range-label-font-size: 12px;
-      --slider-range-label-color: #6b7280;
-      --slider-range-label-margin-top: 8px;
-      
-      /* Marks */
-      --slider-mark-tick-size: 8px;
-      --slider-mark-tick-color: #d1d5db;
-      --slider-mark-tick-active-color: #007bff;
-      --slider-mark-label-font-size: 11px;
-      --slider-mark-label-color: #6b7280;
-      --slider-mark-label-margin-top: 4px;
-      
-      /* Tooltip */
-      --slider-tooltip-bg-color: #374151;
-      --slider-tooltip-color: #ffffff;
-      --slider-tooltip-border-radius: 4px;
-      --slider-tooltip-padding: 4px 8px;
-      --slider-tooltip-font-size: 12px;
-      --slider-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      --slider-tooltip-z-index: 1000;
-      
-      /* Helper Text */
-      --slider-helper-font-size: 12px;
-      --slider-helper-color: #6b7280;
-      --slider-helper-margin-top: 6px;
-      
-      /* Error Messages */
-      --slider-error-message-color: #dc2626;
-      --slider-error-message-font-size: 12px;
-      --slider-error-message-margin-top: 6px;
-      
-      /* Mobile Responsive */
-      --slider-mobile-thumb-size: 22px;
-      --slider-mobile-track-height: 10px;
-      --slider-mobile-padding: 16px;
-    }
-
-## Use Cases
-
-- Parameter adjustment in scientific simulations
-- Range selection for data filtering
-- Volume/intensity controls
-- Progress indicators with user control
-- Configuration sliders in dashboards
+\`\`\`css
+scientific-slider {
+  --slider-width: 100%;
+  --slider-max-width: 100%;
+  --slider-track-height: 8px;
+  --slider-track-color: var(--scientific-border-color);
+  --slider-fill-color: var(--scientific-primary-color);
+  --slider-thumb-size: 20px;
+  --slider-thumb-color: var(--scientific-primary-color);
+  --slider-value-bg-color: var(--scientific-bg-secondary);
+  --slider-value-color: var(--scientific-text-primary);
+  --slider-error-color: var(--scientific-danger-color);
+}
+\`\`\`
         `,
+
       },
     },
   },
