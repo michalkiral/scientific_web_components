@@ -1,4 +1,4 @@
-import {
+﻿import {
   sampleNetworkData,
   proteinInteractionData,
   createLargeNetworkData,
@@ -18,95 +18,132 @@ const meta: Meta<ScientificNetwork> = {
     docs: {
       description: {
         component: `
-# Scientific Network Visualization
+# Scientific Network
 
-The Scientific Network component provides an interactive visualization for complex network data with scientific applications in mind. Built with Cytoscape.js, it offers comprehensive features for exploring relationships between nodes and edges in scientific datasets.
+An **interactive**, **exportable** Cytoscape.js surface for visualising complex scientific networks with analysis, editing tools, and design-system theming.
 
-## Features
+---
 
-- **Interactive Visualization**: Pan, zoom, and select nodes/edges with smooth animations
-- **Scientific Themes**: Multiple visual themes optimized for scientific publications
-- **Real-time Analytics**: Built-in network metrics and statistics
-- **Export Capabilities**: Export to PNG, JPEG, SVG, and JSON formats
-- **Responsive Design**: Adapts to different screen sizes and containers
-- **Custom Styling**: Extensive theming and customization options
-- **Event Handling**: Rich interaction callbacks for custom behavior
-- **Keyboard Shortcuts**: Press '1' to add nodes, '2' to add edges
+## Props
 
-## Usage
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`title\` / \`subtitle\` - Header text rendered by the surface base component
+- \`showToolbar\` - Inherited toggle for rendering the toolbar (default: true)
+- \`isLoading\` / \`errorMessage\` / \`successMessage\` - Standard surface-state messaging controls
+- \`data\` - Graph data (\`{nodes, edges}\`) used to initialise Cytoscape
+- \`directed\` - Renders edges with directionality, updates metrics, and removes self-loops when toggled off
+- \`interactive\` - Reserved flag (current behaviour is governed by \`controls\`)
+- \`showInfo\` - Displays the floating info panel with counts and selections
+- \`showMetrics\` - Extends the info panel with density, degree, and component metrics
+- \`controls\` - Object used to enable or disable tooling (see defaults below)
+- \`onNodeClick\` - Optional callback invoked after a node is selected
+- \`onEdgeClick\` - Optional callback invoked after an edge is selected
+- \`onExport\` - Optional callback that overrides the built-in export handler
 
-\`\`\`html
-<scientific-network
-  title="Protein Interaction Network"
-  .data="\${networkData}"
-  theme="scientific"
-  interactive
-  showToolbar
-  enableNodeCreation
-  enableEdgeCreation
-></scientific-network>
-\`\`\`
-
-## Properties
-
-- \`data\` — Network data with nodes and edges
-- \`title\` — Network title displayed in header
-- \`subtitle\` — Optional subtitle for additional context
-- \`directed\` — Whether the network shows directed edges with arrows
-- \`theme\` — Visual theme: default, dark, scientific
-- \`interactive\` — Enable user interactions (pan, zoom, select)
-- \`showToolbar\` — Display toolbar with controls
-- \`showInfo\` — Show basic network information panel
-- \`showMetrics\` — Show detailed network analytics
-- \`enableZoom\` — Allow zoom functionality
-- \`enablePan\` — Allow pan functionality
-- \`enableSelection\` — Enable node/edge selection
-- \`showTooltips\` — Show tooltips on hover
-- \`enableNodeCreation\` — Allow adding new nodes
-- \`enableEdgeCreation\` — Allow adding new edges
-- \`enableRenaming\` — Allow renaming nodes/edges
-- \`enableRemoval\` — Allow deleting nodes/edges
+Default control configuration:
+\\\`\\\`\\\`ts
+controls = {
+  enableZoom: true,
+  enablePan: true,
+  enableSelection: true,
+  showTooltips: true,
+  enableNodeCreation: false,
+  enableEdgeCreation: false,
+  enableRenaming: false,
+  enableRemoval: false,
+};
+\\\`\\\`\\\`
 
 ## Events
 
-- \`onNodeClick\` — Fired when a node is clicked
-- \`onEdgeClick\` — Fired when an edge is clicked
-- \`onSelectionChange\` — Fired when selection changes
-- \`onDataChange\` — Fired when network data is modified
+- \`node-selected\` - detail: {node, cytoscapeEvent}; dispatched on node tap
+- \`node-added\` / \`node-removed\` / \`node-renamed\` - lifecycle events with detail describing the element change
+- \`edge-selected\` - detail: {edge, cytoscapeEvent}
+- \`edge-added\` / \`edge-removed\` / \`edge-renamed\` - emitted when edges are created, deleted, or renamed (self-loop removal includes \`reason\`)
+- \`canvas-clicked\` - detail: {position}; fired when the background is clicked
+- \`network-zoom\` - detail: {zoomLevel}; emitted whenever Cytoscape zooms
+- \`network-direction-changed\` - detail: {directed}; emitted when the directed toggle changes
+- \`network-updated\` - detail: {action, elementType, elementId}; emitted for removal mutations
+- \`network-export\` - detail: {format, title}; emitted after export (built-in or custom) completes
+- \`keyboard-shortcut\` - detail: {key, action, description}; fired for every recognised shortcut
+- \`shortcut-createNode\` / \`shortcut-createEdge\` / \`shortcut-toggleRename\` / \`shortcut-toggleRemoval\` / \`shortcut-fitToScreen\` / \`shortcut-zoomIn\` / \`shortcut-zoomOut\` / \`shortcut-resetZoom\` - emitted via the shortcuts controller with detail {key, originalEvent}
 
-## Network Data Format
+## Basic Usage
 
-\`\`\`typescript
-interface NetworkData {
-  nodes: Array<{
-    id: string;
-    label?: string;
-    data?: Record<string, any>;
-  }>;
-  edges: Array<{
-    id: string;
-    source: string;
-    target: string;
-    label?: string;
-    data?: Record<string, any>;
-  }>;
+\\\`\\\`\\\`html
+<scientific-network
+  title="Protein Interaction Network"
+  .data="\\\${networkData}"
+  .controls="\\\${{ enableNodeCreation: true, enableEdgeCreation: true }}"
+  showInfo
+  showMetrics
+></scientific-network>
+\\\`\\\`\\\`
+
+## Data Model
+
+\\\`\\\`\\\`ts
+interface NetworkNode {
+  id: string;
+  label?: string;
+  data?: Record<string, unknown>;
+  position?: {x: number; y: number};
+  classes?: string;
+  style?: Record<string, unknown>;
 }
-\`\`\`
+
+interface NetworkEdge {
+  id: string;
+  source: string;
+  target: string;
+  label?: string;
+  data?: Record<string, unknown>;
+  classes?: string;
+  style?: Record<string, unknown>;
+}
+
+interface NetworkData {
+  nodes: NetworkNode[];
+  edges: NetworkEdge[];
+}
+\\\`\\\`\\\`
+
+## Features
+
+- **Toolbar & Shortcuts**: Scientific toolbar controls for directed/undirected mode, creation modes, zoom, and exports; keyboard shortcuts register via \`NetworkShortcutsController\` (keys '1'-'4', '+' and '-')
+- **Editing Modes**: Optional node/edge creation, rename overlays, and guarded removals (double-click within ~3s) with automatic Cytoscape updates
+- **Metrics Overlay**: \`showInfo\` surfaces counts, selections, and (when \`showMetrics\`) density, average degree, and component metrics
+- **Export Pipeline**: PNG/JPG/PDF/JSON export through \`createExportHandler\` or a custom \`onExport\` callback; programmatic helpers \`getDataURL()\` and \`getExportData()\`
+- **Programmatic Access**: \`getCanvasElement()\` exposes the underlying \`<canvas>\` for integrations/testing
+- **Theme Integration**: Applies palette-aware node/edge styling and updates layouts when \`theme\` or \`directed\` changes
+
+## Accessibility Features
+
+- **Surface Messaging**: Loading, error, and success overlays inherit accessible roles from \`ScientificSurfaceBase\`
+- **Keyboard Support**: Toolbar buttons, dropdowns, and shortcuts mirror their visual controls for keyboard users
+- **Selection Feedback**: Info panel mirrors selection counts; highlighted neighbours improve visual focus
+- **Shortcut Announcements**: \`keyboard-shortcut\` events can be surfaced to assistive tooling for discoverability
 
 ## Styling
 
-The component uses CSS custom properties for theming:
+Use CSS variables to customise layout and overlays. Common overrides:
 
-\`\`\`css
+\\\`\\\`\\\`css
 scientific-network {
-  --network-background: #ffffff;
-  --network-border: #e0e0e0;
-  --node-color: #3498db;
-  --edge-color: #95a5a6;
-  --selection-color: #e74c3c;
+  --network-width: 100%;
+  --network-height: 480px;
+  --network-min-height: 360px;
+  --network-container-min-height: 420px;
+  --network-canvas-min-height: 360px;
 }
-\`\`\`
+
+scientific-network .network-info {
+  /* inherits scientific tokens but can be themed */
+  box-shadow: var(--scientific-shadow-lg);
+}
+\\\`\\\`\\\`
         `,
+
       },
     },
   },
