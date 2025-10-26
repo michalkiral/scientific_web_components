@@ -16,43 +16,44 @@ const meta: Meta = {
         component: `
 # Scientific Graph
 
-A **powerful**, **customizable** scientific graph component with Chart.js integration featuring multiple chart types, statistics, and export capabilities.
+A **theme-aware**, **exportable** Chart.js surface for scientific dashboards with statistics, toolbar controls, and dataset utilities.
 
 ---
 
 ## Props
 
-- \`title\` — Graph title text
-- \`subtitle\` — Graph subtitle/description text
-- \`type\` — Chart type: line, bar, pie, doughnut, scatter, area, radar
-- \`isAreaChart\` — Internal flag for area chart rendering (automatically set when type is 'area')
-- \`labels\` — Array of labels for data points
-- \`datasets\` — Array of dataset objects with data, styling, and configuration
-- \`showStatistics\` — Shows/hides statistical calculations
-- \`showLegend\` — Shows/hides chart legend
-- \`showToolbar\` — Shows/hides toolbar with controls
-- \`showExportButtons\` — Shows/hides export buttons in toolbar (default: false)
-- \`exportFormats\` — Array of export formats to show: ['png', 'jpg', 'pdf'] (default: all)
-- \`showGrid\` — Shows/hides grid lines
-- \`showAxes\` — Shows/hides axes
-- \`animateOnLoad\` — Enables/disables chart animation on load
-- \`responsive\` — Makes chart responsive to container size
-- \`maintainAspectRatio\` — Maintains chart aspect ratio
-- \`enableZoom\` — Enables chart zoom functionality
-- \`enablePan\` — Enables chart pan functionality
-- \`isLoading\` — Shows loading overlay
-- \`errorMessage\` — Error message to display
-- \`xAxisTitle\` — Title for X-axis
-- \`yAxisTitle\` — Title for Y-axis
-- \`customOptions\` — Custom Chart.js options object
-- \`onExport\` — Custom export handler function (format: string) => void
-- \`onDataClick\` — Click handler for chart data points
+- \`theme\` - Applies design-system theming tokens (\`default\`, \`dark\`, \`scientific\`)
+- \`title\` - Header text rendered above the chart
+- \`subtitle\` - Supporting description text beneath the header
+- \`showToolbar\` - Toggles the surface toolbar; also controls legend visibility
+- \`isLoading\` - Displays the loading overlay while data is being prepared
+- \`errorMessage\` - Message rendered with \`role="alert"\`
+- \`successMessage\` - Message rendered with \`role="status"\`
+- \`type\` - Chart.js chart type (e.g. 'line', 'bar', 'pie', 'doughnut', 'radar', 'scatter')
+- \`isAreaChart\` - Fills line datasets to render an area chart while keeping \`type='line'\`
+- \`labels\` - Array of category labels for the X axis
+- \`datasets\` - Array of \`GraphDataset\` objects describing the plotted series
+- \`showStatistics\` - Displays the statistics grid derived from the first dataset
+- \`showLegend\` - Shows the legend (requires \`showToolbar\` to be true)
+- \`showExportButtons\` - Adds export buttons to the toolbar (default: false)
+- \`exportFormats\` - Ordered list of export formats to expose ('png', 'jpg', 'pdf')
+- \`responsive\` - Enables Chart.js responsive resizing (default: true)
+- \`maintainAspectRatio\` - Preserves the original aspect ratio on resize (default: false)
+- \`showGrid\` - Toggles grid line rendering for visible axes
+- \`showAxes\` - Toggles axes entirely
+- \`animateOnLoad\` - Enables the 1s ease-in-out animation the first time the chart renders
+- \`xAxisTitle\` - Optional X axis title text
+- \`yAxisTitle\` - Optional Y axis title text
+- \`customOptions\` - Partial Chart.js options merged into the generated configuration
+- \`onExport\` - Optional callback invoked before built-in export handling (\`format\`) => void
+- \`onDataClick\` - Optional callback fired when a data point is clicked (\`value\`, \`datasetIndex\`, \`index\`)
+- \`enableZoom\` / \`enablePan\` - Reserved for future zoom and pan support (currently no effect)
 
 ## Events
 
-- \`graph-type-changed\` — Fired when chart type is changed via dropdown
-- \`graph-exported\` — Fired when chart is exported
-- \`graph-refreshed\` — Fired when chart is refreshed
+- \`graph-type-changed\` - detail: {type, isAreaChart}; emitted when the toolbar type selector changes (bubbles, composed)
+- \`graph-exported\` - detail: {format, title}; emitted after a successful export (bubbles, composed)
+- \`graph-refreshed\` - detail: {timestamp}; emitted when the refresh action rebuilds the chart (bubbles, composed)
 
 ## Basic Usage
 
@@ -64,9 +65,7 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
   .labels="\${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}"
   .datasets="\${[{
     label: 'Sample Data',
-    data: [12, 19, 3, 5, 2, 3],
-    borderColor: '#007bff',
-    backgroundColor: 'rgba(0, 123, 255, 0.1)'
+    data: [12, 19, 3, 5, 2, 3]
   }]}"
   showStatistics
   showLegend
@@ -81,6 +80,7 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
   type="line"
   .labels="\${monthLabels}"
   .datasets="\${temperatureDatasets}"
+  showToolbar
   showExportButtons
   .exportFormats="\${['png', 'pdf']}"
   xAxisTitle="Month"
@@ -91,26 +91,21 @@ A **powerful**, **customizable** scientific graph component with Chart.js integr
 
 ## Features
 
-- **Multiple Chart Types**: Line, bar, pie, doughnut, scatter, area, radar
-- **Interactive Toolbar**: Chart type selector and export options
-- **Statistical Analysis**: Automatic calculation and display of key statistics
-- **Export Capabilities**: PNG, JPG, PDF export with automatic filename generation
-- **Loading States**: Built-in loading overlay and error handling
-- **Responsive Design**: Adapts to container size changes
-- **Interactive Charts**: Click handlers and zoom/pan functionality
-- **Form Integration**: Chart data updates and real-time rendering
-- **Customizable**: Extensive CSS variable system for styling
-- **Accessibility**: ARIA attributes, keyboard navigation, and screen reader support
+- **Chart.js Integration**: Generates theme-aware datasets, fills area charts automatically, and accepts additional Chart.js options
+- **Toolbar Controls**: Built-in scientific toolbar handles type switching, refresh, and optional exports
+- **Statistics Panel**: Calculates mean, median, min, max, standard deviation, and variance for the first dataset
+- **Legend & Theming**: Legend items, axes, and tooltips inherit the active design-system palette
+- **Exports & Callbacks**: Supports PNG/JPG/PDF export, programmatic hooks (\`onExport\`, \`getDataURL\`, \`getExportData\`), and data-point click callbacks
+- **Surface Messaging**: Inherits loading, error, and success messaging utilities from \`ScientificSurfaceBase\`
+- **Programmatic API**: Exposes \`getChart()\` and \`getCanvasElement()\` helpers for integrations and testing
 
 ## Accessibility Features
 
-- **ARIA Labels**: Descriptive labels for chart components and controls
-- **Keyboard Navigation**: Full keyboard support for toolbar controls and interactions
-- **Screen Reader Support**: Chart data accessible through ARIA descriptions
-- **Focus Management**: Proper focus handling for interactive elements
-- **Color Contrast**: Meets WCAG guidelines with customizable color schemes
-- **Loading States**: Accessible loading indicators with aria-busy attributes
-- **Error Handling**: Screen reader accessible error messages
+- **Surface Alerts**: Error and success states use \`role="alert"\` and \`role="status"\` for assistive technologies
+- **Visible Loading**: Overlay displays text alongside the spinner while \`isLoading\` is true
+- **Keyboard-Friendly Toolbar**: Toolbar actions rely on native buttons/selects for predictable keyboard navigation
+- **Textual Legends & Stats**: Legend entries and statistics grid render as plain text for screen-reader consumption
+- **Theme Contrast**: Design-system tokens adjust tooltip, grid, and axis colors for light and dark themes
 
 ## Dataset Configuration
 
@@ -118,14 +113,14 @@ Each dataset object supports these properties:
 
     {
       label: string;              // Dataset name
-      data: number[];            // Data points
-      backgroundColor?: string | string[];  // Fill colors
-      borderColor?: string | string[];      // Border colors
-      borderWidth?: number;      // Border thickness
-      tension?: number;          // Line curve tension (0-1)
-      fill?: boolean;           // Fill area under line
-      pointRadius?: number;      // Point size
-      pointHoverRadius?: number; // Point hover size
+      data: number[];             // Data points
+      backgroundColor?: string | string[];  // Fill colors (auto-generated when omitted)
+      borderColor?: string | string[];      // Stroke colors (auto-generated when omitted)
+      borderWidth?: number;       // Stroke thickness (default 2)
+      tension?: number;           // Line curve tension (0-1)
+      fill?: boolean;             // Override area fill behaviour
+      pointRadius?: number;       // Point size
+      pointHoverRadius?: number;  // Point hover size
     }
 
 ## Styling
@@ -134,43 +129,39 @@ Use CSS variables to customize appearance. Here are the most commonly used varia
 
 **Basic Styling:**
     scientific-graph {
-      --graph-bg-color: #ffffff;
-      --graph-border: 2px solid #e5e7eb;
-      --graph-border-radius: 12px;
-      --graph-padding: 24px;
-      --graph-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --container-border: var(--scientific-border);
+      --container-shadow: var(--scientific-shadow);
+      --graph-max-width: 960px;
+      --graph-min-height: 360px;
+      --graph-canvas-bg-color: #ffffff;
     }
 
 **Available CSS Variables:**
 
     scientific-graph {
-      /* Container dimensions */
+      /* Dimensions & layout */
       --graph-width: 100%;
       --graph-max-width: 100%;
       --graph-min-height: 400px;
-      
-      /* Component spacing */
-      --graph-toolbar-gap: 12px;
-      --graph-toolbar-padding: 12px 0;
-      --graph-controls-gap: 8px;
-      --graph-actions-gap: 8px;
-      --graph-stats-gap: 12px;
-      --graph-stats-padding: 16px 0 0 0;
-      --graph-stat-padding: 12px;
-      
-      /* Headers */
-      --graph-header-border: 1px solid #f3f4f6;
-      --graph-title-font-size: 24px;
-      --graph-subtitle-font-size: 16px;
-      
-      /* Canvas */
       --graph-canvas-min-height: 300px;
-      --graph-canvas-bg-color: #ffffff;
-      
-      /* Statistics styling */
+      --graph-canvas-bg-color: var(--scientific-bg-primary);
+
+      /* Header & toolbar */
+      --graph-header-border: 1px solid #f3f4f6;
+      --graph-title-font-size: var(--scientific-text-2xl);
+      --graph-subtitle-font-size: var(--scientific-text-base);
+      --graph-toolbar-gap: var(--scientific-spacing-sm);
+      --graph-toolbar-padding: var(--scientific-spacing-md) 0;
+
+      /* Legend & stats */
+      --graph-stats-gap: var(--scientific-spacing-md);
+      --graph-stats-padding: var(--scientific-spacing-lg) 0 0 0;
+      --graph-stat-padding: var(--scientific-spacing-md);
       --graph-stats-border: 1px solid #f3f4f6;
-      --graph-stat-bg-color: #f9fafb;
+      --graph-stat-bg-color: var(--scientific-bg-tertiary);
       --graph-stat-border: 1px solid #f3f4f6;
+      --graph-stat-label-color: var(--scientific-text-secondary);
+      --graph-stat-value-color: var(--scientific-text-primary);
     }
         `,
       },
