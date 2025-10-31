@@ -61,10 +61,11 @@ export class NetworkGraphController implements ReactiveController {
       }
 
       const elements = this.convertDataToCytoscapeElements(data);
+      const isLargeNetwork = elements.length > 1000;
 
-      this.cy = cytoscape({
+      const cytoscapeOptions: Record<string, unknown> = {
         container: canvasElement,
-        elements,
+        elements: isLargeNetwork ? [] : elements,
         style: this.getCytoscapeStyles(),
         zoomingEnabled: this.host.enableZoom,
         panningEnabled: this.host.enablePan,
@@ -74,18 +75,52 @@ export class NetworkGraphController implements ReactiveController {
         selectionType: 'single',
         minZoom: 0.1,
         maxZoom: 3,
-      });
+        hideEdgesOnViewport: isLargeNetwork,
+        textureOnViewport: isLargeNetwork,
+        pixelRatio: isLargeNetwork ? 1 : 'auto',
+      };
+
+      if (isLargeNetwork) {
+        cytoscapeOptions.renderer = {
+          name: 'canvas',
+          webgl: true, 
+        };
+      }
+
+      this.cy = cytoscape(cytoscapeOptions);
 
       await new Promise<void>(resolve => {
-        this.cy!.ready(() => {
-          const layoutOptions = options.layout || this.getDefaultLayoutOptions();
-          this.cy!.layout(layoutOptions).run();
-          
-          if (options.autoFit !== false) {
-            this.cy!.fit();
+        this.cy!.ready(async () => {
+          if (isLargeNetwork) {
+            await this.addElementsInBatches(elements);
+            
+            await new Promise<void>(layoutResolve => {
+              setTimeout(() => {
+                const layoutOptions = options.layout || this.getDefaultLayoutOptions();
+                const layout = this.cy!.layout(layoutOptions);
+                
+                layout.run();
+                
+                layout.one('layoutstop', () => {
+                  if (options.autoFit !== false) {
+                    this.cy!.fit();
+                  }
+                  this.calculateMetrics();
+                  layoutResolve();
+                });
+              }, 10);
+            });
+          } else {
+            const layoutOptions = options.layout || this.getDefaultLayoutOptions();
+            this.cy!.layout(layoutOptions).run();
+            
+            if (options.autoFit !== false) {
+              this.cy!.fit();
+            }
+            
+            this.calculateMetrics();
           }
           
-          this.calculateMetrics();
           resolve();
         });
       });
@@ -94,6 +129,41 @@ export class NetworkGraphController implements ReactiveController {
       console.error('Failed to initialize Cytoscape:', error);
       this.host.errorMessage = 'Failed to initialize network visualization';
       throw error;
+    }
+  }
+
+  private async addElementsInBatches(elements: ElementDefinition[]): Promise<void> {
+    if (!this.cy) return;
+
+    const nodes = elements.filter(el => !('source' in el.data));
+    const edges = elements.filter(el => 'source' in el.data);
+    
+    const cols = Math.ceil(Math.sqrt(nodes.length));
+    const spacing = 100;
+    
+    nodes.forEach((node, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      node.position = {
+        x: col * spacing,
+        y: row * spacing
+      };
+    });
+
+    const batchSize = 500;
+    const allElements = [...nodes, ...edges];
+    const totalBatches = Math.ceil(allElements.length / batchSize);
+
+    for (let i = 0; i < totalBatches; i++) {
+      const start = i * batchSize;
+      const end = Math.min(start + batchSize, allElements.length);
+      const batch = allElements.slice(start, end);
+
+      this.cy.add(batch);
+
+      if (i < totalBatches - 1) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
     }
   }
 
@@ -324,13 +394,14 @@ export class NetworkGraphController implements ReactiveController {
   }
 
   private getBasicColors(): ScientificThemeColors {
-    // Get theme colors from the host element (component)
     const hostElement = this.host as unknown as Element;
     return getThemeColors(hostElement);
   }
 
   private getCytoscapeStyles(): StylesheetStyle[] {
     const colors = this.getBasicColors();
+    const nodeCount = this.cy?.nodes().length || 0;
+    const isVeryLarge = nodeCount > 1000;
 
     return [
       {
@@ -339,7 +410,7 @@ export class NetworkGraphController implements ReactiveController {
           'background-color': colors.nodeColor,
           'border-color': colors.borderColor,
           'border-width': 2,
-          label: 'data(label)',
+          label: isVeryLarge ? '' : 'data(label)',
           'text-valign': 'center',
           'text-halign': 'center',
           color: colors.textColor,
@@ -364,7 +435,7 @@ export class NetworkGraphController implements ReactiveController {
           'line-color': colors.edgeColor,
           'target-arrow-color': colors.edgeColor,
           'target-arrow-shape': this.host.directed ? 'triangle' : 'none',
-          'curve-style': 'bezier',
+          'curve-style': isVeryLarge ? 'straight' : 'bezier',
           'font-size': '10px',
           color: colors.textColor,
           'text-rotation': 'autorotate',
@@ -412,12 +483,15 @@ export class NetworkGraphController implements ReactiveController {
   }
 
   private getDefaultLayoutOptions(): LayoutOptions {
-    // For large networks (>200 nodes), use a faster preset layout
-    // For smaller networks, use force-directed layout for better aesthetics
     const nodeCount = this.cy?.nodes().length || 0;
     
-    if (nodeCount > 200) {
-      // Use grid layout for large networks - much faster
+    if (nodeCount > 1000) {
+      return {
+        name: 'preset',
+        animate: false,
+        fit: true,
+      } as LayoutOptions;
+    } else if (nodeCount > 200) {
       return {
         name: 'grid',
         animate: false,
@@ -426,13 +500,11 @@ export class NetworkGraphController implements ReactiveController {
         condense: true,
       } as LayoutOptions;
     } else {
-      // Use force-directed layout for smaller networks
       return {
         name: 'cose',
         animate: false,
         fit: true,
-        // Optimize cose layout for better performance
-        numIter: 1000, // Limit iterations
+        numIter: 1000,
         idealEdgeLength: 100,
         nodeOverlap: 20,
         refresh: 20,
