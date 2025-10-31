@@ -412,11 +412,33 @@ export class NetworkGraphController implements ReactiveController {
   }
 
   private getDefaultLayoutOptions(): LayoutOptions {
-    return {
-      name: 'cose',
-      animate: false,
-      fit: true,
-    } as LayoutOptions;
+    // For large networks (>200 nodes), use a faster preset layout
+    // For smaller networks, use force-directed layout for better aesthetics
+    const nodeCount = this.cy?.nodes().length || 0;
+    
+    if (nodeCount > 200) {
+      // Use grid layout for large networks - much faster
+      return {
+        name: 'grid',
+        animate: false,
+        fit: true,
+        avoidOverlap: true,
+        condense: true,
+      } as LayoutOptions;
+    } else {
+      // Use force-directed layout for smaller networks
+      return {
+        name: 'cose',
+        animate: false,
+        fit: true,
+        // Optimize cose layout for better performance
+        numIter: 1000, // Limit iterations
+        idealEdgeLength: 100,
+        nodeOverlap: 20,
+        refresh: 20,
+        randomize: false,
+      } as LayoutOptions;
+    }
   }
 
   private setupResizeObserver(): void {
