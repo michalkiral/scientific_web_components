@@ -409,7 +409,11 @@ export const DynamicUpdates: Story = {
   render: () => {
     let networkData = generateLargeNetwork(50, 2);
 
-    const addNodes = () => {
+    const addNodes = (e: Event) => {
+      const button = e.target as HTMLButtonElement;
+      const container = button.closest('div');
+      const countSpan = container?.querySelector('.node-count') as HTMLSpanElement;
+      
       const startId = networkData.nodes.length;
       const newNodes = Array.from({length: 25}, (_, i) => ({
         id: `node-${startId + i}`,
@@ -433,6 +437,10 @@ export const DynamicUpdates: Story = {
       if (network) {
         network.data = networkData;
       }
+
+      if (countSpan) {
+        countSpan.textContent = `Current: ${networkData.nodes.length} nodes, ${networkData.edges.length} edges`;
+      }
     };
 
     return html`
@@ -448,7 +456,7 @@ export const DynamicUpdates: Story = {
           >
             Add 25 Nodes + 35 Edges
           </button>
-          <span style="color: #666; font-size: 14px;">
+          <span class="node-count" style="color: #666; font-size: 14px;">
             Current: ${networkData.nodes.length} nodes, ${networkData.edges.length} edges
           </span>
         </div>
