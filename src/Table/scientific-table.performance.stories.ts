@@ -3,9 +3,6 @@ import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-table.js';
 import type {TableColumn, ScientificTable} from './scientific-table.js';
 
-/**
- * Generate a large dataset for performance testing
- */
 function generateLargeDataset(rows: number, columns: number) {
   const cols: TableColumn[] = Array.from({length: columns}, (_, i) => ({
     key: `col${i}`,
@@ -24,9 +21,6 @@ function generateLargeDataset(rows: number, columns: number) {
   return {columns: cols, data};
 }
 
-/**
- * Generate scientific dataset with realistic data
- */
 function generateScientificDataset(rows: number) {
   const columns: TableColumn[] = [
     {key: 'id', label: 'Sample ID', sortable: true},

@@ -3,18 +3,12 @@ import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-graph.js';
 import type {ScientificGraph} from './scientific-graph.js';
 
-/**
- * Generate large dataset for performance testing
- */
 function generateLargeDataset(points: number) {
   const labels = Array.from({length: points}, (_, i) => `Point ${i + 1}`);
   const data = Array.from({length: points}, () => Math.random() * 100);
   return {labels, data};
 }
 
-/**
- * Generate multiple datasets for stress testing
- */
 function generateMultipleDatasets(datasetCount: number, pointsPerDataset: number) {
   const {labels} = generateLargeDataset(pointsPerDataset);
   const datasets = Array.from({length: datasetCount}, (_, i) => ({

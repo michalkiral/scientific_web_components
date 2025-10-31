@@ -3,9 +3,6 @@ import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import './scientific-network.js';
 import type {NetworkData, ScientificNetwork} from './scientific-network.js';
 
-/**
- * Generate a large network for performance testing
- */
 function generateLargeNetwork(nodeCount: number, avgEdgesPerNode: number): NetworkData {
   const nodes = Array.from({length: nodeCount}, (_, i) => ({
     id: `node-${i}`,
@@ -20,7 +17,6 @@ function generateLargeNetwork(nodeCount: number, avgEdgesPerNode: number): Netwo
     const source = Math.floor(Math.random() * nodeCount);
     let target = Math.floor(Math.random() * nodeCount);
 
-    // Avoid self-loops
     while (target === source) {
       target = Math.floor(Math.random() * nodeCount);
     }
@@ -36,10 +32,6 @@ function generateLargeNetwork(nodeCount: number, avgEdgesPerNode: number): Netwo
   return {nodes, edges};
 }
 
-/**
- * Generate a scale-free network (power-law distribution)
- * Simulates realistic biological/social networks
- */
 function generateScaleFreeNetwork(nodeCount: number): NetworkData {
   const nodes = Array.from({length: nodeCount}, (_, i) => ({
     id: `node-${i}`,
@@ -50,7 +42,6 @@ function generateScaleFreeNetwork(nodeCount: number): NetworkData {
   const edges = [];
   const nodeDegrees = new Array(nodeCount).fill(0);
 
-  // Start with a small connected core
   for (let i = 0; i < 5; i++) {
     for (let j = i + 1; j < 5; j++) {
       edges.push({
@@ -64,13 +55,11 @@ function generateScaleFreeNetwork(nodeCount: number): NetworkData {
     }
   }
 
-  // Add remaining nodes using preferential attachment
   for (let i = 5; i < nodeCount; i++) {
     const connections = Math.min(3, i);
     const totalDegree = nodeDegrees.slice(0, i).reduce((a, b) => a + b, 0);
 
     for (let c = 0; c < connections; c++) {
-      // Preferential attachment: connect to nodes with higher degree
       let targetNode = 0;
       const rand = Math.random() * totalDegree;
       let cumulative = 0;
@@ -142,7 +131,6 @@ export const OneThousandNodes: Story = {
       button.textContent = 'Loading...';
       isLoading = true;
 
-      // Generate network data asynchronously to avoid blocking UI
       setTimeout(() => {
         const networkData = generateLargeNetwork(1000, 2);
         const container = document.getElementById('network-1k-container');
@@ -200,7 +188,6 @@ export const FiveThousandNodes: Story = {
 
     const loadNetwork = () => {
       isLoading = true;
-      // Use setTimeout to avoid blocking the UI
       setTimeout(() => {
         networkData = generateLargeNetwork(5000, 2);
         isLoading = false;
@@ -292,7 +279,6 @@ export const ScaleFreeNetwork: Story = {
       button.textContent = 'Loading...';
       isLoading = true;
 
-      // Generate network data asynchronously to avoid blocking UI
       setTimeout(() => {
         const networkData = generateScaleFreeNetwork(500);
         const container = document.getElementById('network-scalefree-container');
@@ -500,7 +486,6 @@ export const ZoomAndPan: Story = {
       button.textContent = 'Loading...';
       isLoading = true;
 
-      // Generate network data asynchronously to avoid blocking UI
       setTimeout(() => {
         const networkData = generateLargeNetwork(300, 2);
         const container = document.getElementById('network-zoom-container');
