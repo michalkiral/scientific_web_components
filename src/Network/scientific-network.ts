@@ -39,7 +39,7 @@ import {
   controlButtons,
 } from './scientific-network.stories.data.js';
 import {NetworkEvents, getElementEventName} from '../shared/constants/events.js';
-import {DEFAULT_NETWORK_SHORTCUTS} from '../shared/constants/shortcuts.js';
+import {DEFAULT_NETWORK_SHORTCUTS} from './network-shortcuts.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import '../shared/components/ScientificToolbar/scientific-toolbar.js';

@@ -1,4 +1,4 @@
-import type {KeyboardShortcut} from '../../Network/controllers/network-shortcuts-controller.js';
+import type {KeyboardShortcut} from './controllers/network-shortcuts-controller.js';
 
 export const DEFAULT_NETWORK_SHORTCUTS: Record<string, Omit<KeyboardShortcut, 'key'>> = {
   '1': {

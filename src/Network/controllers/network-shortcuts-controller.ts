@@ -1,6 +1,6 @@
 import {ReactiveController, ReactiveControllerHost} from 'lit';
 import {dispatchCustomEvent} from '../../shared/utils/event-utils.js';
-import {DEFAULT_NETWORK_SHORTCUTS} from '../../shared/constants/shortcuts.js';
+import {DEFAULT_NETWORK_SHORTCUTS} from '../network-shortcuts.js';
 
 export interface KeyboardShortcut {
   action: string;

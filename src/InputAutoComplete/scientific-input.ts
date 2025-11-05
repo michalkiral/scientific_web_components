@@ -13,7 +13,7 @@ import {
   inputContainerStyles,
   autocompleteStyles,
   inputClearButtonStyles,
-} from '../shared/styles/input-styles.js';
+} from './input-styles.js';
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
