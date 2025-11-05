@@ -187,19 +187,10 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   isAreaChart = false;
 
   @property({type: Array})
-  labels: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  labels: string[] = [];
 
   @property({type: Array})
-  datasets: GraphDataset[] = [
-    {
-      label: 'Sample Data',
-      data: [12, 19, 3, 5, 2, 3],
-      borderColor: '#007bff',
-      backgroundColor: 'rgba(0, 123, 255, 0.1)',
-      borderWidth: 2,
-      tension: 0.1,
-    },
-  ];
+  datasets: GraphDataset[] = [];
 
   @property({type: Boolean})
   showStatistics = true;

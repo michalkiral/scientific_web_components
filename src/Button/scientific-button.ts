@@ -102,7 +102,7 @@ export class ScientificButton extends LitElement {
   loading = false;
 
   @property({type: String})
-  label = 'Click Me';
+  label = '';
 
   @property({type: String})
   icon = '';

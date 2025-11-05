@@ -20,7 +20,7 @@ suite('ScientificDropdown', () => {
     assert.isNotNull(select);
     assert.isFalse(el.isOpen);
     assert.isFalse(el.disabled);
-    assert.equal(el.label, 'Select an option');
+    assert.equal(el.label, '');
     assert.equal(el.placeholder, 'Select an option');
     assert.equal(el.theme, 'default');
   });

@@ -48,16 +48,13 @@ export class ScientificDropdown
   ];
 
   @property({type: String})
-  label = 'Select an option';
+  label = '';
 
   @property({type: String, reflect: true})
   theme: ScientificTheme = 'default';
 
   @property({type: Array})
-  options: DropdownOption[] = [
-    {label: 'Option 1', value: '1'},
-    {label: 'Option 2', value: '2'},
-  ];
+  options: DropdownOption[] = [];
 
   @property({type: String})
   selectedValue = '';
