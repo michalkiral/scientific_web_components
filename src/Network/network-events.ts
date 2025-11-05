@@ -1,21 +1,33 @@
+/**
+ * Network Component Events
+ * 
+ * Event constants for the Network component, including node/edge operations,
+ * canvas interactions, zoom controls, and keyboard shortcuts.
+ */
+
 export const NetworkEvents = {
+  // Node events
   NODE_SELECTED: 'node-selected',
   NODE_ADDED: 'node-added',
   NODE_RENAMED: 'node-renamed',
   NODE_REMOVED: 'node-removed',
   
+  // Edge events
   EDGE_SELECTED: 'edge-selected',
   EDGE_ADDED: 'edge-added',
   EDGE_RENAMED: 'edge-renamed',
   EDGE_REMOVED: 'edge-removed',
   
+  // Canvas interaction events
   CANVAS_CLICKED: 'canvas-clicked',
   NETWORK_ZOOM: 'network-zoom',
   
+  // Network state events
   NETWORK_DIRECTION_CHANGED: 'network-direction-changed',
   NETWORK_UPDATED: 'network-updated',
   NETWORK_EXPORT: 'network-export',
   
+  // Keyboard shortcut events
   SHORTCUT_CREATE_NODE: 'shortcut-createNode',
   SHORTCUT_CREATE_EDGE: 'shortcut-createEdge',
   SHORTCUT_TOGGLE_RENAME: 'shortcut-toggleRename',
@@ -29,43 +41,14 @@ export const NetworkEvents = {
   KEYBOARD_SHORTCUT: 'keyboard-shortcut',
 } as const;
 
-export const GraphEvents = {
-  GRAPH_TYPE_CHANGED: 'graph-type-changed',
-  GRAPH_EXPORTED: 'graph-exported',
-  GRAPH_REFRESHED: 'graph-refreshed',
-} as const;
-
-export const FormEvents = {
-  FORM_SUBMIT_START: 'form-submit-start',
-  FORM_SUBMIT_SUCCESS: 'form-submit-success',
-  FORM_SUBMIT_ERROR: 'form-submit-error',
-  FORM_CANCEL: 'form-cancel',
-  FORM_RESET: 'form-reset',
-} as const;
-
-export const DropdownEvents = {
-  OPTION_SELECTED: 'option-selected',
-  OPTION_CLEARED: 'option-cleared',
-  CHANGE: 'change',
-} as const;
-
-export const AllEvents = {
-  ...NetworkEvents,
-  ...GraphEvents,
-  ...FormEvents,
-  ...DropdownEvents,
-} as const;
-
 export type NetworkEventName = typeof NetworkEvents[keyof typeof NetworkEvents];
-export type GraphEventName = typeof GraphEvents[keyof typeof GraphEvents];
-export type FormEventName = typeof FormEvents[keyof typeof FormEvents];
-export type DropdownEventName = typeof DropdownEvents[keyof typeof DropdownEvents];
-export type AllEventName = typeof AllEvents[keyof typeof AllEvents];
 
-export function getEventName(eventKey: keyof typeof AllEvents): AllEventName {
-  return AllEvents[eventKey];
-}
-
+/**
+ * Helper function to get the appropriate event name for element operations
+ * @param elementType - The type of element (node or edge)
+ * @param operation - The operation being performed (renamed or removed)
+ * @returns The appropriate event name constant
+ */
 export function getElementEventName(
   elementType: 'node' | 'edge',
   operation: 'renamed' | 'removed'
@@ -75,12 +58,4 @@ export function getElementEventName(
   } else {
     return operation === 'renamed' ? NetworkEvents.EDGE_RENAMED : NetworkEvents.EDGE_REMOVED;
   }
-}
-
-export function isNetworkEvent(event: string): event is NetworkEventName {
-  return Object.values(NetworkEvents).includes(event as NetworkEventName);
-}
-
-export function isValidEvent(event: string): event is AllEventName {
-  return Object.values(AllEvents).includes(event as AllEventName);
 }

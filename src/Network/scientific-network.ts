@@ -38,7 +38,7 @@ import {
   interactionModeButtons,
   controlButtons,
 } from './scientific-network.stories.data.js';
-import {NetworkEvents, getElementEventName} from '../shared/constants/events.js';
+import {NetworkEvents, getElementEventName} from './network-events.js';
 import {DEFAULT_NETWORK_SHORTCUTS} from './network-shortcuts.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
