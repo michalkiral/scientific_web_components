@@ -19,6 +19,7 @@ import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
+import {renderMessage} from '../shared/utils/message-utils.js';
 import {
   filterOptions,
   generateAutocompleteHint,
@@ -423,16 +424,12 @@ export class ScientificInput
           : ''}
         ${this.state === 'error' && this.errorMessage
           ? html`
-              <div class="scientific-message scientific-message--error">
-                ${this.errorMessage}
-              </div>
+              ${renderMessage({type: 'error', content: this.errorMessage})}
             `
           : ''}
         ${this.state === 'success' && this.successMessage
           ? html`
-              <div class="scientific-message scientific-message--success">
-                ${this.successMessage}
-              </div>
+              ${renderMessage({type: 'success', content: this.successMessage})}
             `
           : ''}
       </div>

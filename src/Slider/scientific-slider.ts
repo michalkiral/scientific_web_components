@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/utils/icon-utils.js';
+import {renderMessage} from '../shared/utils/message-utils.js';
 import {
   sharedVariables,
   containerStyles,
@@ -668,13 +668,8 @@ export class ScientificSlider extends LitElement {
         ? html`<div class="slider-helper scientific-message">${this.helperText}</div>`
         : ''}
       ${this.state === 'error' && this.errorMessage
-        ? html`<div class="slider-error scientific-message scientific-message--error">
-            <div class="message-icon">
-              ${renderIcon('warning', {size: 16})}
-            </div>
-            <div class="message-content">
-              ${this.errorMessage}
-            </div>
+        ? html`<div class="slider-error" role="alert">
+            ${renderMessage({type: 'error', content: this.errorMessage})}
           </div>`
         : ''}
     `;
