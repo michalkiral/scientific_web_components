@@ -8,6 +8,11 @@ export const baseComponentStyles = css`
       system-ui,
       -apple-system,
       BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      sans-serif
     );
     box-sizing: border-box;
   }

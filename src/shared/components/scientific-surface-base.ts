@@ -1,7 +1,7 @@
 import {LitElement, html, nothing, TemplateResult} from 'lit';
 import {property} from 'lit/decorators.js';
 import {classNames} from '../utils/dom-utils.js';
-import {renderIcon} from '../utils/icon-utils.js';
+import {renderMessage} from '../utils/message-utils.js';
 import type {ScientificTheme} from '../styles/common-styles.js';
 
 export abstract class ScientificSurfaceBase extends LitElement {
@@ -38,7 +38,7 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return classNames(...baseClasses);
   }
 
-  protected renderHeader() {
+  protected renderHeader(): TemplateResult | typeof nothing {
     if (!this.title && !this.subtitle && !this.shouldShowToolbar() && !this.hasHeaderContent()) {
       return nothing;
     }
@@ -74,41 +74,31 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return nothing;
   }
 
-  protected renderError() {
+  protected renderError(): TemplateResult | typeof nothing {
     if (!this.errorMessage) {
       return nothing;
     }
 
     return html`
-      <div class="scientific-message scientific-message--error" role="alert">
-        <div class="message-icon">
-          ${renderIcon('warning', {size: 16})}
-        </div>
-        <div class="message-content">
-          <span>${this.errorMessage}</span>
-        </div>
+      <div role="alert">
+        ${renderMessage({type: 'error', content: this.errorMessage})}
       </div>
     `;
   }
 
-  protected renderSuccess() {
+  protected renderSuccess(): TemplateResult | typeof nothing {
     if (!this.successMessage) {
       return nothing;
     }
 
     return html`
-      <div class="scientific-message scientific-message--success" role="status">
-        <div class="message-icon">
-          ${renderIcon('check', {size: 16})}
-        </div>
-        <div class="message-content">
-          <span>${this.successMessage}</span>
-        </div>
+      <div role="status">
+        ${renderMessage({type: 'success', content: this.successMessage})}
       </div>
     `;
   }
 
-  protected renderLoading() {
+  protected renderLoading(): TemplateResult | typeof nothing {
     if (!this.isLoading) {
       return nothing;
     }
@@ -125,11 +115,11 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return this.showToolbar;
   }
 
-  protected renderToolbar(): unknown {
+  protected renderToolbar(): TemplateResult | typeof nothing {
     return nothing;
   }
 
-  protected abstract renderContent(): unknown;
+  protected abstract renderContent(): TemplateResult | typeof nothing;
 
   protected shouldHideContentOnError(): boolean {
     return true;

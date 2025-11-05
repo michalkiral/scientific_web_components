@@ -72,18 +72,15 @@ suite('scientific-table', () => {
       return cells[cellIndex].textContent!.trim();
     };
 
-    // Initial order
     assert.equal(getCellText(0, 0), 'John', 'First row should be John');
     assert.equal(getCellText(1, 0), 'Alice', 'Second row should be Alice');
 
-    // Click name header to sort by name
     const nameHeader = el.shadowRoot!.querySelector(
       'th.table-header-cell'
     )! as HTMLElement;
     nameHeader.click();
     await aTimeout(50);
 
-    // Should be sorted alphabetically (Alice, John)
     assert.equal(
       getCellText(0, 0),
       'Alice',
@@ -193,11 +190,9 @@ suite('scientific-table', () => {
     const searchInput = el.shadowRoot!.querySelector('scientific-input') as any;
     assert.exists(searchInput, 'Search input should be displayed');
 
-    // Check initial rows
     let rows = el.shadowRoot!.querySelectorAll('tbody tr.table-row');
     assert.equal(rows.length, 2, 'Should have 2 rows initially');
 
-    // Use the public method to set search term
     el.setSearchTerm('Alice');
     await el.updateComplete;
 
@@ -224,7 +219,7 @@ suite('scientific-table', () => {
     const checkboxes = el.shadowRoot!.querySelectorAll('.table-checkbox');
     assert.isAtLeast(checkboxes.length, 2, 'Should have selection checkboxes');
 
-    const firstCheckbox = checkboxes[1] as HTMLInputElement; // Skip header checkbox
+    const firstCheckbox = checkboxes[1] as HTMLInputElement;
     firstCheckbox.click();
     await aTimeout(50);
 

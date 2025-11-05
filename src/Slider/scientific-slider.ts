@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-import {renderIcon} from '../shared/utils/icon-utils.js';
+import {renderMessage} from '../shared/utils/message-utils.js';
 import {
   sharedVariables,
   containerStyles,
@@ -14,6 +14,7 @@ import {
 import {sliderThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
+import {SimpleValidationState} from '../shared/types/common-types.js';
 
 export interface SliderMark {
   value: number;
@@ -328,7 +329,7 @@ export class ScientificSlider extends LitElement {
   errorMessage = '';
 
   @property({type: String})
-  state: 'default' | 'error' = 'default';
+  state: SimpleValidationState = 'default';
 
   @property({attribute: false})
   formatValue?: (value: number) => string;
@@ -668,13 +669,8 @@ export class ScientificSlider extends LitElement {
         ? html`<div class="slider-helper scientific-message">${this.helperText}</div>`
         : ''}
       ${this.state === 'error' && this.errorMessage
-        ? html`<div class="slider-error scientific-message scientific-message--error">
-            <div class="message-icon">
-              ${renderIcon('warning', {size: 16})}
-            </div>
-            <div class="message-content">
-              ${this.errorMessage}
-            </div>
+        ? html`<div class="slider-error" role="alert">
+            ${renderMessage({type: 'error', content: this.errorMessage})}
           </div>`
         : ''}
     `;

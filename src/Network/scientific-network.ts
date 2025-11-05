@@ -3,9 +3,9 @@ import {customElement, property, state, query} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {EventObject} from 'cytoscape';
-import {NetworkGraphController} from '../shared/network/network-graph-controller.js';
-import {NetworkShortcutsController} from '../shared/network/network-shortcuts-controller.js';
-import {NetworkMetrics} from '../shared/network/network-metrics-calculator.js';
+import {NetworkGraphController} from './controllers/network-graph-controller.js';
+import {NetworkShortcutsController} from './controllers/network-shortcuts-controller.js';
+import {NetworkMetrics} from './controllers/network-metrics-calculator.js';
 import {
   sharedVariables,
   themeStyles,
@@ -15,7 +15,7 @@ import {
   loadingSpinnerStyles,
   responsiveStyles,
 } from '../shared/styles/common-styles.js';
-import {networkStyles} from '../shared/styles/network-styles.js';
+import {networkStyles} from './network-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {
@@ -37,9 +37,9 @@ import {
   networkTypeOptions,
   interactionModeButtons,
   controlButtons,
-} from './scientific-network.stories.data.js';
-import {NetworkEvents, getElementEventName} from '../shared/constants/events.js';
-import {DEFAULT_NETWORK_SHORTCUTS} from '../shared/constants/shortcuts.js';
+} from './stories/scientific-network.stories.data.js';
+import {NetworkEvents, getElementEventName} from './network-events.js';
+import {DEFAULT_NETWORK_SHORTCUTS} from './network-shortcuts.js';
 import '../Button/scientific-button.js';
 import '../Dropdown/scientific-dropdown.js';
 import '../shared/components/ScientificToolbar/scientific-toolbar.js';
@@ -198,11 +198,11 @@ export class ScientificNetwork
     this._initializeNetwork();
   }
 
-  override updated(changedProperties: Map<string, unknown>) {
+  override async updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
     
     if (changedProperties.has('data')) {
-      this.graphController.loadData(this.data);
+      await this.graphController.loadData(this.data);
       this._updateMetrics();
     }
     

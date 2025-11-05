@@ -13,12 +13,13 @@ import {
   inputContainerStyles,
   autocompleteStyles,
   inputClearButtonStyles,
-} from '../shared/styles/input-styles.js';
+} from './input-styles.js';
 import {inputThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {DropdownInteractionController} from '../shared/dropdown/dropdown-interaction-controller.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
+import {renderMessage} from '../shared/utils/message-utils.js';
 import {
   filterOptions,
   generateAutocompleteHint,
@@ -29,7 +30,8 @@ import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 import {
   renderClearButton,
   createClearHandler,
-} from '../shared/components/clear-button/clear-button-utils.js';
+} from '../shared/utils/clear-button-utils.js';
+import {ValidationState} from '../shared/types/common-types.js';
 
 export type InputType =
   | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'
@@ -94,10 +96,7 @@ export class ScientificInput
   clearable = true;
 
   @property({type: String})
-  state: 'default' | 'error' | 'success' = 'default';
-
-  @property({type: String})
-  helperText = '';
+  state: ValidationState = 'default';
 
   @property({type: String})
   errorMessage = '';
@@ -334,12 +333,29 @@ export class ScientificInput
     }, 150);
   }
 
+  private getValidationState(): 'default' | 'error' | 'success' {
+    if (this.required && !this.inputValue.trim()) {
+      return 'error';
+    }
+
+    if (this.state === 'success') {
+      return 'success';
+    }
+
+    if (this.state === 'error' && this.errorMessage) {
+      return 'error';
+    }
+
+    return 'default';
+  }
+
   private getInputClasses() {
+    const validationState = this.getValidationState();
     return classNames(
       'input-field',
       'scientific-input',
       this.required && 'required',
-      this.state !== 'default' && this.state
+      validationState !== 'default' && validationState
     );
   }
 
@@ -418,21 +434,19 @@ export class ScientificInput
           ${hasIcon ? html` <div class="input-icon">${this.icon}</div> ` : ''}
         </div>
 
-        ${this.helperText
-          ? html` <div class="scientific-message">${this.helperText}</div> `
-          : ''}
-        ${this.state === 'error' && this.errorMessage
+        ${this.getValidationState() === 'error' && this.errorMessage
           ? html`
-              <div class="scientific-message scientific-message--error">
-                ${this.errorMessage}
-              </div>
+              ${renderMessage({type: 'error', content: this.errorMessage})}
             `
           : ''}
-        ${this.state === 'success' && this.successMessage
+        ${this.getValidationState() === 'error' && !this.errorMessage && this.required && !this.inputValue.trim()
           ? html`
-              <div class="scientific-message scientific-message--success">
-                ${this.successMessage}
-              </div>
+              ${renderMessage({type: 'error', content: 'This field is required'})}
+            `
+          : ''}
+        ${this.getValidationState() === 'success' && this.successMessage
+          ? html`
+              ${renderMessage({type: 'success', content: this.successMessage})}
             `
           : ''}
       </div>
@@ -442,7 +456,12 @@ export class ScientificInput
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
     if (changedProperties.has('value')) {
-      this.inputValue = this.value;
+      const selectedOption = this.options.find(opt => opt.value === this.value);
+      if (selectedOption && this.inputValue !== selectedOption.label) {
+        this.inputValue = selectedOption.label;
+      } else if (!selectedOption && this.inputValue !== this.value) {
+        this.inputValue = this.value;
+      }
     }
     if (changedProperties.has('isOpen')) {
       if (this.isOpen) {

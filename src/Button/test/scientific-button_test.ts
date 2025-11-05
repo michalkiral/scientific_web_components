@@ -13,8 +13,8 @@ suite('ScientificButton', () => {
     const el = await fixture(html`<scientific-button></scientific-button>`);
     const button = el.shadowRoot!.querySelector('button');
     assert.isNotNull(button);
-    assert.equal(button!.getAttribute('aria-label'), 'Click Me');
-    assert.include(button!.textContent!, 'Click Me');
+    assert.equal(button!.getAttribute('aria-label'), '');
+    assert.equal(button!.textContent!.trim(), '');
   });
 
   test('renders with a set label', async () => {

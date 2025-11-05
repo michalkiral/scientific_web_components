@@ -27,6 +27,7 @@ import {
   createExportHandler,
   type ExportableComponent,
   type ExportOptions,
+  type GraphExportFormat,
 } from '../shared/utils/export-utils.js';
 import {getChartThemeColors} from '../shared/utils/theme-utils.js';
 import {
@@ -37,7 +38,7 @@ import {
   type GraphToolbarState,
   type GraphToolbarHandlers,
 } from '../shared/utils/toolbar-config-utils.js';
-import {graphToolbarConfig} from './scientific-graph.stories.data.js';
+import {graphToolbarConfig} from './stories/scientific-graph.stories.data.js';
 
 export interface GraphDataset {
   label: string;
@@ -187,19 +188,10 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   isAreaChart = false;
 
   @property({type: Array})
-  labels: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  labels: string[] = [];
 
   @property({type: Array})
-  datasets: GraphDataset[] = [
-    {
-      label: 'Sample Data',
-      data: [12, 19, 3, 5, 2, 3],
-      borderColor: '#007bff',
-      backgroundColor: 'rgba(0, 123, 255, 0.1)',
-      borderWidth: 2,
-      tension: 0.1,
-    },
-  ];
+  datasets: GraphDataset[] = [];
 
   @property({type: Boolean})
   showStatistics = true;
@@ -211,7 +203,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   showExportButtons = false;
 
   @property({type: Array})
-  exportFormats: ('png' | 'jpg' | 'pdf')[] = ['png', 'jpg', 'pdf'];
+  exportFormats: GraphExportFormat[] = ['png', 'jpg', 'pdf'];
 
   @property({type: Boolean})
   responsive = true;
@@ -251,7 +243,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   ) => void;
 
   @property({attribute: false})
-  onExport?: (format: 'png' | 'jpg' | 'pdf') => void;
+  onExport?: (format: GraphExportFormat) => void;
 
   private chart: Chart | null = null;
 
@@ -542,7 +534,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
     };
   };
 
-  getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
+  getDataURL(format: GraphExportFormat = 'png', quality = 1.0): string | null {
     if (!this.chart) return null;
 
     if (format === 'jpg') {
@@ -566,7 +558,9 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   }
 
   getExportData(): unknown {
-    if (!this.chart) return null;
+    if (!this.chart) {
+      return null;
+    }
     return {
       title: this.title,
       subtitle: this.subtitle,
@@ -589,10 +583,14 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   };
 
   private _renderStatistics() {
-    if (!this.showStatistics) return '';
+    if (!this.showStatistics) {
+      return '';
+    }
 
     const stats = this._calculateStatistics();
-    if (!stats) return '';
+    if (!stats) {
+      return '';
+    }
 
     return html`
       <div class="graph-statistics">
@@ -637,7 +635,9 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   }
 
   private _renderLegend() {
-    if (!this.showLegend || !this.datasets.length) return '';
+    if (!this.showLegend || !this.datasets.length) {
+      return '';
+    }
 
     return html`
       <div class="graph-legend">

@@ -20,7 +20,7 @@ suite('ScientificDropdown', () => {
     assert.isNotNull(select);
     assert.isFalse(el.isOpen);
     assert.isFalse(el.disabled);
-    assert.equal(el.label, 'Select an option');
+    assert.equal(el.label, '');
     assert.equal(el.placeholder, 'Select an option');
     assert.equal(el.theme, 'default');
   });
@@ -66,15 +66,12 @@ suite('ScientificDropdown', () => {
       '.dropdown-select'
     ) as HTMLElement;
 
-    // Initially closed
     assert.isFalse(el.isOpen);
 
-    // Click to open
     select.click();
     await el.updateComplete;
     assert.isTrue(el.isOpen);
 
-    // Click to close
     select.click();
     await el.updateComplete;
     assert.isFalse(el.isOpen);

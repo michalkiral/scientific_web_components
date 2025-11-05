@@ -1,8 +1,3 @@
-
-export interface ScientificCustomEvent<T = unknown> extends CustomEvent<T> {
-  detail: T;
-}
-
 export function dispatchCustomEvent<T>(
   element: HTMLElement,
   eventName: string,

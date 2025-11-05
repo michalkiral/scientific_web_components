@@ -27,7 +27,7 @@ import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 import {
   renderClearButton,
   createClearHandler,
-} from '../shared/components/clear-button/clear-button-utils.js';
+} from '../shared/utils/clear-button-utils.js';
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown
@@ -48,16 +48,13 @@ export class ScientificDropdown
   ];
 
   @property({type: String})
-  label = 'Select an option';
+  label = '';
 
   @property({type: String, reflect: true})
   theme: ScientificTheme = 'default';
 
   @property({type: Array})
-  options: DropdownOption[] = [
-    {label: 'Option 1', value: '1'},
-    {label: 'Option 2', value: '2'},
-  ];
+  options: DropdownOption[] = [];
 
   @property({type: String})
   selectedValue = '';

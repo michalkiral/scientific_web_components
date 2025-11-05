@@ -1,4 +1,4 @@
-import {html, TemplateResult} from 'lit';
+import {html, TemplateResult, nothing} from 'lit';
 import {classNames} from '../utils/dom-utils.js';
 import {DropdownOption, groupOptions} from './dropdown-utils.js';
 
@@ -20,7 +20,7 @@ export interface DropdownRenderConfig {
 
 export function renderDropdownOptions(
   config: DropdownRenderConfig
-): TemplateResult | string {
+): TemplateResult | typeof nothing {
   const {
     isOpen,
     filteredOptions,
@@ -38,7 +38,7 @@ export function renderDropdownOptions(
   } = config;
 
   if (!isOpen) {
-    return '';
+    return nothing;
   }
 
   if (filteredOptions.length === 0) {
@@ -55,7 +55,7 @@ export function renderDropdownOptions(
                 @click="${(e: Event) => e.stopPropagation()}"
               />
             `
-          : ''}
+          : nothing}
         <div class="options-list">
           ${allowCustomValues && inputValue.trim() && onCustomValueClick
             ? html`
@@ -93,13 +93,13 @@ export function renderDropdownOptions(
               @keydown="${(e: KeyboardEvent) => e.stopPropagation()}"
             />
           `
-        : ''}
+        : nothing}
       <div class="options-list">
         ${Object.entries(groupedOptions).map(
           ([group, options]) => html`
             ${group !== 'default'
               ? html`<div class="option-group">${group}</div>`
-              : ''}
+              : nothing}
             ${options.map((option) => {
               const globalIndex = filteredOptions.indexOf(option);
               return html`
