@@ -67,18 +67,17 @@ suite('NetworkGraphController', () => {
   });
 
   suite('Data Handling', () => {
-    test('should handle empty network data', () => {
+    test('should handle empty network data', async () => {
       const emptyData = {
         nodes: [],
         edges: []
       };
       
-      expect(() => {
-        controller.loadData(emptyData);
-      }).to.not.throw();
+      await controller.loadData(emptyData);
+      // Test passes if no exception is thrown
     });
 
-    test('should handle network data with nodes and edges', () => {
+    test('should handle network data with nodes and edges', async () => {
       const networkData = {
         nodes: [
           { id: 'n1', label: 'Node 1' },
@@ -89,9 +88,8 @@ suite('NetworkGraphController', () => {
         ]
       };
       
-      expect(() => {
-        controller.loadData(networkData);
-      }).to.not.throw();
+      await controller.loadData(networkData);
+      // Test passes if no exception is thrown
     });
   });
 

@@ -23,6 +23,7 @@ export class NetworkGraphController implements ReactiveController {
   private cy: Core | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private resizeTimeout: number | null = null;
+  private retryTimeout: number | null = null;
   private currentMetrics: NetworkMetrics | null = null;
 
   constructor(host: NetworkGraphControllerHost) {
@@ -53,9 +54,12 @@ export class NetworkGraphController implements ReactiveController {
     try {
       const canvasRect = canvasElement.getBoundingClientRect();
       if (!canvasRect || (canvasRect.width === 0 && canvasRect.height === 0)) {
-        return new Promise(resolve => {
-          setTimeout(() => {
-            this.initialize(canvasElement, data, options).then(resolve);
+        return new Promise((resolve, reject) => {
+          this.retryTimeout = window.setTimeout(() => {
+            this.retryTimeout = null;
+            this.initialize(canvasElement, data, options)
+              .then(resolve)
+              .catch(reject);
           }, 250);
         });
       }
@@ -81,6 +85,10 @@ export class NetworkGraphController implements ReactiveController {
       };
 
       this.cy = cytoscape(cytoscapeOptions);
+
+      if (this.resizeObserver) {
+        this.resizeObserver.observe(canvasElement);
+      }
 
       await new Promise<void>(resolve => {
         this.cy!.ready(async () => {
@@ -130,8 +138,8 @@ export class NetworkGraphController implements ReactiveController {
       return;
     }
 
-    const nodes = elements.filter(el => !('source' in el.data));
-    const edges = elements.filter(el => 'source' in el.data);
+    const nodes = elements.filter(el => !('source' in el.data && 'target' in el.data));
+    const edges = elements.filter(el => 'source' in el.data && 'target' in el.data);
     
     const cols = Math.ceil(Math.sqrt(nodes.length));
     const spacing = 100;
@@ -177,13 +185,18 @@ export class NetworkGraphController implements ReactiveController {
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = null;
     }
+    
+    if (this.retryTimeout) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
   }
 
   getCytoscapeInstance(): Core | null {
     return this.cy;
   }
 
-  loadData(data: NetworkData): void {
+  async loadData(data: NetworkData): Promise<void> {
     if (!this.cy) {
       return;
     }
@@ -191,7 +204,14 @@ export class NetworkGraphController implements ReactiveController {
     try {
       const elements = this.convertDataToCytoscapeElements(data);
       this.cy.elements().remove();
-      this.cy.add(elements);
+      
+      const isLargeNetwork = elements.length > 1000;
+      if (isLargeNetwork) {
+        await this.addElementsInBatches(elements);
+      } else {
+        this.cy.add(elements);
+      }
+      
       this.applyLayout();
       this.calculateMetrics();
     } catch (error) {
@@ -315,7 +335,9 @@ export class NetworkGraphController implements ReactiveController {
         const attributeValue = node.data(colorAttribute);
         if (attributeValue !== undefined) {
           const str = String(attributeValue);
-          colorIndex = (str.length + str.charCodeAt(0) + (str.charCodeAt(str.length - 1) || 0)) % DATA_VISUALIZATION_PALETTE.length;
+          if (str.length > 0) {
+            colorIndex = (str.length + str.charCodeAt(0) + (str.charCodeAt(str.length - 1) || 0)) % DATA_VISUALIZATION_PALETTE.length;
+          }
         }
       }
       

@@ -198,11 +198,11 @@ export class ScientificNetwork
     this._initializeNetwork();
   }
 
-  override updated(changedProperties: Map<string, unknown>) {
+  override async updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
     
     if (changedProperties.has('data')) {
-      this.graphController.loadData(this.data);
+      await this.graphController.loadData(this.data);
       this._updateMetrics();
     }
     
