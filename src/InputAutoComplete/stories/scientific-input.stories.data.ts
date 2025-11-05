@@ -67,7 +67,6 @@ export const defaultInputArgs = {
   required: false,
   clearable: true,
   state: 'default' as const,
-  helperText: 'Select a country from the list or type to search',
   errorMessage: '',
   successMessage: '',
   icon: '',
@@ -84,7 +83,6 @@ export const stateExamples = [
     label: 'Default Input',
     placeholder: 'Type something...',
     state: 'default' as const,
-    helperText: 'This is a helper text',
     options: fruitOptions,
   },
   {
@@ -132,14 +130,12 @@ export const groupedOptionsExample = {
   label: 'Programming Languages',
   placeholder: 'Choose a programming language...',
   options: groupedProgrammingOptions,
-  helperText: 'Options are grouped by category',
 };
 
 export const customValuesExample = {
   label: 'Tags',
   placeholder: 'Type to add a tag...',
   allowCustomValues: true,
-  helperText: 'Select from existing tags or create new ones',
   options: tagOptions,
 };
 
@@ -149,7 +145,6 @@ export const disabledRequiredExamples = [
     label: 'Required Field',
     placeholder: 'This field is required...',
     required: true,
-    helperText: 'This field must be filled out',
     options: fruitOptions,
   },
   {
@@ -158,7 +153,6 @@ export const disabledRequiredExamples = [
     placeholder: 'This field is disabled...',
     disabled: true,
     value: 'Disabled value',
-    helperText: 'This field cannot be edited',
     options: fruitOptions,
   },
 ] as const;
@@ -169,7 +163,6 @@ export const lengthValidationExamples = [
     label: 'Short Input',
     placeholder: 'Max 20 characters...',
     maxLength: 20,
-    helperText: 'Limited to 20 characters',
     options: [],
   },
   {
@@ -177,7 +170,6 @@ export const lengthValidationExamples = [
     label: 'Medium Input',
     placeholder: 'Max 50 characters...',
     maxLength: 50,
-    helperText: 'Limited to 50 characters',
     options: [],
   },
 ] as const;
@@ -189,7 +181,6 @@ export const autocompleteExamples = [
     placeholder: 'Type to see suggestions...',
     autoComplete: true,
     options: countryOptions,
-    helperText: 'Autocomplete suggestions enabled',
   },
   {
     title: 'Without Autocomplete',
@@ -197,7 +188,6 @@ export const autocompleteExamples = [
     placeholder: 'Type freely...',
     autoComplete: false,
     options: countryOptions,
-    helperText: 'No autocomplete suggestions',
   },
 ] as const;
 
@@ -261,6 +251,5 @@ export const realTimeValidationExample = {
   label: 'Email Validation',
   placeholder: 'Enter your email address...',
   icon: '📧',
-  helperText: 'Enter a valid email address',
   options: emailOptions,
 };

@@ -26,8 +26,8 @@ export const inputContainerStyles = css`
     background: transparent;
   }
 
-  .input-field.scientific-input.required {
-    border-color: var(--scientific-danger-color);
+  .input-field.scientific-input.error {
+    border-color: var(--input-error-border-color, var(--scientific-danger-color));
   }
 
   :host(.dropdown-open) .input-field {

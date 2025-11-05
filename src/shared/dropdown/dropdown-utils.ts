@@ -151,7 +151,7 @@ export function generateAutocompleteHint(
   const labelLower = firstMatch.label.toLowerCase();
 
   if (labelLower.startsWith(inputLower) && inputLower !== labelLower) {
-    return inputValue + firstMatch.label.slice(inputValue.length);
+    return firstMatch.label;
   }
 
   return '';

@@ -43,7 +43,6 @@ A **highly configurable**, **accessible** autocomplete/combobox built on the sci
 - \`required\` - Marks the label and adds required styling
 - \`clearable\` - Shows the clear button when a value exists (default: true)
 - \`state\` - Visual state: \`default\`, \`error\`, or \`success\`
-- \`helperText\` - Supporting helper copy below the field
 - \`errorMessage\` - Message rendered when \`state='error'\`
 - \`successMessage\` - Message rendered when \`state='success'\`
 - \`icon\` - Optional trailing icon/text rendered when the clear button is hidden
@@ -97,14 +96,14 @@ A **highly configurable**, **accessible** autocomplete/combobox built on the sci
 - **Predictive Hinting**: Displays an inline completion hint and accepts it with Tab
 - **Keyboard Navigation**: Dropdown controller handles arrow keys, Enter, Escape, and Tab selection semantics
 - **Custom Values & Clearing**: Optional custom-value flow plus a reusable clear button that focuses the field again
-- **Stateful Messaging**: Helper, error, and success copy share scientific message styling and roles
+- **Stateful Messaging**: Error, and success copy share scientific message styling and roles
 - **Grouped Options**: Supports grouped datasets via each option's \`group\` field
 - **Theme Ready**: Integrates with design-system themes and shared typography/spacing tokens
 
 ## Accessibility Features
 
 - **Combobox Semantics**: Uses \`role="combobox"\`, \`aria-expanded\`, \`aria-autocomplete\`, and \`aria-haspopup\` for assistive tech
-- **Visible Feedback**: Required indicator, state styling, and helper/error messages announced with appropriate roles
+- **Visible Feedback**: Required indicator, state styling, and error messages announced with appropriate roles
 - **Keyboard-First Design**: All interactions are reachable with the keyboard; Tab accepts hints or closes the list
 - **Live Hint Layer**: Autocomplete hint renders as plain text so screen readers echo forthcoming input
 - **Consistent Focus**: Clear actions return focus to the input and dropdown closing preserves context
@@ -233,10 +232,6 @@ scientific-input {
         defaultValue: {summary: "'default'"},
       },
     },
-    helperText: {
-      control: 'text',
-      description: 'Helper text displayed below the input',
-    },
     errorMessage: {
       control: 'text',
       description: 'Error message displayed when state is error',
@@ -286,7 +281,6 @@ export const Default: Story = {
     required,
     clearable,
     state,
-    helperText,
     errorMessage,
     successMessage,
     icon,
@@ -305,7 +299,6 @@ export const Default: Story = {
       .required=${required}
       .clearable=${clearable}
       .state=${state}
-      .helperText=${helperText}
       .errorMessage=${errorMessage}
       .successMessage=${successMessage}
       .icon=${icon}
@@ -328,7 +321,6 @@ export const States: Story = {
           .label=${stateExamples[0].label}
           .placeholder=${stateExamples[0].placeholder}
           .state=${stateExamples[0].state}
-          .helperText=${stateExamples[0].helperText}
           .options=${stateExamples[0].options}
         ></scientific-input>
       </div>
@@ -338,7 +330,6 @@ export const States: Story = {
         <scientific-input
           .label=${stateExamples[1].label}
           .placeholder=${stateExamples[1].placeholder}
-          .state=${stateExamples[1].state}
           .errorMessage=${stateExamples[1].errorMessage}
           .value=${stateExamples[1].value}
           .options=${stateExamples[1].options}
@@ -350,7 +341,6 @@ export const States: Story = {
         <scientific-input
           .label=${stateExamples[2].label}
           .placeholder=${stateExamples[2].placeholder}
-          .state=${stateExamples[2].state}
           .successMessage=${stateExamples[2].successMessage}
           .value=${stateExamples[2].value}
           .options=${stateExamples[2].options}
@@ -386,7 +376,6 @@ export const GroupedOptions: Story = {
         .label=${groupedOptionsExample.label}
         .placeholder=${groupedOptionsExample.placeholder}
         .options=${groupedOptionsExample.options}
-        .helperText=${groupedOptionsExample.helperText}
       ></scientific-input>
     </div>
   `,
@@ -394,13 +383,12 @@ export const GroupedOptions: Story = {
 
 export const CustomValues: Story = {
   args: customValuesExample,
-  render: ({label, placeholder, allowCustomValues, helperText, options}) =>
+  render: ({label, placeholder, allowCustomValues, options}) =>
     html`<div style="width: 400px;">
       <scientific-input
         .label=${label}
         .placeholder=${placeholder}
         .allowCustomValues=${allowCustomValues}
-        .helperText=${helperText}
         .options=${options}
       ></scientific-input>
     </div>`,
@@ -417,7 +405,6 @@ export const DisabledAndRequired: Story = {
           .label=${disabledRequiredExamples[0].label}
           .placeholder=${disabledRequiredExamples[0].placeholder}
           .required=${disabledRequiredExamples[0].required}
-          .helperText=${disabledRequiredExamples[0].helperText}
           .options=${disabledRequiredExamples[0].options}
         ></scientific-input>
       </div>
@@ -429,7 +416,6 @@ export const DisabledAndRequired: Story = {
           .placeholder=${disabledRequiredExamples[1].placeholder}
           .disabled=${disabledRequiredExamples[1].disabled}
           .value=${disabledRequiredExamples[1].value}
-          .helperText=${disabledRequiredExamples[1].helperText}
           .options=${disabledRequiredExamples[1].options}
         ></scientific-input>
       </div>
@@ -458,7 +444,6 @@ export const MaxLength: Story = {
         label="Maximum Length (10 characters)"
         placeholder="Try typing more than 10 characters..."
         maxLength="10"
-        helperText="Maximum 10 characters allowed - input will stop accepting characters after limit"
         .options=${fruitOptions}
       ></scientific-input>
     </div>
@@ -472,7 +457,6 @@ export const NoAutocomplete: Story = {
         label="Regular Text Input"
         placeholder="Type anything..."
         .autoComplete=${false}
-        helperText="Autocomplete is disabled - this works like a regular input"
         .options=${countryOptions}
       ></scientific-input>
     </div>
@@ -501,7 +485,6 @@ export const CustomStyling: Story = {
         label="Custom Styled Input"
         placeholder="Beautifully customized..."
         .options=${fruitOptions}
-        helperText="This input has custom CSS styling"
       ></scientific-input>
     </div>
   `,
@@ -520,7 +503,6 @@ export const TabAutocompletion: Story = {
           {label: 'Banana', value: 'banana'},
           {label: 'Berry', value: 'berry'},
         ]}
-        helperText="Type 'App' and press Tab to autocomplete with the first match!"
       ></scientific-input>
     </div>
   `,
