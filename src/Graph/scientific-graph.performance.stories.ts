@@ -218,14 +218,15 @@ export const MultipleDatasets: Story = {
 export const DataUpdatePerformance: Story = {
   name: 'Dynamic Data Updates',
   render: () => {
-    const graphRef = {current: null as ScientificGraph | null};
-    let intervalId: number;
-
-    const updateData = () => {
-      if (graphRef.current) {
+    const updateData = (e: Event) => {
+      const button = e.target as HTMLButtonElement;
+      const container = button.closest('div')?.parentElement;
+      const graph = container?.querySelector('scientific-graph') as ScientificGraph | null;
+      
+      if (graph) {
         const {labels, data} = generateLargeDataset(5000);
-        graphRef.current.labels = labels;
-        graphRef.current.datasets = [
+        graph.labels = labels;
+        graph.datasets = [
           {
             label: 'Dynamic Data',
             data: data,
@@ -251,22 +252,8 @@ export const DataUpdatePerformance: Story = {
           >
             Update Data
           </button>
-          <button
-            @click=${() => {
-              if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = 0;
-              } else {
-                intervalId = window.setInterval(updateData, 3000);
-              }
-            }}
-            style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;"
-          >
-            Toggle Auto-Update (3s)
-          </button>
         </div>
         <scientific-graph
-          ${(el: Element) => (graphRef.current = el as ScientificGraph)}
           title="Dynamic Data Updates - 5,000 Points"
           subtitle="Performance test: Real-time data updates"
           type="line"

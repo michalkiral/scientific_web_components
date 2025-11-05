@@ -109,7 +109,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 1500);
 
     console.log(
-      `✓ Rendered 1,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Rendered 1,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(renderTime, 10000, 'Should render within 10 seconds');
@@ -135,7 +135,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 8000);
 
     console.log(
-      `✓ Rendered 5,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Rendered 5,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(renderTime, 15000, 'Should render within 15 seconds');
@@ -163,7 +163,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 9000);
 
     console.log(
-      `✓ Rendered dense network with ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Rendered dense network with ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
@@ -192,7 +192,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     const metricsTime = performance.now() - startTime;
 
     console.log(
-      `✓ Calculated metrics for 2,000 nodes in ${metricsTime.toFixed(2)}ms`
+      `Calculated metrics for 2,000 nodes in ${metricsTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
@@ -224,7 +224,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 6000);
 
     console.log(
-      `✓ Rendered scale-free network (3,000 nodes, ${el.data.edges.length} edges) in ${renderTime.toFixed(2)}ms`
+      `Rendered scale-free network (3,000 nodes, ${el.data.edges.length} edges) in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
@@ -317,7 +317,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     const exportTime = performance.now() - startTime;
 
     console.log(
-      `✓ Prepared export data for 1,000 nodes in ${exportTime.toFixed(2)}ms`
+      `Prepared export data for 1,000 nodes in ${exportTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
@@ -373,7 +373,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.exists(el);
 
     console.log(
-      `✓ Layout computed for 1,000 nodes in ${layoutTime.toFixed(2)}ms`
+      `Layout computed for 1,000 nodes in ${layoutTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
@@ -402,7 +402,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     }
 
     console.log(
-      `✓ Created and destroyed ${iterations} networks with 1,000 nodes each`
+      `Created and destroyed ${iterations} networks with 1,000 nodes each`
     );
 
     assert.isTrue(true, 'Memory remains stable across multiple renders');
@@ -437,7 +437,7 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.equal(el.data.nodes.length, 1000);
 
     console.log(
-      `✓ Added 500 nodes and edges in ${updateTime.toFixed(2)}ms`
+      `Added 500 nodes and edges in ${updateTime.toFixed(2)}ms`
     );
 
     assert.isBelow(

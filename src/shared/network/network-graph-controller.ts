@@ -80,13 +80,6 @@ export class NetworkGraphController implements ReactiveController {
         pixelRatio: isLargeNetwork ? 1 : 'auto',
       };
 
-      if (isLargeNetwork) {
-        cytoscapeOptions.renderer = {
-          name: 'canvas',
-          webgl: true, 
-        };
-      }
-
       this.cy = cytoscape(cytoscapeOptions);
 
       await new Promise<void>(resolve => {
@@ -133,7 +126,9 @@ export class NetworkGraphController implements ReactiveController {
   }
 
   private async addElementsInBatches(elements: ElementDefinition[]): Promise<void> {
-    if (!this.cy) return;
+    if (!this.cy) {
+      return;
+    }
 
     const nodes = elements.filter(el => !('source' in el.data));
     const edges = elements.filter(el => 'source' in el.data);
