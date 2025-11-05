@@ -3,9 +3,9 @@ import {customElement, property, state, query} from 'lit/decorators.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../shared/components/scientific-surface-base.js';
 import {EventObject} from 'cytoscape';
-import {NetworkGraphController} from '../shared/network/network-graph-controller.js';
-import {NetworkShortcutsController} from '../shared/network/network-shortcuts-controller.js';
-import {NetworkMetrics} from '../shared/network/network-metrics-calculator.js';
+import {NetworkGraphController} from './controllers/network-graph-controller.js';
+import {NetworkShortcutsController} from './controllers/network-shortcuts-controller.js';
+import {NetworkMetrics} from './controllers/network-metrics-calculator.js';
 import {
   sharedVariables,
   themeStyles,

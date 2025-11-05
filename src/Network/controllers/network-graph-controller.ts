@@ -5,9 +5,9 @@ import cytoscape, {
   LayoutOptions,
   StylesheetStyle,
 } from 'cytoscape';
-import {NetworkData} from '../../Network/scientific-network.js';
+import {NetworkData} from '../scientific-network.js';
 import {NetworkMetricsCalculator, NetworkMetrics} from './network-metrics-calculator.js';
-import {getThemeColors, ScientificThemeColors, DATA_VISUALIZATION_PALETTE, createColorVariants} from '../utils/theme-utils.js';
+import {getThemeColors, ScientificThemeColors, DATA_VISUALIZATION_PALETTE, createColorVariants} from '../../shared/utils/theme-utils.js';
 import {
   LARGE_NETWORK_THRESHOLD,
   MEDIUM_NETWORK_THRESHOLD,
