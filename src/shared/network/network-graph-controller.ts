@@ -8,6 +8,21 @@ import cytoscape, {
 import {NetworkData} from '../../Network/scientific-network.js';
 import {NetworkMetricsCalculator, NetworkMetrics} from './network-metrics-calculator.js';
 import {getThemeColors, ScientificThemeColors, DATA_VISUALIZATION_PALETTE, createColorVariants} from '../utils/theme-utils.js';
+import {
+  LARGE_NETWORK_THRESHOLD,
+  MEDIUM_NETWORK_THRESHOLD,
+  NODE_GRID_SPACING,
+  BATCH_SIZE,
+  INITIALIZATION_RETRY_DELAY,
+  RESIZE_DEBOUNCE_DELAY,
+  COSE_LAYOUT_ITERATIONS,
+  COSE_IDEAL_EDGE_LENGTH,
+  COSE_NODE_OVERLAP,
+  COSE_REFRESH_RATE,
+  DEFAULT_ZOOM_PERCENT,
+  ZOOM_CONVERSION_FACTOR,
+  isLargeNetwork,
+} from './network-constants.js';
 
 export interface NetworkGraphControllerHost extends ReactiveControllerHost {
   theme?: string;
@@ -60,16 +75,16 @@ export class NetworkGraphController implements ReactiveController {
             this.initialize(canvasElement, data, options)
               .then(resolve)
               .catch(reject);
-          }, 250);
+          }, INITIALIZATION_RETRY_DELAY);
         });
       }
 
       const elements = this.convertDataToCytoscapeElements(data);
-      const isLargeNetwork = elements.length > 1000;
+      const isLarge = isLargeNetwork(elements.length);
 
       const cytoscapeOptions: Record<string, unknown> = {
         container: canvasElement,
-        elements: isLargeNetwork ? [] : elements,
+        elements: isLarge ? [] : elements,
         style: this.getCytoscapeStyles(),
         zoomingEnabled: this.host.enableZoom,
         panningEnabled: this.host.enablePan,
@@ -79,9 +94,9 @@ export class NetworkGraphController implements ReactiveController {
         selectionType: 'single',
         minZoom: 0.1,
         maxZoom: 3,
-        hideEdgesOnViewport: isLargeNetwork,
-        textureOnViewport: isLargeNetwork,
-        pixelRatio: isLargeNetwork ? 1 : 'auto',
+        hideEdgesOnViewport: isLarge,
+        textureOnViewport: isLarge,
+        pixelRatio: isLarge ? 1 : 'auto',
       };
 
       this.cy = cytoscape(cytoscapeOptions);
@@ -92,7 +107,7 @@ export class NetworkGraphController implements ReactiveController {
 
       await new Promise<void>(resolve => {
         this.cy!.ready(async () => {
-          if (isLargeNetwork) {
+          if (isLarge) {
             await this.addElementsInBatches(elements);
             
             await new Promise<void>(layoutResolve => {
@@ -142,24 +157,22 @@ export class NetworkGraphController implements ReactiveController {
     const edges = elements.filter(el => 'source' in el.data && 'target' in el.data);
     
     const cols = Math.ceil(Math.sqrt(nodes.length));
-    const spacing = 100;
     
     nodes.forEach((node, i) => {
       const row = Math.floor(i / cols);
       const col = i % cols;
       node.position = {
-        x: col * spacing,
-        y: row * spacing
+        x: col * NODE_GRID_SPACING,
+        y: row * NODE_GRID_SPACING
       };
     });
 
-    const batchSize = 500;
     const allElements = [...nodes, ...edges];
-    const totalBatches = Math.ceil(allElements.length / batchSize);
+    const totalBatches = Math.ceil(allElements.length / BATCH_SIZE);
 
     for (let i = 0; i < totalBatches; i++) {
-      const start = i * batchSize;
-      const end = Math.min(start + batchSize, allElements.length);
+      const start = i * BATCH_SIZE;
+      const end = Math.min(start + BATCH_SIZE, allElements.length);
       const batch = allElements.slice(start, end);
 
       this.cy.add(batch);
@@ -205,8 +218,7 @@ export class NetworkGraphController implements ReactiveController {
       const elements = this.convertDataToCytoscapeElements(data);
       this.cy.elements().remove();
       
-      const isLargeNetwork = elements.length > 1000;
-      if (isLargeNetwork) {
+      if (isLargeNetwork(elements.length)) {
         await this.addElementsInBatches(elements);
       } else {
         this.cy.add(elements);
@@ -280,7 +292,7 @@ export class NetworkGraphController implements ReactiveController {
   }
 
   getCurrentZoom(): number {
-    return this.cy ? Math.round(this.cy.zoom() * 100) : 100;
+    return this.cy ? Math.round(this.cy.zoom() * ZOOM_CONVERSION_FACTOR) : DEFAULT_ZOOM_PERCENT;
   }
 
   getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
@@ -418,7 +430,7 @@ export class NetworkGraphController implements ReactiveController {
   private getCytoscapeStyles(): StylesheetStyle[] {
     const colors = this.getBasicColors();
     const nodeCount = this.cy?.nodes().length || 0;
-    const isVeryLarge = nodeCount > 1000;
+    const isVeryLarge = isLargeNetwork(nodeCount);
 
     return [
       {
@@ -502,13 +514,13 @@ export class NetworkGraphController implements ReactiveController {
   private getDefaultLayoutOptions(): LayoutOptions {
     const nodeCount = this.cy?.nodes().length || 0;
     
-    if (nodeCount > 1000) {
+    if (nodeCount > LARGE_NETWORK_THRESHOLD) {
       return {
         name: 'preset',
         animate: false,
         fit: true,
       } as LayoutOptions;
-    } else if (nodeCount > 200) {
+    } else if (nodeCount > MEDIUM_NETWORK_THRESHOLD) {
       return {
         name: 'grid',
         animate: false,
@@ -521,10 +533,10 @@ export class NetworkGraphController implements ReactiveController {
         name: 'cose',
         animate: false,
         fit: true,
-        numIter: 1000,
-        idealEdgeLength: 100,
-        nodeOverlap: 20,
-        refresh: 20,
+        numIter: COSE_LAYOUT_ITERATIONS,
+        idealEdgeLength: COSE_IDEAL_EDGE_LENGTH,
+        nodeOverlap: COSE_NODE_OVERLAP,
+        refresh: COSE_REFRESH_RATE,
         randomize: false,
       } as LayoutOptions;
     }
@@ -540,7 +552,7 @@ export class NetworkGraphController implements ReactiveController {
         if (this.cy) {
           this.cy.resize();
         }
-      }, 100);
+      }, RESIZE_DEBOUNCE_DELAY);
     });
   }
 }
