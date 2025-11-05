@@ -138,11 +138,34 @@ export class ScientificToolbar extends LitElement {
         border: none;
       }
 
+      .toolbar-container.grid-1 {
+        display: flex;
+        justify-content: center;
+        border: none;
+      }
+
+      .toolbar-container.grid-6,
+      .toolbar-container.grid-7,
+      .toolbar-container.grid-8,
+      .toolbar-container.grid-9,
+      .toolbar-container.grid-10 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--scientific-spacing-md);
+        border: none;
+      }
+
       @media (max-width: 767px) {
+        .toolbar-container.grid-1,
         .toolbar-container.grid-2,
         .toolbar-container.grid-3,
         .toolbar-container.grid-4,
-        .toolbar-container.grid-5 {
+        .toolbar-container.grid-5,
+        .toolbar-container.grid-6,
+        .toolbar-container.grid-7,
+        .toolbar-container.grid-8,
+        .toolbar-container.grid-9,
+        .toolbar-container.grid-10 {
           display: flex;
           flex-direction: column;
         }
@@ -188,7 +211,7 @@ export class ScientificToolbar extends LitElement {
     }
 
     const containerClass = this.layout === 'auto' 
-      ? `grid-${visibleSections.length}` 
+      ? `grid-${Math.min(visibleSections.length, 10)}` 
       : this.layout;
 
     return html`

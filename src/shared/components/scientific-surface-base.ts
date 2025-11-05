@@ -38,7 +38,7 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return classNames(...baseClasses);
   }
 
-  protected renderHeader() {
+  protected renderHeader(): TemplateResult | typeof nothing {
     if (!this.title && !this.subtitle && !this.shouldShowToolbar() && !this.hasHeaderContent()) {
       return nothing;
     }
@@ -74,7 +74,7 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return nothing;
   }
 
-  protected renderError() {
+  protected renderError(): TemplateResult | typeof nothing {
     if (!this.errorMessage) {
       return nothing;
     }
@@ -86,7 +86,7 @@ export abstract class ScientificSurfaceBase extends LitElement {
     `;
   }
 
-  protected renderSuccess() {
+  protected renderSuccess(): TemplateResult | typeof nothing {
     if (!this.successMessage) {
       return nothing;
     }
@@ -98,7 +98,7 @@ export abstract class ScientificSurfaceBase extends LitElement {
     `;
   }
 
-  protected renderLoading() {
+  protected renderLoading(): TemplateResult | typeof nothing {
     if (!this.isLoading) {
       return nothing;
     }
@@ -115,11 +115,11 @@ export abstract class ScientificSurfaceBase extends LitElement {
     return this.showToolbar;
   }
 
-  protected renderToolbar(): unknown {
+  protected renderToolbar(): TemplateResult | typeof nothing {
     return nothing;
   }
 
-  protected abstract renderContent(): unknown;
+  protected abstract renderContent(): TemplateResult | typeof nothing;
 
   protected shouldHideContentOnError(): boolean {
     return true;
