@@ -14,6 +14,7 @@ import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 import {renderIcon} from '../shared/utils/icon-utils.js';
+import {type ButtonVariant, type ComponentSize, type ButtonType} from '../shared/types/common-types.js';
 
 export type ButtonTheme = ScientificTheme;
 
@@ -114,16 +115,10 @@ export class ScientificButton extends LitElement {
   showSpinner = true;
 
   @property({type: String})
-  variant:
-    | 'primary'
-    | 'secondary'
-    | 'outline'
-    | 'ghost'
-    | 'danger'
-    | 'success' = 'primary';
+  variant: ButtonVariant = 'primary';
 
   @property({type: String})
-  size: 'small' | 'medium' | 'large' = 'medium';
+  size: ComponentSize = 'medium';
 
   @property({type: Boolean})
   disabled = false;
@@ -134,7 +129,7 @@ export class ScientificButton extends LitElement {
 
 
   @property({type: String})
-  type: 'button' | 'submit' | 'reset' = 'button';
+  type: ButtonType = 'button';
 
   @property({type: String})
   href = '';

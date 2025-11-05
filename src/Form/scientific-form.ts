@@ -14,8 +14,7 @@ import {
 } from '../shared/styles/common-styles.js';
 import {formThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
-
-type FormMethod = 'GET' | 'POST' | 'dialog';
+import {ButtonVariant, FormMethod, FormEncType} from '../shared/types/common-types.js';
 
 import {dispatchCustomEvent} from '../shared/utils/event-utils.js';
 import {classNames} from '../shared/utils/dom-utils.js';
@@ -154,22 +153,10 @@ export class ScientificForm extends ScientificSurfaceBase {
   loadingLabel = 'Processing...';
 
   @property({type: String})
-  submitVariant:
-    | 'primary'
-    | 'secondary'
-    | 'outline'
-    | 'ghost'
-    | 'danger'
-    | 'success' = 'primary';
+  submitVariant: ButtonVariant = 'primary';
 
   @property({type: String})
-  cancelVariant:
-    | 'primary'
-    | 'secondary'
-    | 'outline'
-    | 'ghost'
-    | 'danger'
-    | 'success' = 'outline';
+  cancelVariant: ButtonVariant = 'outline';
 
   @property({type: Boolean})
   disabled = false;
@@ -220,10 +207,7 @@ export class ScientificForm extends ScientificSurfaceBase {
   action = '';
 
   @property({type: String})
-  enctype:
-    | 'application/x-www-form-urlencoded'
-    | 'multipart/form-data'
-    | 'text/plain' = 'application/x-www-form-urlencoded';
+  enctype: FormEncType = 'application/x-www-form-urlencoded';
 
   @property({type: Boolean})
   noValidate = false;

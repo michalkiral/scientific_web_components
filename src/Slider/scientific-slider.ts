@@ -14,6 +14,7 @@ import {
 import {sliderThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
 import {classNames, formatValue, clamp} from '../shared/utils/dom-utils.js';
+import {SimpleValidationState} from '../shared/types/common-types.js';
 
 export interface SliderMark {
   value: number;
@@ -328,7 +329,7 @@ export class ScientificSlider extends LitElement {
   errorMessage = '';
 
   @property({type: String})
-  state: 'default' | 'error' = 'default';
+  state: SimpleValidationState = 'default';
 
   @property({attribute: false})
   formatValue?: (value: number) => string;

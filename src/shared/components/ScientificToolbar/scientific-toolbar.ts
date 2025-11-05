@@ -7,11 +7,12 @@ import {
 } from '../../styles/common-styles.js';
 import '../../../Button/scientific-button.js';
 import '../../../Dropdown/scientific-dropdown.js';
+import {ButtonVariant} from '../../types/common-types.js';
 
 export interface ToolbarButtonDescriptor {
   id: string;
   label: string;
-  variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
+  variant: ButtonVariant;
   title: string;
   handler: () => void;
   icon?: string;

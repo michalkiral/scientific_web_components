@@ -20,13 +20,14 @@ import {
 import {tableThemeStyles} from '../shared/styles/component-theme-styles.js';
 import {dispatchMultipleEvents, debounce} from '../shared/utils/event-utils.js';
 import {parseCSVStream} from '../shared/utils/csv-utils.js';
+import {TextAlignment, SortDirection} from '../shared/types/common-types.js';
 
 export interface TableColumn {
   key: string;
   label: string;
   sortable?: boolean;
   width?: string;
-  align?: 'left' | 'center' | 'right';
+  align?: TextAlignment;
   type?: 'text' | 'number' | 'date' | 'boolean';
   formatter?: (value: unknown, row: TableData) => string | TemplateResult;
 }
@@ -38,7 +39,7 @@ export interface TableData {
 
 export interface TableSort {
   column: string;
-  direction: 'asc' | 'desc';
+  direction: SortDirection;
 }
 
 export type TableTheme = ScientificTheme;

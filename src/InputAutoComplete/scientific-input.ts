@@ -31,6 +31,7 @@ import {
   renderClearButton,
   createClearHandler,
 } from '../shared/utils/clear-button-utils.js';
+import {ValidationState} from '../shared/types/common-types.js';
 
 export type InputType =
   | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'
@@ -95,7 +96,7 @@ export class ScientificInput
   clearable = true;
 
   @property({type: String})
-  state: 'default' | 'error' | 'success' = 'default';
+  state: ValidationState = 'default';
 
   @property({type: String})
   errorMessage = '';
