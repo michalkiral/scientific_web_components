@@ -2,6 +2,7 @@ import {
   type ToolbarSection,
   type ToolbarButtonDescriptor,
 } from '../components/ScientificToolbar/scientific-toolbar.js';
+import {type GraphExportFormat} from './export-utils.js';
 
 export interface ButtonConfig {
   id: string;
@@ -71,7 +72,7 @@ export interface GraphToolbarState {
   isLoading: boolean;
   chartExists: boolean;
   showExportButtons: boolean;
-  exportFormats: Array<'png' | 'jpg' | 'pdf'>;
+  exportFormats: GraphExportFormat[];
 }
 
 export interface GraphToolbarHandlers {

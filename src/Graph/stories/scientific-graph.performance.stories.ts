@@ -2,6 +2,7 @@ import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import '../scientific-graph.js';
 import type {ScientificGraph} from '../scientific-graph.js';
+import {type GraphExportFormat} from '../../shared/utils/export-utils.js';
 
 function generateLargeDataset(points: number) {
   const labels = Array.from({length: points}, (_, i) => `Point ${i + 1}`);
@@ -402,7 +403,7 @@ export const ExportPerformance: Story = {
           ]}
           showToolbar
           showExportButtons
-          .exportFormats=${['png', 'pdf'] as ('png' | 'jpg' | 'pdf')[]}
+          .exportFormats=${['png', 'pdf'] as GraphExportFormat[]}
           .onExport=${(format: string) => {
             const startTime = performance.now();
             setTimeout(() => {

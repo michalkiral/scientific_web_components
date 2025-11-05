@@ -27,6 +27,7 @@ import {
   createExportHandler,
   type ExportableComponent,
   type ExportOptions,
+  type GraphExportFormat,
 } from '../shared/utils/export-utils.js';
 import {getChartThemeColors} from '../shared/utils/theme-utils.js';
 import {
@@ -202,7 +203,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   showExportButtons = false;
 
   @property({type: Array})
-  exportFormats: ('png' | 'jpg' | 'pdf')[] = ['png', 'jpg', 'pdf'];
+  exportFormats: GraphExportFormat[] = ['png', 'jpg', 'pdf'];
 
   @property({type: Boolean})
   responsive = true;
@@ -242,7 +243,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   ) => void;
 
   @property({attribute: false})
-  onExport?: (format: 'png' | 'jpg' | 'pdf') => void;
+  onExport?: (format: GraphExportFormat) => void;
 
   private chart: Chart | null = null;
 
@@ -533,7 +534,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
     };
   };
 
-  getDataURL(format: 'png' | 'jpg' = 'png', quality = 1.0): string | null {
+  getDataURL(format: GraphExportFormat = 'png', quality = 1.0): string | null {
     if (!this.chart) return null;
 
     if (format === 'jpg') {

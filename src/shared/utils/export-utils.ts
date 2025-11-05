@@ -1,14 +1,18 @@
+export type ExportFormat = 'png' | 'jpg' | 'pdf' | 'json' | 'svg';
+export type ImageExportFormat = 'png' | 'jpg';
+export type GraphExportFormat = 'png' | 'jpg' | 'pdf';
+
 export interface ExportOptions {
   title?: string;
   subtitle?: string;
-  format: 'png' | 'jpg' | 'pdf' | 'json' | 'svg';
+  format: ExportFormat;
   quality?: number;
   backgroundColor?: string;
   timestamp?: boolean;
 }
 
 export interface ExportableComponent {
-  getDataURL?: (format: 'png' | 'jpg', quality?: number) => string | null;
+  getDataURL?: (format: ImageExportFormat, quality?: number) => string | null;
   getCanvasElement?: () => HTMLCanvasElement | null;
   getExportData?: () => unknown;
 }

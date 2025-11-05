@@ -1,6 +1,7 @@
 import {ScientificGraph} from '../scientific-graph.js';
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
+import {type GraphExportFormat} from '../../shared/utils/export-utils.js';
 
 (window as any).Chart = {
   register: () => {},
@@ -248,7 +249,7 @@ suite('ScientificGraph - Performance Tests', () => {
         .datasets=${datasets}
         showToolbar
         showExportButtons
-        .exportFormats=${['png'] as ('png' | 'jpg' | 'pdf')[]}
+        .exportFormats=${['png'] as GraphExportFormat[]}
       ></scientific-graph>
     `);
 
