@@ -451,32 +451,36 @@ export const LoadingStates: Story = {
 export const WithMessages: Story = {
   render: () => html`
     <style>
-      .error-input {
+      .form-input {
         padding: 12px;
-        border: 2px solid #fecaca;
+        border: 2px solid #e5e7eb;
         border-radius: 8px;
         width: 100%;
         box-sizing: border-box;
         outline: none;
         transition: all 0.2s ease;
+        font-size: 16px;
       }
       
-      .error-input:focus {
+      .form-input:focus {
+        border-color: var(--scientific-border-focus, #3b82f6);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      
+      .form-input:invalid:not(:placeholder-shown) {
+        border-color: #fca5a5;
+      }
+      
+      .form-input:invalid:focus:not(:placeholder-shown) {
         border-color: #f87171;
         box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1);
       }
       
-      .success-input {
-        padding: 12px;
-        border: 2px solid #bbf7d0;
-        border-radius: 8px;
-        width: 100%;
-        box-sizing: border-box;
-        outline: none;
-        transition: all 0.2s ease;
+      .form-input:valid:not(:placeholder-shown) {
+        border-color: #86efac;
       }
       
-      .success-input:focus {
+      .form-input:valid:focus:not(:placeholder-shown) {
         border-color: #34d399;
         box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
       }
@@ -493,13 +497,17 @@ export const WithMessages: Story = {
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <input
             type="email"
+            name="email"
             placeholder="Email"
-            class="error-input"
+            class="form-input"
+            required
           />
           <input
             type="password"
+            name="password"
             placeholder="Password"
-            class="error-input"
+            class="form-input"
+            required
           />
         </div>
       </scientific-form>
@@ -509,13 +517,22 @@ export const WithMessages: Story = {
         title="Newsletter Signup"
         subtitle="Stay updated with our latest news"
         successMessage="Thank you! You've been successfully subscribed to our newsletter."
+        .onSubmit=${async (formData: FormData) => {
+          console.log('Newsletter signup:', Object.fromEntries(formData));
+        }}
       >
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-          <input
-          type="email"
-          placeholder="Your email address"
-          class="success-input"
-        />
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <label style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 500; color: #374151;">Email Address *</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="Your email address"
+              class="form-input"
+              required
+              value="user@example.com"
+            />
+          </label>
         </div>
       </scientific-form>
     </div>
