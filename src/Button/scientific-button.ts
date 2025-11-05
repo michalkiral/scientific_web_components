@@ -3,13 +3,13 @@ import {customElement, property} from 'lit/decorators.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import {
   sharedVariables,
-  buttonStyles,
   loadingSpinnerStyles,
   responsiveStyles,
   themeStyles,
   type ScientificTheme,
 } from '../shared/styles/common-styles.js';
 import {buttonThemeStyles} from '../shared/styles/component-theme-styles.js';
+import {buttonStyles} from './button-styles.js';
 import {baseComponentStyles} from '../shared/styles/base-component-styles.js';
 import {classNames} from '../shared/utils/dom-utils.js';
 import {dispatchMultipleEvents} from '../shared/utils/event-utils.js';
