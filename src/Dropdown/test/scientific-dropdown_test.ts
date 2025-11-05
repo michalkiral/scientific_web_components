@@ -66,15 +66,12 @@ suite('ScientificDropdown', () => {
       '.dropdown-select'
     ) as HTMLElement;
 
-    // Initially closed
     assert.isFalse(el.isOpen);
 
-    // Click to open
     select.click();
     await el.updateComplete;
     assert.isTrue(el.isOpen);
 
-    // Click to close
     select.click();
     await el.updateComplete;
     assert.isFalse(el.isOpen);

@@ -493,7 +493,6 @@ suite('ScientificInput', () => {
     input.value = 'xyz';
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await el.updateComplete;
-    // Wait for debounced filtering (150ms + buffer)
     await aTimeout(200);
     await el.updateComplete;
 
@@ -535,7 +534,6 @@ suite('ScientificInput', () => {
     input.value = 'App';
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await el.updateComplete;
-    // Wait for debounced filtering (150ms + buffer)
     await aTimeout(200);
     await el.updateComplete;
 

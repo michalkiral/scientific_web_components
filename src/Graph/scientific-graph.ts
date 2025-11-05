@@ -566,7 +566,9 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   }
 
   getExportData(): unknown {
-    if (!this.chart) return null;
+    if (!this.chart) {
+      return null;
+    }
     return {
       title: this.title,
       subtitle: this.subtitle,
@@ -589,10 +591,14 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   };
 
   private _renderStatistics() {
-    if (!this.showStatistics) return '';
+    if (!this.showStatistics) {
+      return '';
+    }
 
     const stats = this._calculateStatistics();
-    if (!stats) return '';
+    if (!stats) {
+      return '';
+    }
 
     return html`
       <div class="graph-statistics">
@@ -637,8 +643,10 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
   }
 
   private _renderLegend() {
-    if (!this.showLegend || !this.datasets.length) return '';
-
+    if (!this.showLegend || !this.datasets.length) {
+      return '';
+    }
+    
     return html`
       <div class="graph-legend">
         ${this.datasets.map(

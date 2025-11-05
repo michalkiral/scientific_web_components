@@ -3,17 +3,7 @@ import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 import type {NetworkData, NetworkNode, NetworkEdge} from '../scientific-network.js';
 
-/**
- * Performance test suite for ScientificNetwork component
- * Tests rendering and interaction performance with large network graphs
- * as specified in the thesis requirements
- */
 suite('ScientificNetwork - Performance Tests', () => {
-  /**
-   * Generate a large network dataset for testing
-   * @param nodeCount Number of nodes to generate
-   * @param edgeDensity Average edges per node (affects total edge count)
-   */
   function generateLargeNetwork(
     nodeCount: number,
     edgeDensity = 2
@@ -21,7 +11,6 @@ suite('ScientificNetwork - Performance Tests', () => {
     const nodes: NetworkNode[] = [];
     const edges: NetworkEdge[] = [];
 
-    // Generate nodes
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         id: `node-${i}`,
@@ -33,13 +22,11 @@ suite('ScientificNetwork - Performance Tests', () => {
       });
     }
 
-    // Generate edges
     const targetEdgeCount = nodeCount * edgeDensity;
     for (let i = 0; i < targetEdgeCount; i++) {
       const source = nodes[Math.floor(Math.random() * nodeCount)];
       const target = nodes[Math.floor(Math.random() * nodeCount)];
 
-      // Avoid self-loops
       if (source.id !== target.id) {
         edges.push({
           id: `edge-${i}`,
@@ -53,15 +40,10 @@ suite('ScientificNetwork - Performance Tests', () => {
     return {nodes, edges};
   }
 
-  /**
-   * Generate a scale-free network (more realistic scientific network)
-   * @param nodeCount Number of nodes
-   */
   function generateScaleFreeNetwork(nodeCount: number): NetworkData {
     const nodes: NetworkNode[] = [];
     const edges: NetworkEdge[] = [];
 
-    // Create initial nodes
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         id: `node-${i}`,
@@ -73,17 +55,15 @@ suite('ScientificNetwork - Performance Tests', () => {
       });
     }
 
-    // Preferential attachment - new nodes connect to high-degree nodes
     const nodeDegrees = new Map<string, number>();
     nodes.forEach((n) => nodeDegrees.set(n.id, 0));
 
     let edgeId = 0;
     for (let i = 1; i < nodeCount; i++) {
       const newNode = nodes[i];
-      const connectionsToMake = Math.min(3, i); // Connect to 3 existing nodes
+      const connectionsToMake = Math.min(3, i);
 
       for (let j = 0; j < connectionsToMake; j++) {
-        // Select target based on degree (preferential attachment)
         const targetNode = nodes[Math.floor(Math.random() * i)];
 
         edges.push({
@@ -97,7 +77,6 @@ suite('ScientificNetwork - Performance Tests', () => {
       }
     }
 
-    // Mark hub nodes (nodes with high degree)
     const avgDegree =
       Array.from(nodeDegrees.values()).reduce((a, b) => a + b, 0) / nodeCount;
     nodes.forEach((node) => {
@@ -127,7 +106,7 @@ suite('ScientificNetwork - Performance Tests', () => {
 
     assert.exists(el);
     assert.equal(el.data.nodes.length, 1000);
-    assert.isAtLeast(el.data.edges.length, 1500); // Approximately 2 per node
+    assert.isAtLeast(el.data.edges.length, 1500);
 
     console.log(
       `✓ Rendered 1,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
@@ -163,8 +142,7 @@ suite('ScientificNetwork - Performance Tests', () => {
   });
 
   test('handles 10,000 edges in a dense network', async () => {
-    // Create a network with fewer nodes but many edges
-    const networkData = generateLargeNetwork(500, 20); // Dense network
+    const networkData = generateLargeNetwork(500, 20);
 
     const startTime = performance.now();
 
@@ -300,7 +278,6 @@ suite('ScientificNetwork - Performance Tests', () => {
 
     const startTime = performance.now();
 
-    // Trigger selection programmatically
     const nodeSelectedEvent = new CustomEvent('node-selected', {
       detail: {node: {id: 'node-0'}},
     });
@@ -329,12 +306,10 @@ suite('ScientificNetwork - Performance Tests', () => {
     `);
 
     await el.updateComplete;
-    // Give the network time to initialize
     await new Promise(resolve => setTimeout(resolve, 100));
 
     const startTime = performance.now();
 
-    // Test getExportData method if available
     if (typeof el.getExportData === 'function') {
       el.getExportData();
     }
@@ -382,7 +357,6 @@ suite('ScientificNetwork - Performance Tests', () => {
   test('layout algorithm completes in reasonable time', async () => {
     const networkData = generateLargeNetwork(1000, 2);
 
-    // Layout is computed during initial render
     const startTime = performance.now();
 
     const el = await fixture<ScientificNetwork>(html`
@@ -410,7 +384,6 @@ suite('ScientificNetwork - Performance Tests', () => {
   });
 
   test('memory usage remains stable with large networks', async () => {
-    // Create and destroy multiple large networks
     const iterations = 3;
 
     for (let i = 0; i < iterations; i++) {
@@ -425,7 +398,6 @@ suite('ScientificNetwork - Performance Tests', () => {
 
       await el.updateComplete;
 
-      // Remove element
       el.remove();
     }
 
@@ -451,7 +423,6 @@ suite('ScientificNetwork - Performance Tests', () => {
 
     const startTime = performance.now();
 
-    // Generate additional nodes and edges
     const additionalNetwork = generateLargeNetwork(500, 2);
     const updatedData: NetworkData = {
       nodes: [...initialNetwork.nodes, ...additionalNetwork.nodes],

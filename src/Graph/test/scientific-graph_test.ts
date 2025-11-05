@@ -23,11 +23,9 @@ suite('ScientificGraph', () => {
     const el = await fixture(html`<scientific-graph></scientific-graph>`);
     const container = el.shadowRoot!.querySelector('.scientific-container');
     const canvasContainer = el.shadowRoot!.querySelector('.graph-canvas-container');
-    // const canvas = el.shadowRoot!.querySelector('#myChart');
 
     assert.isNotNull(container);
     assert.isNotNull(canvasContainer);
-    // assert.isNotNull(canvas);
   });
 
   test('renders with custom title', async () => {
@@ -68,8 +66,6 @@ suite('ScientificGraph', () => {
     const dropdown = toolbar!.shadowRoot!.querySelector('scientific-dropdown');
     assert.isNotNull(dropdown);
 
-    // assert.equal(el.type, 'line');
-
     el.type = 'bar';
     await el.updateComplete;
     assert.equal(el.type, 'bar');
@@ -91,8 +87,6 @@ suite('ScientificGraph', () => {
     });
     dropdown.dispatchEvent(changeEvent);
     await el.updateComplete;
-
-    // assert.equal(el.type, 'bar');
   });
 
   test('dropdown has correct width constraints', async () => {
@@ -141,9 +135,6 @@ suite('ScientificGraph', () => {
     );
 
     assert.isTrue(el.responsive);
-
-    // const canvas = el.shadowRoot!.querySelector('#myChart') as HTMLCanvasElement;
-    // assert.isNotNull(canvas);
   });
 
   test('handles animation settings', async () => {
@@ -222,7 +213,6 @@ suite('ScientificGraph', () => {
 
     assert.equal(el.labels.length, 2);
 
-    // Update data
     el.labels = newLabels;
     el.datasets = newDatasets;
     await el.updateComplete;

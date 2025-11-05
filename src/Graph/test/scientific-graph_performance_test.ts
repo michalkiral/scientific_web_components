@@ -2,7 +2,6 @@ import {ScientificGraph} from '../scientific-graph.js';
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 
-// Mock Chart.js for testing
 (window as any).Chart = {
   register: () => {},
   getChart: () => null,
@@ -13,16 +12,8 @@ import {html} from 'lit/static-html.js';
   },
 } as any;
 
-/**
- * Performance test suite for ScientificGraph component
- * Tests rendering and interaction performance with large datasets
- * as specified in the thesis requirements
- */
+
 suite('ScientificGraph - Performance Tests', () => {
-  /**
-   * Generate a large dataset for testing
-   * @param size Number of data points to generate
-   */
   function generateLargeDataset(size: number) {
     const labels: string[] = [];
     const data: number[] = [];
@@ -35,11 +26,6 @@ suite('ScientificGraph - Performance Tests', () => {
     return {labels, data};
   }
 
-  /**
-   * Generate multiple datasets for stress testing
-   * @param datasetCount Number of datasets
-   * @param pointsPerDataset Number of points per dataset
-   */
   function generateMultipleDatasets(
     datasetCount: number,
     pointsPerDataset: number
@@ -47,12 +33,10 @@ suite('ScientificGraph - Performance Tests', () => {
     const labels: string[] = [];
     const datasets: Array<{label: string; data: number[]}> = [];
 
-    // Generate labels
     for (let i = 0; i < pointsPerDataset; i++) {
       labels.push(`Point ${i + 1}`);
     }
 
-    // Generate datasets
     for (let d = 0; d < datasetCount; d++) {
       const data: number[] = [];
       for (let i = 0; i < pointsPerDataset; i++) {
@@ -90,7 +74,6 @@ suite('ScientificGraph - Performance Tests', () => {
 
     console.log(`✓ Rendered 10,000 points in ${renderTime.toFixed(2)}ms`);
 
-    // Assert reasonable render time (should be under 5 seconds)
     assert.isBelow(renderTime, 5000, 'Should render within 5 seconds');
   });
 
@@ -122,7 +105,6 @@ suite('ScientificGraph - Performance Tests', () => {
   });
 
   test('handles 10,000 data points - Scatter Plot', async () => {
-    // Generate scatter plot data
     const scatterData: Array<{x: number; y: number}> = [];
     for (let i = 0; i < 10000; i++) {
       scatterData.push({
@@ -209,7 +191,6 @@ suite('ScientificGraph - Performance Tests', () => {
       ></scientific-graph>
     `);
 
-    // Generate new data
     const {labels: newLabels, data: newData} = generateLargeDataset(5000);
     const newDatasets = [{label: 'Updated Data', data: newData}];
 
@@ -273,7 +254,6 @@ suite('ScientificGraph - Performance Tests', () => {
 
     await el.updateComplete;
 
-    // Test that export data can be prepared
     assert.exists(el);
     assert.equal(el.labels.length, 5000);
     assert.equal(el.datasets[0].data.length, 5000);
@@ -282,7 +262,6 @@ suite('ScientificGraph - Performance Tests', () => {
   });
 
   test('memory usage remains stable with large dataset', async () => {
-    // This test verifies that multiple renders don't leak memory
     const iterations = 5;
     const pointsPerIteration = 2000;
 
@@ -300,7 +279,6 @@ suite('ScientificGraph - Performance Tests', () => {
 
       await el.updateComplete;
 
-      // Remove element
       el.remove();
     }
 
@@ -308,7 +286,6 @@ suite('ScientificGraph - Performance Tests', () => {
       `✓ Created and destroyed ${iterations} graphs with ${pointsPerIteration} points each`
     );
 
-    // If we got here without running out of memory, test passes
     assert.isTrue(true, 'Memory remains stable across multiple renders');
   });
 

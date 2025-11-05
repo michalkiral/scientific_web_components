@@ -3,22 +3,11 @@ import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 import type {TableColumn, TableData} from '../scientific-table.js';
 
-/**
- * Performance test suite for ScientificTable component
- * Tests rendering and interaction performance with large datasets
- * as specified in the thesis requirements
- */
 suite('ScientificTable - Performance Tests', () => {
-  /**
-   * Generate a large dataset for testing
-   * @param rowCount Number of rows to generate
-   * @param columnCount Number of columns per row
-   */
   function generateLargeDataset(rowCount: number, columnCount = 10) {
     const columns: TableColumn[] = [];
     const data: TableData[] = [];
 
-    // Generate columns
     columns.push({
       key: 'id',
       label: 'ID',
@@ -40,7 +29,6 @@ suite('ScientificTable - Performance Tests', () => {
       });
     }
 
-    // Generate data rows
     for (let r = 0; r < rowCount; r++) {
       const row: TableData = {
         id: `row-${r}`,
@@ -77,10 +65,6 @@ suite('ScientificTable - Performance Tests', () => {
     return {columns, data};
   }
 
-  /**
-   * Generate scientific dataset (compounds, experiments, etc.)
-   * @param rowCount Number of compounds/experiments
-   */
   function generateScientificDataset(rowCount: number) {
     const columns: TableColumn[] = [
       {key: 'id', label: 'Compound ID', sortable: true, type: 'text'},
@@ -129,7 +113,6 @@ suite('ScientificTable - Performance Tests', () => {
     const states = ['Solid', 'Liquid', 'Gas', 'Plasma'];
 
     for (let i = 0; i < rowCount; i++) {
-      // Generate chemical formula
       const formula =
         elements[i % elements.length] +
         Math.floor(Math.random() * 20 + 1) +
@@ -233,7 +216,6 @@ suite('ScientificTable - Performance Tests', () => {
 
     const startTime = performance.now();
 
-    // Change page
     el.currentPage = 5;
     await el.updateComplete;
 
@@ -268,7 +250,6 @@ suite('ScientificTable - Performance Tests', () => {
 
     const startTime = performance.now();
 
-    // Trigger sort event
     const sortEvent = new CustomEvent('sort', {
       detail: {column: columns[1], direction: 'asc'},
     });
@@ -374,7 +355,7 @@ suite('ScientificTable - Performance Tests', () => {
   });
 
   test('handles wide tables (many columns)', async () => {
-    const {columns, data} = generateLargeDataset(5000, 30); // 30 columns
+    const {columns, data} = generateLargeDataset(5000, 30);
 
     const startTime = performance.now();
 
@@ -421,7 +402,6 @@ suite('ScientificTable - Performance Tests', () => {
 
     await el.updateComplete;
 
-    // Generate new data
     const {data: newData} = generateLargeDataset(5000, 10);
 
     const startTime = performance.now();
@@ -465,7 +445,6 @@ suite('ScientificTable - Performance Tests', () => {
   });
 
   test('memory usage remains stable with large datasets', async () => {
-    // Create and destroy multiple large tables
     const iterations = 3;
 
     for (let i = 0; i < iterations; i++) {
@@ -483,7 +462,6 @@ suite('ScientificTable - Performance Tests', () => {
 
       await el.updateComplete;
 
-      // Remove element
       el.remove();
     }
 
@@ -495,7 +473,7 @@ suite('ScientificTable - Performance Tests', () => {
   });
 
   test('empty state renders quickly even with large column definition', async () => {
-    const {columns} = generateLargeDataset(0, 20); // 20 columns, no data
+    const {columns} = generateLargeDataset(0, 20);
 
     const startTime = performance.now();
 
@@ -526,8 +504,6 @@ suite('ScientificTable - Performance Tests', () => {
   });
 
   test('handles CSV import with 10,000 rows (simulation)', async () => {
-    // Note: Actual CSV loading requires a real file
-    // This test simulates the post-load state
     const {columns, data} = generateScientificDataset(10000);
 
     const startTime = performance.now();
