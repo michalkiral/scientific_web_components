@@ -1,6 +1,6 @@
 import {html, TemplateResult} from 'lit';
-import {renderIcon} from '../../utils/icon-utils.js';
-import {dispatchMultipleEvents} from '../../utils/event-utils.js';
+import {renderIcon} from './icon-utils.js';
+import {dispatchMultipleEvents} from './event-utils.js';
 
 export interface ClearButtonConfig {
   onClear: () => void;

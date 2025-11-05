@@ -1,6 +1,6 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-dropdown.js';
+import '../scientific-dropdown.js';
 import {
   dropdownThemes,
   defaultDropdownArgs,

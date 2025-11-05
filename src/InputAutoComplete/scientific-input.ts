@@ -30,7 +30,7 @@ import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 import {
   renderClearButton,
   createClearHandler,
-} from '../shared/components/clear-button/clear-button-utils.js';
+} from '../shared/utils/clear-button-utils.js';
 
 export type InputType =
   | 'hidden' | 'text' | 'search' | 'tel' | 'url' | 'email' | 'password'

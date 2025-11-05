@@ -37,7 +37,7 @@ import {
   type GraphToolbarState,
   type GraphToolbarHandlers,
 } from '../shared/utils/toolbar-config-utils.js';
-import {graphToolbarConfig} from './scientific-graph.stories.data.js';
+import {graphToolbarConfig} from './stories/scientific-graph.stories.data.js';
 
 export interface GraphDataset {
   label: string;
@@ -646,7 +646,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
     if (!this.showLegend || !this.datasets.length) {
       return '';
     }
-    
+
     return html`
       <div class="graph-legend">
         ${this.datasets.map(

@@ -1,12 +1,12 @@
 import {temperatureData, experimentData} from './scientific-graph.stories.data.js';
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-graph.js';
-import '../Button/scientific-button.js';
-import '../Dropdown/scientific-dropdown.js';
+import '../scientific-graph.js';
+import '../../Button/scientific-button.js';
+import '../../Dropdown/scientific-dropdown.js';
 
 const meta: Meta = {
-  title: 'Scientific/Graph',
+  title: 'Scientific/Graph/Scientific Graph',
   component: 'scientific-graph',
   tags: ['autodocs'],
   parameters: {

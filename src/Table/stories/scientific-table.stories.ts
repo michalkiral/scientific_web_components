@@ -9,12 +9,12 @@ import {
 } from './scientific-table.stories.data.js';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import {html} from 'lit';
-import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
-import './scientific-table';
-import type {ScientificTable} from './scientific-table';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
+import '../scientific-table.js';
+import type {ScientificTable} from '../scientific-table.js';
 
 const meta: Meta<ScientificTable> = {
-  title: 'Scientific/Scientific Table',
+  title: 'Scientific/Table/Scientific Table',
   component: 'scientific-table',
   parameters: {
     layout: 'fullscreen',

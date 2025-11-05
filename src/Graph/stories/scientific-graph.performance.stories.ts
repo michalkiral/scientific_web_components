@@ -1,7 +1,7 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-graph.js';
-import type {ScientificGraph} from './scientific-graph.js';
+import '../scientific-graph.js';
+import type {ScientificGraph} from '../scientific-graph.js';
 
 function generateLargeDataset(points: number) {
   const labels = Array.from({length: points}, (_, i) => `Point ${i + 1}`);
@@ -33,13 +33,6 @@ const meta: Meta = {
 
 Visual tests demonstrating the Graph component's ability to handle large datasets efficiently.
 These stories can be used for visual regression testing and performance validation.
-
-**Performance Benchmarks:**
-- 10,000 points: < 5 seconds render time
-- Multiple datasets: < 5 seconds with 10 datasets × 1,000 points
-- Statistics calculation: < 5 seconds with 10,000 points
-
-All tests validate the component's ability to handle real-world scientific data volumes.
         `,
       },
     },

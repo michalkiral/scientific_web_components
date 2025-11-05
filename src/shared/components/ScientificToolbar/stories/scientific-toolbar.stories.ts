@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-toolbar.js';
-import type {ScientificToolbar, ToolbarSection} from './scientific-toolbar.js';
-import {SCIENTIFIC_THEMES} from '../../constants/themes.js';
+import '../scientific-toolbar.js';
+import type {ScientificToolbar, ToolbarSection} from '../scientific-toolbar.js';
+import {SCIENTIFIC_THEMES} from '../../../constants/themes.js';
 
 const meta: Meta<ScientificToolbar> = {
   title: 'Components/ScientificToolbar',

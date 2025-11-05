@@ -1,4 +1,4 @@
-import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
 
 export const sliderThemes = SCIENTIFIC_THEMES;
 export const sliderStates = ['default', 'error'] as const;

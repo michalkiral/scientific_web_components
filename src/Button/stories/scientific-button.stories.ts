@@ -1,6 +1,6 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-button.js';
+import '../scientific-button.js';
 import {
   buttonThemes,
   buttonVariants,

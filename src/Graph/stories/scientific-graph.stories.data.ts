@@ -1,5 +1,5 @@
-import type {GraphDataset} from './scientific-graph';
-import type {GraphToolbarConfig} from '../shared/utils/toolbar-config-utils';
+import type {GraphDataset} from '../scientific-graph';
+import type {GraphToolbarConfig} from '../../shared/utils/toolbar-config-utils';
 
 interface GraphData {
   labels: string[];

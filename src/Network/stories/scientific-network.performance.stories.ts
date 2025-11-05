@@ -1,7 +1,7 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-network.js';
-import type {NetworkData, ScientificNetwork} from './scientific-network.js';
+import '../scientific-network.js';
+import type {NetworkData, ScientificNetwork} from '../scientific-network.js';
 
 function generateLargeNetwork(nodeCount: number, avgEdgesPerNode: number): NetworkData {
   const nodes = Array.from({length: nodeCount}, (_, i) => ({
@@ -99,14 +99,6 @@ const meta: Meta = {
 
 Visual tests demonstrating the Network component's ability to handle large graph datasets efficiently.
 These stories can be used for visual regression testing and performance validation.
-
-**Performance Benchmarks:**
-- 1,000 nodes: < 10 seconds render time
-- 5,000 nodes: < 15 seconds render time
-- 10,000 edges: < 15 seconds render time
-- Scale-free networks: < 15 seconds for realistic topologies
-
-All tests validate the component's ability to handle real-world network visualization scenarios.
         `,
       },
     },

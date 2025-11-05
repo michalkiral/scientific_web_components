@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import {html} from 'lit';
-import './scientific-slider.js';
-import type {ScientificSlider} from './scientific-slider.js';
+import '../scientific-slider.js';
+import type {ScientificSlider} from '../scientific-slider.js';
 import {
   sliderThemes,
   sliderStates,

@@ -1,10 +1,10 @@
 import {LitElement, html, css, nothing} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-form.js';
-import '../InputAutoComplete/scientific-input.js';
-import '../Dropdown/scientific-dropdown.js';
-import '../Button/scientific-button.js';
-import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+import '../scientific-form.js';
+import '../../InputAutoComplete/scientific-input.js';
+import '../../Dropdown/scientific-dropdown.js';
+import '../../Button/scientific-button.js';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
 
 const meta: Meta = {
   title: 'Scientific/Form',

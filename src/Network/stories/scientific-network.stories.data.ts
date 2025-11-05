@@ -1,4 +1,4 @@
-import type {NetworkData} from './scientific-network';
+import type {NetworkData} from '../scientific-network';
 
 export const exportFormatOptions: Array<{value: string; label: string}> = [
   {value: 'png', label: 'PNG'},

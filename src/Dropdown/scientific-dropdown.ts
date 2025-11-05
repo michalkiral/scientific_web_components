@@ -27,7 +27,7 @@ import {renderDropdownOptions} from '../shared/dropdown/dropdown-render.js';
 import {
   renderClearButton,
   createClearHandler,
-} from '../shared/components/clear-button/clear-button-utils.js';
+} from '../shared/utils/clear-button-utils.js';
 
 @customElement('scientific-dropdown')
 export class ScientificDropdown

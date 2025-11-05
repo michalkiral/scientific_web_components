@@ -37,7 +37,7 @@ import {
   networkTypeOptions,
   interactionModeButtons,
   controlButtons,
-} from './scientific-network.stories.data.js';
+} from './stories/scientific-network.stories.data.js';
 import {NetworkEvents, getElementEventName} from './network-events.js';
 import {DEFAULT_NETWORK_SHORTCUTS} from './network-shortcuts.js';
 import '../Button/scientific-button.js';

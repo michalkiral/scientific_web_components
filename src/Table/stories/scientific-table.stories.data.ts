@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import type {TableColumn, TableData} from './scientific-table';
+import type {TableColumn, TableData} from '../scientific-table';
 
 export const sampleColumns: TableColumn[] = [
   {

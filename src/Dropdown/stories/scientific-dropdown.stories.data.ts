@@ -1,4 +1,4 @@
-import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
 
 export const dropdownThemes = SCIENTIFIC_THEMES;
 

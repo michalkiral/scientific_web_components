@@ -1,7 +1,7 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-table.js';
-import type {TableColumn, ScientificTable} from './scientific-table.js';
+import '../scientific-table.js';
+import type {TableColumn, ScientificTable} from '../scientific-table.js';
 
 function generateLargeDataset(rows: number, columns: number) {
   const cols: TableColumn[] = Array.from({length: columns}, (_, i) => ({
@@ -68,15 +68,6 @@ const meta: Meta = {
 
 Visual tests demonstrating the Table component's ability to handle large datasets efficiently.
 These stories can be used for visual regression testing and performance validation.
-
-**Performance Benchmarks:**
-- 10,000 rows: < 5 seconds render time
-- Pagination: < 500ms page changes
-- Sorting: < 2 seconds with 10,000 rows
-- Search/filtering: < 1 second response
-- Wide tables (30+ columns): < 5 seconds render
-
-All tests validate the component's ability to handle real-world scientific data tables.
         `,
       },
     },

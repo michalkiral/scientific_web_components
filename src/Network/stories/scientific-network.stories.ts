@@ -5,12 +5,12 @@
 } from './scientific-network.stories.data.js';
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
-import './scientific-network.js';
-import type {ScientificNetwork} from './scientific-network.js';
-import {SCIENTIFIC_THEMES} from '../shared/constants/themes.js';
+import '../scientific-network.js';
+import type {ScientificNetwork} from '../scientific-network.js';
+import {SCIENTIFIC_THEMES} from '../../shared/constants/themes.js';
 
 const meta: Meta<ScientificNetwork> = {
-   title: 'Scientific/Network',
+   title: 'Scientific/Network/Scientific Network',
   component: 'scientific-network',
   tags: ['autodocs'],
   parameters: {
