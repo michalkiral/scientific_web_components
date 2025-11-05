@@ -121,7 +121,7 @@ suite('ScientificGraph - Performance Tests', () => {
       <scientific-graph
         title="10,000 Scatter Points"
         .labels=${[]}
-        .datasets=${datasets}
+        .datasets=${datasets as any}
         type="scatter"
       ></scientific-graph>
     `);
@@ -248,7 +248,7 @@ suite('ScientificGraph - Performance Tests', () => {
         .datasets=${datasets}
         showToolbar
         showExportButtons
-        .exportFormats=${['png', 'json']}
+        .exportFormats=${['png'] as ('png' | 'jpg' | 'pdf')[]}
       ></scientific-graph>
     `);
 

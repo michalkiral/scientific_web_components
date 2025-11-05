@@ -47,28 +47,45 @@ suite('ScientificInput', () => {
   });
 
   test('applies state classes correctly', async () => {
-    const states = ['default', 'error', 'success'] as const;
+    const successEl = await fixture<ScientificInput>(html`
+      <scientific-input state="success"></scientific-input>
+    `);
+    const successInput = successEl.shadowRoot!.querySelector('.input-field')!;
+    assert.include(
+      successInput.className,
+      'success',
+      'Input should have success class'
+    );
 
-    for (const state of states) {
-      const el = await fixture<ScientificInput>(html`
-        <scientific-input .state=${state}></scientific-input>
-      `);
-      const input = el.shadowRoot!.querySelector('.input-field')!;
+    const errorEl = await fixture<ScientificInput>(html`
+      <scientific-input state="error" errorMessage="Error"></scientific-input>
+    `);
+    const errorInput = errorEl.shadowRoot!.querySelector('.input-field')!;
+    assert.include(
+      errorInput.className,
+      'error',
+      'Input should have error class when errorMessage is provided'
+    );
 
-      if (state !== 'default') {
-        assert.include(
-          input.className,
-          state,
-          `Input should have ${state} class`
-        );
-      } else {
-        assert.notInclude(
-          input.className,
-          'default',
-          'Default state should not add class'
-        );
-      }
-    }
+    const defaultEl = await fixture<ScientificInput>(html`
+      <scientific-input state="default"></scientific-input>
+    `);
+    const defaultInput = defaultEl.shadowRoot!.querySelector('.input-field')!;
+    assert.notInclude(
+      defaultInput.className,
+      'default',
+      'Default state should not add default class'
+    );
+    assert.notInclude(
+      defaultInput.className,
+      'error',
+      'Default state should not have error class'
+    );
+    assert.notInclude(
+      defaultInput.className,
+      'success',
+      'Default state should not have success class'
+    );
   });
 
   test('handles disabled state', async () => {
@@ -338,14 +355,17 @@ suite('ScientificInput', () => {
     assert.equal(el.value, 'custom value');
   });
 
-  test('displays helper text', async () => {
+  test('displays success message', async () => {
     const el = await fixture<ScientificInput>(html`
-      <scientific-input helperText="This is helper text"></scientific-input>
+      <scientific-input
+        state="success"
+        .successMessage=${'This is a success message'}
+      ></scientific-input>
     `);
 
-    const helperText = el.shadowRoot!.querySelector('.scientific-message');
-    assert.isNotNull(helperText);
-    assert.include(helperText!.textContent!, 'This is helper text');
+    const message = el.shadowRoot!.querySelector('.scientific-message');
+    assert.isNotNull(message);
+    assert.include(message!.textContent!, 'This is a success message');
   });
 
   test('displays error message when in error state', async () => {

@@ -149,7 +149,7 @@ export const TenThousandPointsScatter: Story = {
           .datasets=${[
             {
               label: 'Scatter Data',
-              data: scatterData,
+              data: scatterData as unknown as number[],
               backgroundColor: 'rgba(255, 99, 132, 0.6)',
               borderColor: '#ff6384',
               pointRadius: 3,
@@ -402,7 +402,7 @@ export const ExportPerformance: Story = {
           ]}
           showToolbar
           showExportButtons
-          .exportFormats=${['png', 'pdf']}
+          .exportFormats=${['png', 'pdf'] as ('png' | 'jpg' | 'pdf')[]}
           .onExport=${(format: string) => {
             const startTime = performance.now();
             setTimeout(() => {

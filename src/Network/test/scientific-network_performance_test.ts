@@ -270,7 +270,16 @@ suite('ScientificNetwork - Performance Tests', () => {
       <scientific-network
         title="Selection Test"
         .data=${networkData}
-        .controls=${{enableSelection: true}}
+        .controls=${{
+          enableZoom: false,
+          enablePan: false,
+          enableSelection: true,
+          showTooltips: false,
+          enableNodeCreation: false,
+          enableEdgeCreation: false,
+          enableRenaming: false,
+          enableRemoval: false,
+        }}
       ></scientific-network>
     `);
 
@@ -334,7 +343,16 @@ suite('ScientificNetwork - Performance Tests', () => {
       <scientific-network
         title="Zoom Test"
         .data=${networkData}
-        .controls=${{enableZoom: true, enablePan: true}}
+        .controls=${{
+          enableZoom: true,
+          enablePan: true,
+          enableSelection: false,
+          showTooltips: false,
+          enableNodeCreation: false,
+          enableEdgeCreation: false,
+          enableRenaming: false,
+          enableRemoval: false,
+        }}
       ></scientific-network>
     `);
 
@@ -415,7 +433,16 @@ suite('ScientificNetwork - Performance Tests', () => {
       <scientific-network
         title="Dynamic Update Test"
         .data=${initialNetwork}
-        .controls=${{enableNodeCreation: true, enableEdgeCreation: true}}
+        .controls=${{
+          enableZoom: false,
+          enablePan: false,
+          enableSelection: false,
+          showTooltips: false,
+          enableNodeCreation: true,
+          enableEdgeCreation: true,
+          enableRenaming: false,
+          enableRemoval: false,
+        }}
       ></scientific-network>
     `);
 

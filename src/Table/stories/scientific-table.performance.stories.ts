@@ -124,7 +124,7 @@ export const ScientificData: Story = {
           title="Compound Screening Results"
           subtitle="10,000 compound test results"
           .columns=${columns}
-          .data=${data}
+          .data=${data as {[key: string]: unknown}[]}
           pagination
           pageSize="50"
           sortable
@@ -522,7 +522,7 @@ export const CSVImportSimulation: Story = {
           title="CSV Import - 10,000 Rows"
           subtitle="Simulated large dataset import"
           .columns=${columns}
-          .data=${data}
+          .data=${data as {[key: string]: unknown}[]}
           pagination
           pageSize="100"
           sortable
