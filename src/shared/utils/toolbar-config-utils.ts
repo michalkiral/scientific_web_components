@@ -1,7 +1,7 @@
 import {
   type ToolbarSection,
   type ToolbarButtonDescriptor,
-} from '../components/ScientificToolbar/scientific-toolbar.js';
+} from '../components/toolbar/scientific-toolbar.js';
 import {type GraphExportFormat} from './export-utils.js';
 
 export interface ButtonConfig {
