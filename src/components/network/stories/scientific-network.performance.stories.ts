@@ -110,7 +110,7 @@ export default meta;
 type Story = StoryObj;
 
 export const OneThousandNodes: Story = {
-  name: '1,000 Nodes Network (Load on Demand)',
+  name: '1,000 Nodes Network',
   render: () => {
     let isLoaded = false;
     let isLoading = false;
@@ -149,9 +149,6 @@ export const OneThousandNodes: Story = {
           <strong>Performance Test:</strong> Rendering 1,000 nodes with ~2,000 edges.
           Expected render time: &lt;10 seconds.
         </p>
-        <p style="margin-bottom: 16px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-          ⚠️ <strong>Large Network:</strong> Click the button below to load this network on demand to prevent Storybook from freezing.
-        </p>
         <button
           @click=${loadNetwork}
           style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-bottom: 16px;"
@@ -172,63 +169,8 @@ export const OneThousandNodes: Story = {
   },
 };
 
-export const FiveThousandNodes: Story = {
-  name: '5,000 Nodes Network (On Demand)',
-  render: () => {
-    let networkData: NetworkData | null = null;
-    let isLoading = false;
-
-    const loadNetwork = () => {
-      isLoading = true;
-      setTimeout(() => {
-        networkData = generateLargeNetwork(5000, 2);
-        isLoading = false;
-        const container = document.getElementById('network-5k-container');
-        if (container) {
-          container.innerHTML = '';
-          const network = document.createElement('scientific-network');
-          network.setAttribute('title', '5,000 Node Network');
-          network.setAttribute('subtitle', 'Performance test: Large-scale network visualization');
-          network.setAttribute('showInfo', '');
-          network.setAttribute('style', 'width: 100%; height: 700px; max-width: 1200px;');
-          (network as ScientificNetwork).data = networkData;
-          container.appendChild(network);
-        }
-      }, 100);
-    };
-
-    return html`
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
-          <strong>Performance Test:</strong> Rendering 5,000 nodes with ~10,000 edges.
-          Expected render time: &lt;15 seconds.
-        </p>
-        <p style="margin-bottom: 16px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-          ⚠️ <strong>Warning:</strong> This is a very large network. Click the button below to load it on demand to avoid page freezing.
-        </p>
-        <button
-          @click=${loadNetwork}
-          ?disabled=${isLoading}
-          style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-bottom: 16px;"
-        >
-          ${isLoading ? 'Loading...' : 'Load 5,000 Node Network'}
-        </button>
-        <div id="network-5k-container"></div>
-      </div>
-    `;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tests network rendering with 5,000 nodes. Click the button to load on demand to prevent page freezing.',
-      },
-    },
-    chromatic: { disableSnapshot: true },
-  },
-};
-
 export const SmallNetwork: Story = {
-  name: 'Small Network (100 nodes)',
+  name: '100 Nodes Network',
   render: () => {
     const networkData = generateLargeNetwork(100, 3);
     return html`
@@ -258,7 +200,7 @@ export const SmallNetwork: Story = {
 };
 
 export const ScaleFreeNetwork: Story = {
-  name: 'Scale-Free Network (500 nodes - On Demand)',
+  name: '500 Nodes Network',
   render: () => {
     let isLoaded = false;
     let isLoading = false;
@@ -297,9 +239,6 @@ export const ScaleFreeNetwork: Story = {
           <strong>Performance Test:</strong> Scale-free network with 500 nodes.
           Uses preferential attachment algorithm. Expected render time: &lt;5 seconds.
         </p>
-        <p style="margin-bottom: 16px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-          ⚠️ <strong>Large Network:</strong> Click the button below to load this network on demand to prevent Storybook from freezing.
-        </p>
         <button
           @click=${loadNetwork}
           style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-bottom: 16px;"
@@ -324,7 +263,6 @@ export const DirectionToggle: Story = {
   name: 'Direction Toggle Performance',
   render: () => {
     const networkData = generateLargeNetwork(200, 2);
-    let isDirected = true;
 
     return html`
       <div style="padding: 20px;">
@@ -332,18 +270,6 @@ export const DirectionToggle: Story = {
           <strong>Performance Test:</strong> Toggle between directed/undirected with 200 nodes.
           Expected toggle time: &lt;1 second.
         </p>
-        <button
-          @click=${(e: Event) => {
-            const button = e.target as HTMLButtonElement;
-            const network = button.nextElementSibling as ScientificNetwork;
-            isDirected = !isDirected;
-            network.directed = isDirected;
-            button.textContent = isDirected ? 'Switch to Undirected' : 'Switch to Directed';
-          }}
-          style="margin-bottom: 16px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
-        >
-          Switch to Undirected
-        </button>
         <scientific-network
           title="Direction Toggle Test"
           subtitle="200 nodes - toggle between directed/undirected"
@@ -359,37 +285,6 @@ export const DirectionToggle: Story = {
     docs: {
       description: {
         story: 'Tests performance of toggling network direction. Validates re-render efficiency.',
-      },
-    },
-    chromatic: { disableSnapshot: true },
-  },
-};
-
-export const LayoutPerformance: Story = {
-  name: 'Layout Performance (150 nodes)',
-  render: () => {
-    const networkData = generateLargeNetwork(150, 2);
-
-    return html`
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
-          <strong>Performance Test:</strong> Layout computation with 150 nodes.
-          Expected layout computation: &lt;2 seconds.
-        </p>
-        <scientific-network
-          title="Layout Performance Test"
-          subtitle="150 nodes - automatic force-directed layout"
-          .data=${networkData}
-          showInfo
-          style="width: 100%; height: 600px; max-width: 1200px;"
-        ></scientific-network>
-      </div>
-    `;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tests layout computation performance. The default force-directed algorithm should complete quickly.',
       },
     },
     chromatic: { disableSnapshot: true },
@@ -473,7 +368,7 @@ export const DynamicUpdates: Story = {
 };
 
 export const ZoomAndPan: Story = {
-  name: 'Zoom & Pan (300 nodes - On Demand)',
+  name: 'Zoom & Pan',
   render: () => {
     let isLoaded = false;
     let isLoading = false;
@@ -522,9 +417,6 @@ export const ZoomAndPan: Story = {
           <strong>Performance Test:</strong> Zoom and pan with 300 nodes.
           Use mouse wheel to zoom and drag to pan. Expected: Smooth 60fps interaction.
         </p>
-        <p style="margin-bottom: 16px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-          ⚠️ <strong>Medium Network:</strong> Click the button below to load this network on demand to prevent Storybook from freezing.
-        </p>
         <button
           @click=${loadNetwork}
           style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-bottom: 16px;"
@@ -539,46 +431,6 @@ export const ZoomAndPan: Story = {
     docs: {
       description: {
         story: 'Tests zoom and pan performance. Interaction should remain smooth during navigation. Loads on demand to prevent page freezing.',
-      },
-    },
-    chromatic: { disableSnapshot: true },
-  },
-};
-
-export const MultipleNetworks: Story = {
-  name: 'Multiple Networks (Memory Test)',
-  render: () => {
-    const networks = Array.from({length: 3}, (_, i) => ({
-      id: i,
-      data: generateLargeNetwork(100, 2),
-    }));
-
-    return html`
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
-          <strong>Memory Test:</strong> Three networks with 100 nodes each.
-          Validates no memory leaks with multiple instances.
-        </p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
-          ${networks.map(
-            (network) => html`
-              <scientific-network
-                title="Network ${network.id + 1}"
-                subtitle="Memory test - 100 nodes"
-                .data=${network.data}
-                showInfo
-                style="width: 100%; height: 400px;"
-              ></scientific-network>
-            `
-          )}
-        </div>
-      </div>
-    `;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tests memory stability with multiple network instances. Monitor browser memory usage for leaks.',
       },
     },
     chromatic: { disableSnapshot: true },

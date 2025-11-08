@@ -1,8 +1,6 @@
 import {html} from 'lit';
 import type {Meta, StoryObj} from '@storybook/web-components-vite';
 import '../scientific-graph.js';
-import type {ScientificGraph} from '../scientific-graph.js';
-import {type GraphExportFormat} from '../../../shared/utils/export-utils.js';
 
 function generateLargeDataset(points: number) {
   const labels = Array.from({length: points}, (_, i) => `Point ${i + 1}`);
@@ -175,7 +173,7 @@ export const TenThousandPointsScatter: Story = {
 };
 
 export const MultipleDatasets: Story = {
-  name: 'Multiple Datasets (10 × 1,000 points)',
+  name: 'Multiple Datasets',
   render: () => {
     const {labels, datasets} = generateMultipleDatasets(10, 1000);
     return html`
@@ -209,79 +207,8 @@ export const MultipleDatasets: Story = {
   },
 };
 
-export const DataUpdatePerformance: Story = {
-  name: 'Dynamic Data Updates',
-  render: () => {
-    const updateData = (e: Event) => {
-      const button = e.target as HTMLButtonElement;
-      const container = button.closest('div')?.parentElement;
-      const graph = container?.querySelector('scientific-graph') as ScientificGraph | null;
-      
-      if (graph) {
-        const {labels, data} = generateLargeDataset(5000);
-        graph.labels = labels;
-        graph.datasets = [
-          {
-            label: 'Dynamic Data',
-            data: data,
-            borderColor: '#6f42c1',
-            backgroundColor: 'rgba(111, 66, 193, 0.1)',
-            borderWidth: 2,
-            tension: 0.3,
-          },
-        ];
-      }
-    };
-
-    return html`
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
-          <strong>Performance Test:</strong> Dynamic data updates with 5,000 points.
-          Click "Update Data" to test update performance. Expected: &lt;2 seconds per update.
-        </p>
-        <div style="margin-bottom: 16px;">
-          <button
-            @click=${updateData}
-            style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 8px;"
-          >
-            Update Data
-          </button>
-        </div>
-        <scientific-graph
-          title="Dynamic Data Updates - 5,000 Points"
-          subtitle="Performance test: Real-time data updates"
-          type="line"
-          .labels=${Array.from({length: 5000}, (_, i) => `Point ${i + 1}`)}
-          .datasets=${[
-            {
-              label: 'Dynamic Data',
-              data: Array.from({length: 5000}, () => Math.random() * 100),
-              borderColor: '#6f42c1',
-              backgroundColor: 'rgba(111, 66, 193, 0.1)',
-              borderWidth: 2,
-              tension: 0.3,
-            },
-          ]}
-          showToolbar
-          showStatistics
-          xAxisTitle="Data Points"
-          yAxisTitle="Value"
-          style="width: 100%; max-width: 1200px; height: 600px;"
-        ></scientific-graph>
-      </div>
-    `;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tests dynamic data update performance. Useful for validating real-time data visualization scenarios.',
-      },
-    },
-  },
-};
-
 export const StatisticsCalculation: Story = {
-  name: 'Statistics with 10,000 Points',
+  name: 'Statistics',
   render: () => {
     const {labels, data} = generateLargeDataset(10000);
     return html`
@@ -325,7 +252,7 @@ export const StatisticsCalculation: Story = {
 };
 
 export const ResponsiveResize: Story = {
-  name: 'Responsive Resizing (10,000 points)',
+  name: 'Responsive Resizing',
   render: () => {
     const {labels, data} = generateLargeDataset(10000);
     return html`
@@ -364,64 +291,6 @@ export const ResponsiveResize: Story = {
     docs: {
       description: {
         story: 'Tests responsive resizing performance with large datasets. The container is resizable - drag the bottom-right corner.',
-      },
-    },
-  },
-};
-
-export const ExportPerformance: Story = {
-  name: 'Export Performance (5,000 points)',
-  render: () => {
-    const {labels, data} = generateLargeDataset(5000);
-    let exportTime = 0;
-
-    return html`
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
-          <strong>Performance Test:</strong> Export performance with 5,000 points.
-          Use the toolbar export buttons to test. Expected: &lt;1 second.
-        </p>
-        ${exportTime > 0
-          ? html`<p style="margin-bottom: 16px; padding: 8px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
-              Last export took: <strong>${exportTime}ms</strong>
-            </p>`
-          : ''}
-        <scientific-graph
-          title="Export Performance Test"
-          subtitle="Testing PNG/PDF export with 5,000 data points"
-          type="line"
-          .labels=${labels}
-          .datasets=${[
-            {
-              label: 'Export Test Data',
-              data: data,
-              borderColor: '#e83e8c',
-              backgroundColor: 'rgba(232, 62, 140, 0.1)',
-              borderWidth: 2,
-              tension: 0.3,
-            },
-          ]}
-          showToolbar
-          showExportButtons
-          .exportFormats=${['png', 'pdf'] as GraphExportFormat[]}
-          .onExport=${(format: string) => {
-            const startTime = performance.now();
-            setTimeout(() => {
-              exportTime = performance.now() - startTime;
-              console.log(`Export (${format}) took: ${exportTime}ms`);
-            }, 100);
-          }}
-          xAxisTitle="Data Points"
-          yAxisTitle="Value"
-          style="width: 100%; max-width: 1200px; height: 600px;"
-        ></scientific-graph>
-      </div>
-    `;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tests export functionality performance with large datasets. Export times are logged to the console.',
       },
     },
   },
