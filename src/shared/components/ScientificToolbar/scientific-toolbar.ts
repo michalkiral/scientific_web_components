@@ -5,8 +5,8 @@ import {
   themeStyles,
   type ScientificTheme,
 } from '../../styles/common-styles.js';
-import '../../../../components/button/scientific-button.js';
-import '../../../../components/dropdown/scientific-dropdown.js';
+import '../../../components/button/scientific-button.js';
+import '../../../components/dropdown/scientific-dropdown.js';
 import {ButtonVariant} from '../../types/common-types.js';
 
 export interface ToolbarButtonDescriptor {
