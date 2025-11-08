@@ -31,7 +31,7 @@ import {
 } from '../../shared/utils/toolbar-config-utils.js';
 import {
   type ToolbarSection,
-} from '../../shared/components/ScientificToolbar/scientific-toolbar.js';
+} from '../../shared/components/toolbar/scientific-toolbar.js';
 import {
   exportFormatOptions,
   networkTypeOptions,

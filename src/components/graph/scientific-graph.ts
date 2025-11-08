@@ -32,7 +32,7 @@ import {
 import {getChartThemeColors} from '../../shared/utils/theme-utils.js';
 import {
   type ToolbarSection,
-} from '../../shared/components/ScientificToolbar/scientific-toolbar.js';
+} from '../../shared/components/toolbar/scientific-toolbar.js';
 import {
   createGraphToolbarSections,
   type GraphToolbarState,
