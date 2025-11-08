@@ -1,4 +1,4 @@
-/* eslint-disable no-constant-condition */
+ 
 import {html, css, TemplateResult, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '../InputAutoComplete/scientific-input.js';

@@ -25,15 +25,14 @@ A curated library of Lit-based web components tailored for data-heavy and scient
 
 ### Requirements
 
-- **Node.js** ≥ 16  
-- **npm** ≥ 8
+- **Node.js** ≥ 20  
 
 ### Installation
 
 ```bash
 git clone https://github.com/Snowskii/scientific_web_components.git
 cd scientific_web_components
-npm install
+npm ci
 ```
 
 ### Using a Component
@@ -86,7 +85,7 @@ Each component has detailed Storybook documentation under `src/<Component>/`.
 Refer to the Storybook stories (`*.stories.ts`) for usage patterns and live demos.
 
 ## Storybook & Docs
-
+- `npm run build` - Build before using storybook
 - `npm run storybook` – Interactive playground and component docs.  
 - `npm run docs` – Generates static component documentation using Custom Elements Manifest, Eleventy, and Rollup. Generated files are emitted to the `docs/` directory.  
 - To watch and rebuild docs: `npm run docs:gen:watch`.
@@ -95,7 +94,7 @@ Refer to the Storybook stories (`*.stories.ts`) for usage patterns and live demo
 
 - **Unit Tests**: Web Test Runner + Playwright (`npm test`).  
 - **Snapshots / Interaction Tests**: Storybook Test Runner (`npm run test-storybook`).  
-- **Linting**: ESLint & lit-analyzer (`npm run lint`).  
+- **Linting**: ESLint 9 & lit-analyzer (`npm run lint`).  
 - **Formatting**: Prettier (`npm run format`).  
 - **Bundle Inspection**: `npm run analyze` and `npm run checksize` for size checks.
 

@@ -629,7 +629,7 @@ export const CustomExportHandler: Story = {
     showExportButtons: true,
     exportFormats: ['png', 'jpg'],
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   render: (args: any) =>
     html`<scientific-graph
       .title=${args.title}

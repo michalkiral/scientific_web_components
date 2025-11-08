@@ -321,7 +321,7 @@ export class ScientificGraph extends ScientificSurfaceBase implements Exportable
           existingChartInstance.destroy();
         }
       }
-    } catch (error) {
+    } catch {
       // Ignore errors during cleanup
     }
 
