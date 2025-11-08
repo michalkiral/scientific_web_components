@@ -56,18 +56,15 @@ Components are published as ES modules; import paths are relative when consuming
 
 | Command | Description |
 |---------|-------------|
-| `npm run build` | Type-check and emit compiled JS. |
-| `npm run build:watch` | Incremental rebuild during development. |
-| `npm run serve` | Dev server with live reload (Web Dev Server). |
-| `npm run serve:prod` | Serve using production mode settings. |
-| `npm run lint` | Run ESLint + lit-analyzer. |
-| `npm run format` | Format using Prettier. |
-| `npm test` | Build then execute unit tests in dev and prod modes. |
-| `npm run test:watch` | Watch mode for tests. |
-| `npm run storybook` | Launch Storybook at http://localhost:6006. |
-| `npm run build-storybook` | Generate static Storybook docs. |
-| `npm run docs` | Build API docs (Custom Elements Manifest + Eleventy). |
-| `npm run docs:serve` | Preview generated docs locally. |
+| `npm run build` | Compile TypeScript to JavaScript in `Build/` directory. |
+| `npm run build:watch` | Watch mode - automatically rebuild on file changes. |
+| `npm run serve` | Start dev server with live reload at http://localhost:8000. |
+| `npm run lint` | Run ESLint and lit-analyzer on source files. |
+| `npm run format` | Format all files with Prettier. |
+| `npm test` | Build and run unit tests across Chromium, Firefox, and WebKit. |
+| `npm run test:watch` | Run tests in watch mode for development. |
+| `npm run storybook` | Launch Storybook dev server at http://localhost:6006. |
+| `npm run build-storybook` | Build static Storybook site for deployment. |
 
 ## Component Catalogue
 
@@ -84,19 +81,20 @@ Each component has detailed Storybook documentation under `src/<Component>/`.
 
 Refer to the Storybook stories (`*.stories.ts`) for usage patterns and live demos.
 
-## Storybook & Docs
-- `npm run build` - Build before using storybook
-- `npm run storybook` – Interactive playground and component docs.  
-- `npm run docs` – Generates static component documentation using Custom Elements Manifest, Eleventy, and Rollup. Generated files are emitted to the `docs/` directory.  
-- To watch and rebuild docs: `npm run docs:gen:watch`.
+## Storybook & Documentation
+
+- **Development**: Run `npm run storybook` to launch the interactive component playground at http://localhost:6006
+- **Production Build**: Run `npm run build-storybook` to generate static documentation in `storybook-static/`
+- **Component Stories**: Each component has detailed stories in `src/<Component>/*.stories.ts` files
 
 ## Testing & Quality
 
-- **Unit Tests**: Web Test Runner + Playwright (`npm test`).  
-- **Snapshots / Interaction Tests**: Storybook Test Runner (`npm run test-storybook`).  
-- **Linting**: ESLint 9 & lit-analyzer (`npm run lint`).  
-- **Formatting**: Prettier (`npm run format`).  
-- **Bundle Inspection**: `npm run analyze` and `npm run checksize` for size checks.
+- **Unit Tests**: Web Test Runner with Playwright browsers for Chromium, Firefox, and WebKit (`npm test`)
+- **Test Watch Mode**: Run `npm run test:watch` for continuous testing during development
+- **Linting**: ESLint 9 with flat config + lit-analyzer (`npm run lint`)
+- **Formatting**: Prettier for consistent code style (`npm run format`)
+- **Accessibility**: Storybook a11y addon for automated accessibility testing
+- **CI/CD**: GitHub Actions workflow runs lint, build, and tests on all pushes and pull requests
 
 ## Import Conventions
 

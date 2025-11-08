@@ -105,6 +105,7 @@ export default [
         __dirname: 'readonly',
         module: 'readonly',
         require: 'readonly',
+        console: 'readonly',
       },
     },
   },
