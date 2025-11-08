@@ -161,9 +161,9 @@ suite('ScientificTable - Performance Tests', () => {
     assert.equal(el.data.length, 10000);
     assert.equal(el.columns.length, 10);
 
-    console.log(`✓ Rendered 10,000 rows in ${renderTime.toFixed(2)}ms`);
+    console.log(`✓ Loaded 10,000 rows, rendered first page (100 rows) in ${renderTime.toFixed(2)}ms`);
 
-    assert.isBelow(renderTime, 5000, 'Should render within 5 seconds');
+    assert.isBelow(renderTime, 5000, 'Should render first page within 5 seconds');
   });
 
   test('handles 10,000 rows with scientific data (compounds)', async () => {
@@ -189,13 +189,13 @@ suite('ScientificTable - Performance Tests', () => {
     assert.equal(el.data.length, 10000);
 
     console.log(
-      `✓ Rendered scientific dataset with 10,000 rows in ${renderTime.toFixed(2)}ms`
+      `✓ Loaded scientific dataset (10,000 rows), rendered first page (50 rows) in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       renderTime,
       5000,
-      'Scientific dataset should render within 5 seconds'
+      'Scientific dataset first page should render within 5 seconds'
     );
   });
 
@@ -259,9 +259,9 @@ suite('ScientificTable - Performance Tests', () => {
 
     const sortTime = performance.now() - startTime;
 
-    console.log(`✓ Sorted 10,000 rows in ${sortTime.toFixed(2)}ms`);
+    console.log(`✓ Sorted 10,000 rows, re-rendered current page in ${sortTime.toFixed(2)}ms`);
 
-    assert.isBelow(sortTime, 2000, 'Sorting should complete within 2 seconds');
+    assert.isBelow(sortTime, 2000, 'Sorting and re-rendering should complete within 2 seconds');
   });
 
   test('search/filtering is performant with 10,000 rows', async () => {
@@ -284,9 +284,9 @@ suite('ScientificTable - Performance Tests', () => {
 
     const searchTime = performance.now() - startTime;
 
-    console.log(`✓ Rendered searchable table with 10,000 rows in ${searchTime.toFixed(2)}ms`);
+    console.log(`✓ Loaded 10,000 rows with search enabled, rendered first page (50 rows) in ${searchTime.toFixed(2)}ms`);
 
-    assert.isBelow(searchTime, 5000, 'Table with search should render within 5 seconds');
+    assert.isBelow(searchTime, 5000, 'Table with search first page should render within 5 seconds');
   });
 
   test('selection is performant with 10,000 rows', async () => {
@@ -309,12 +309,12 @@ suite('ScientificTable - Performance Tests', () => {
 
     const selectionTime = performance.now() - startTime;
 
-    console.log(`✓ Rendered selectable table with 10,000 rows in ${selectionTime.toFixed(2)}ms`);
+    console.log(`✓ Loaded 10,000 rows with selection enabled, rendered first page (100 rows) in ${selectionTime.toFixed(2)}ms`);
 
     assert.isBelow(
       selectionTime,
       5000,
-      'Selectable table should render within 5 seconds'
+      'Selectable table first page should render within 5 seconds'
     );
   });
 
@@ -377,13 +377,13 @@ suite('ScientificTable - Performance Tests', () => {
     assert.equal(el.data.length, 5000);
 
     console.log(
-      `✓ Rendered wide table (30 columns) in ${renderTime.toFixed(2)}ms`
+      `✓ Loaded wide table (5,000 rows × 30 columns), rendered first page (50 rows) in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       renderTime,
       5000,
-      'Wide tables should render within 5 seconds'
+      'Wide table first page should render within 5 seconds'
     );
   });
 
@@ -411,7 +411,7 @@ suite('ScientificTable - Performance Tests', () => {
 
     const updateTime = performance.now() - startTime;
 
-    console.log(`✓ Updated 5,000 rows in ${updateTime.toFixed(2)}ms`);
+    console.log(`✓ Updated data (5,000 rows), re-rendered current page (100 rows) in ${updateTime.toFixed(2)}ms`);
 
     assert.isBelow(
       updateTime,
@@ -439,9 +439,9 @@ suite('ScientificTable - Performance Tests', () => {
 
     const clickTime = performance.now() - startTime;
 
-    console.log(`✓ Rendered table with 10,000 rows in ${clickTime.toFixed(2)}ms`);
+    console.log(`✓ Loaded 10,000 rows, rendered first page (50 rows) in ${clickTime.toFixed(2)}ms`);
 
-    assert.isBelow(clickTime, 5000, 'Table should render within 5 seconds');
+    assert.isBelow(clickTime, 5000, 'Table first page should render within 5 seconds');
   });
 
   test('memory usage remains stable with large datasets', async () => {
@@ -526,13 +526,13 @@ suite('ScientificTable - Performance Tests', () => {
     assert.equal(el.data.length, 10000);
 
     console.log(
-      `✓ Loaded simulated CSV with 10,000 rows in ${loadTime.toFixed(2)}ms`
+      `✓ Loaded simulated CSV (10,000 rows), rendered first page (100 rows) in ${loadTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       loadTime,
       5000,
-      'CSV loading should complete within 5 seconds'
+      'CSV loading and first page render should complete within 5 seconds'
     );
   });
 });

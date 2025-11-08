@@ -109,10 +109,10 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 1500);
 
     console.log(
-      `Rendered 1,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Component initialized with 1,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
-    assert.isBelow(renderTime, 10000, 'Should render within 10 seconds');
+    assert.isBelow(renderTime, 10000, 'Component initialization should complete within 10 seconds');
   });
 
   test('handles 5,000 nodes with 10,000 edges', async () => {
@@ -135,10 +135,10 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 8000);
 
     console.log(
-      `Rendered 5,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Component initialized with 5,000 nodes and ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
-    assert.isBelow(renderTime, 15000, 'Should render within 15 seconds');
+    assert.isBelow(renderTime, 15000, 'Component initialization should complete within 15 seconds');
   });
 
   test('handles 10,000 edges in a dense network', async () => {
@@ -163,13 +163,13 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 9000);
 
     console.log(
-      `Rendered dense network with ${el.data.edges.length} edges in ${renderTime.toFixed(2)}ms`
+      `Dense network component initialized (${el.data.edges.length} edges) in ${renderTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
     assert.isBelow(
       renderTime,
       15000,
-      'Dense network should render within 15 seconds'
+      'Dense network component initialization should complete within 15 seconds'
     );
   });
 
@@ -192,13 +192,13 @@ suite('ScientificNetwork - Performance Tests', () => {
     const metricsTime = performance.now() - startTime;
 
     console.log(
-      `Calculated metrics for 2,000 nodes in ${metricsTime.toFixed(2)}ms`
+      `Component initialized with metrics enabled (2,000 nodes) in ${metricsTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
     assert.isBelow(
       metricsTime,
       12000,
-      'Metrics calculation should complete within 12 seconds'
+      'Component initialization with metrics should complete within 12 seconds'
     );
   });
 
@@ -224,13 +224,13 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.isAtLeast(el.data.edges.length, 6000);
 
     console.log(
-      `Rendered scale-free network (3,000 nodes, ${el.data.edges.length} edges) in ${renderTime.toFixed(2)}ms`
+      `Scale-free network component initialized (3,000 nodes, ${el.data.edges.length} edges) in ${renderTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
     assert.isBelow(
       renderTime,
       15000,
-      'Scale-free network should render within 15 seconds'
+      'Scale-free network component initialization should complete within 15 seconds'
     );
   });
 
@@ -391,13 +391,13 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.exists(el);
 
     console.log(
-      `Layout computed for 1,000 nodes in ${layoutTime.toFixed(2)}ms`
+      `Component initialized (1,000 nodes) in ${layoutTime.toFixed(2)}ms (Cytoscape layout/rendering NOT included)`
     );
 
     assert.isBelow(
       layoutTime,
       10000,
-      'Layout should complete within 10 seconds'
+      'Component initialization should complete within 10 seconds'
     );
   });
 
@@ -464,13 +464,13 @@ suite('ScientificNetwork - Performance Tests', () => {
     assert.equal(el.data.nodes.length, 1000);
 
     console.log(
-      `Added 500 nodes and edges in ${updateTime.toFixed(2)}ms`
+      `Data updated (500 nodes added) in ${updateTime.toFixed(2)}ms (Cytoscape re-layout/rendering NOT included)`
     );
 
     assert.isBelow(
       updateTime,
       5000,
-      'Dynamic updates should complete within 5 seconds'
+      'Data update should complete within 5 seconds'
     );
   });
 });

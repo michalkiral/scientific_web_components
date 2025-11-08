@@ -13,7 +13,6 @@ import {type GraphExportFormat} from '../../../shared/utils/export-utils.js';
   },
 } as any;
 
-
 suite('ScientificGraph - Performance Tests', () => {
   function generateLargeDataset(size: number) {
     const labels: string[] = [];
@@ -73,9 +72,9 @@ suite('ScientificGraph - Performance Tests', () => {
     assert.equal(el.labels.length, 10000);
     assert.equal(el.datasets[0].data.length, 10000);
 
-    console.log(`✓ Rendered 10,000 points in ${renderTime.toFixed(2)}ms`);
+    console.log(`Loaded and initialized line chart (10,000 points) in ${renderTime.toFixed(2)}ms`);
 
-    assert.isBelow(renderTime, 5000, 'Should render within 5 seconds');
+    assert.isBelow(renderTime, 5000, 'Chart initialization should complete within 5 seconds');
   });
 
   test('handles 10,000 data points - Bar Chart', async () => {
@@ -99,10 +98,10 @@ suite('ScientificGraph - Performance Tests', () => {
     assert.equal(el.datasets[0].data.length, 10000);
 
     console.log(
-      `✓ Rendered bar chart with 10,000 points in ${renderTime.toFixed(2)}ms`
+      `Loaded and initialized bar chart (10,000 points) in ${renderTime.toFixed(2)}ms`
     );
 
-    assert.isBelow(renderTime, 5000, 'Bar chart should render within 5 seconds');
+    assert.isBelow(renderTime, 5000, 'Bar chart initialization should complete within 5 seconds');
   });
 
   test('handles 10,000 data points - Scatter Plot', async () => {
@@ -133,13 +132,13 @@ suite('ScientificGraph - Performance Tests', () => {
     assert.equal(el.datasets[0].data.length, 10000);
 
     console.log(
-      `✓ Rendered scatter plot with 10,000 points in ${renderTime.toFixed(2)}ms`
+      `Loaded and initialized scatter plot (10,000 points) in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       renderTime,
       5000,
-      'Scatter plot should render within 5 seconds'
+      'Scatter plot initialization should complete within 5 seconds'
     );
   });
 
@@ -170,13 +169,13 @@ suite('ScientificGraph - Performance Tests', () => {
     assert.equal(totalPoints, 10000);
 
     console.log(
-      `✓ Rendered 10 datasets (10,000 total points) in ${renderTime.toFixed(2)}ms`
+      `Loaded and initialized 10 datasets (10,000 total points) in ${renderTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       renderTime,
       5000,
-      'Multiple datasets should render within 5 seconds'
+      'Multiple datasets initialization should complete within 5 seconds'
     );
   });
 
@@ -205,9 +204,9 @@ suite('ScientificGraph - Performance Tests', () => {
 
     assert.equal(el.datasets[0].label, 'Updated Data');
 
-    console.log(`✓ Updated 5,000 points in ${updateTime.toFixed(2)}ms`);
+    console.log(`Updated chart data (5,000 points) and re-rendered in ${updateTime.toFixed(2)}ms`);
 
-    assert.isBelow(updateTime, 2000, 'Data updates should complete within 2 seconds');
+    assert.isBelow(updateTime, 2000, 'Chart data updates should complete within 2 seconds');
   });
 
   test('statistics calculation is performant with 10,000 points', async () => {
@@ -229,12 +228,12 @@ suite('ScientificGraph - Performance Tests', () => {
 
     const statsTime = performance.now() - startTime;
 
-    console.log(`✓ Statistics calculated for 10,000 points in ${statsTime.toFixed(2)}ms`);
+    console.log(`Loaded chart and calculated statistics (10,000 points) in ${statsTime.toFixed(2)}ms`);
 
     assert.isBelow(
       statsTime,
       5000,
-      'Statistics calculation should complete within 5 seconds'
+      'Chart initialization with statistics should complete within 5 seconds'
     );
   });
 
@@ -311,12 +310,12 @@ suite('ScientificGraph - Performance Tests', () => {
 
     assert.equal(el.labels.length, 10000);
 
-    console.log(`✓ Responsive chart handles 10,000 points in ${resizeTime.toFixed(2)}ms`);
+    console.log(`Initialized responsive chart (10,000 points) in ${resizeTime.toFixed(2)}ms`);
 
     assert.isBelow(
       resizeTime,
       5000,
-      'Responsive chart should render within 5 seconds'
+      'Responsive chart initialization should complete within 5 seconds'
     );
   });
 
@@ -343,13 +342,13 @@ suite('ScientificGraph - Performance Tests', () => {
     assert.equal(el.type, 'bar');
 
     console.log(
-      `✓ Switched chart type with 5,000 points in ${switchTime.toFixed(2)}ms`
+      `Switched chart type and re-rendered (5,000 points) in ${switchTime.toFixed(2)}ms`
     );
 
     assert.isBelow(
       switchTime,
       2000,
-      'Chart type switching should complete within 2 seconds'
+      'Chart type switching and re-rendering should complete within 2 seconds'
     );
   });
 });
