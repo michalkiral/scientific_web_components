@@ -3,7 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {Chart, ChartType, ChartOptions} from 'chart.js/auto';
 import '../button/scientific-button.js';
 import '../dropdown/scientific-dropdown.js';
-import '../../shared/components/ScientificToolbar/scientific-toolbar.js';
+import '../../shared/components/toolbar/scientific-toolbar.js';
 import {baseComponentStyles} from '../../shared/styles/base-component-styles.js';
 import {ScientificSurfaceBase} from '../../shared/components/scientific-surface-base.js';
 import {

@@ -42,7 +42,7 @@ import {NetworkEvents, getElementEventName} from './network-events.js';
 import {DEFAULT_NETWORK_SHORTCUTS} from './network-shortcuts.js';
 import '../button/scientific-button.js';
 import '../dropdown/scientific-dropdown.js';
-import '../../shared/components/ScientificToolbar/scientific-toolbar.js';
+import '../../shared/components/toolbar/scientific-toolbar.js';
 
 export interface NetworkNode {
   id: string;
